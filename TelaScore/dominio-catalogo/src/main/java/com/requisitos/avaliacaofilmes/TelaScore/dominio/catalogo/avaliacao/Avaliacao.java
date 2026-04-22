@@ -13,7 +13,7 @@ public class Avaliacao {
 	private final UsuarioId usuarioId;
 	
 	private Nota nota;
-	private String resenha; // Texto descritivo da avaliação (opcional)
+	private String resenha; 
 	private final LocalDate dataAvaliacao;
 
 	public Avaliacao(AvaliacaoId id, FilmeId filmeId, UsuarioId usuarioId, Nota nota, String resenha) {
@@ -25,7 +25,7 @@ public class Avaliacao {
 		this.id = id;
 		this.filmeId = filmeId;
 		this.usuarioId = usuarioId;
-		this.dataAvaliacao = LocalDate.now(); // Regista automaticamente a data em que foi criada
+		this.dataAvaliacao = LocalDate.now(); 
 
 		this.nota = nota;
 		this.resenha = resenha;

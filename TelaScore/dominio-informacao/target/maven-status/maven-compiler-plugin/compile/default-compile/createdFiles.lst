@@ -1,0 +1,13 @@
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\evento\EventoRepositorio.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\noticia\Noticia.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\noticia\NoticiaRepositorio.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\evento\Evento.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\noticia\NoticiaId.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\calendario\EntradaCalendario.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\calendario\CalendarioEstreia.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\evento\EventoId.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\evento\EventoServico.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\calendario\CalendarioServico.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\calendario\CalendarioId.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\calendario\CalendarioRepositorio.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\noticia\NoticiaServico.class
