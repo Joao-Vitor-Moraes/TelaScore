@@ -21,3 +21,6 @@ Além disso, muitos amantes de cinema demonstram interesse em testar e expandir 
 ## 🗺️ Mapa de Histórias do Usuário
 <img width="3782" height="1121" alt="Mapa_de_historias_do_usuario" src="https://github.com/user-attachments/assets/747b329e-ab8a-48be-bec4-59d4eb23d782" />
 
+## 🎨 Protótipos
+
+## Context Mapper
