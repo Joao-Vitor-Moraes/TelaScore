@@ -17,3 +17,7 @@ A experiência relacionada ao cinema também possui um forte componente social. 
 Além de registrar e organizar filmes, muitos cinéfilos buscam acompanhar o lançamento de novas obras cinematográficas. O cinema é um campo em constante renovação, com produções sendo anunciadas, lançadas e discutidas ao longo do tempo. Para pessoas interessadas nesse universo, é importante acompanhar datas de estreia, anúncios de novos filmes e outras informações relacionadas a futuros lançamentos, permitindo que planejem quais obras desejam assistir quando estiverem disponíveis.
 
 Além disso, muitos amantes de cinema demonstram interesse em testar e expandir seus conhecimentos sobre filmes, diretores, atores e momentos marcantes da história do cinema. Esse interesse frequentemente se manifesta em desafios que permitem aos participantes avaliar o quanto sabem sobre algum universo cinematográfico e aprender novos fatos sobre essa área.
+
+## 🗺️ Mapa de Histórias do Usuário
+<img width="3782" height="1121" alt="Mapa_de_historias_do_usuario" src="https://github.com/user-attachments/assets/747b329e-ab8a-48be-bec4-59d4eb23d782" />
+
