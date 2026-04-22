@@ -2,13 +2,13 @@ package com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario;
 
 import java.util.Objects;
 
-import static org.apache.commons.lang3.Validate.isTrue;
-
 public class UsuarioId {
 	private final int id;
 
 	public UsuarioId(int id) {
-		isTrue(id > 0, "O id deve ser positivo");
+		if (id <= 0) {
+			throw new IllegalArgumentException("O id deve ser positivo");
+		}
 
 		this.id = id;
 	}
