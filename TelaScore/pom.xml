@@ -23,6 +23,8 @@
         <module>dominio-analise</module>
         <module>dominio-catalogo</module>
         <module>dominio-identidade</module>
+        <module>dominio-social</module>
+        <module>dominio-informacao</module>
         <module>aplicacao</module>
         <module>infraestrutura</module>
         <module>apresentacao-frontend</module>
