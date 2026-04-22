@@ -21,3 +21,10 @@ Além disso, muitos amantes de cinema demonstram interesse em testar e expandir 
 ## 🗺️ Mapa de Histórias do Usuário
 <img width="3782" height="1121" alt="Mapa_de_historias_do_usuario" src="https://github.com/user-attachments/assets/747b329e-ab8a-48be-bec4-59d4eb23d782" />
 
+## 🎨 Protótipos
+[Link dos Protótipos digitalizados](https://drive.google.com/drive/folders/1E7BqRoQI8SytqiydP5ptddj06PrGCgtM?usp=sharing)
+
+## Context Mapper
+
+## 🧪 Cenários de Teste BDD
+[Link dos cenários de Teste BDD](https://docs.google.com/document/d/1EmFClQxJ9P6FoeYFepJB9ckl0WHs-gYfcIe4Wqy6_2U/edit?usp=sharing)
