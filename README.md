@@ -22,6 +22,7 @@ Além disso, muitos amantes de cinema demonstram interesse em testar e expandir 
 <img width="3782" height="1121" alt="Mapa_de_historias_do_usuario" src="https://github.com/user-attachments/assets/747b329e-ab8a-48be-bec4-59d4eb23d782" />
 
 ## 🎨 Protótipos
+[Link dos Protótipos digitalizados](https://drive.google.com/drive/folders/1E7BqRoQI8SytqiydP5ptddj06PrGCgtM?usp=sharing)
 
 ## Context Mapper
 
