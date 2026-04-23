@@ -23,7 +23,6 @@ public class AvaliarFilmeCasoDeUso {
 	}
 
 	public void executar(AvaliarFilmeComando comando) {
-		// 1. Garante que o filme existe antes de deixar avaliar
 		FilmeId filmeId = new FilmeId(comando.filmeId());
 		if (filmeRepositorio.obter(filmeId) == null) {
 			throw new IllegalArgumentException("Não é possível avaliar um filme que não existe.");
@@ -31,20 +30,16 @@ public class AvaliarFilmeCasoDeUso {
 		
 		UsuarioId usuarioId = new UsuarioId(comando.usuarioId());
 		
-		// 2. Valida a nota de 1 a 5 estrelas usando o nosso Objeto de Valor do Domínio!
 		Nota nota = new Nota(comando.valorNota());
 		
-		// 3. Pede um novo ID
 		AvaliacaoId avaliacaoId = new AvaliacaoId(geradorId.gerarProximoIdAvaliacao());
 		
-		// 4. Monta a Avaliação
 		Avaliacao avaliacao = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota);
 		avaliacao.setComentario(comando.comentario());
 		
-		// 5. Salva na base de dados
 		avaliacaoRepositorio.salvar(avaliacao);
+
 		
 		// NOTA ARQUITETURAL: No futuro, é aqui que chamaríamos um "PublicadorDeEventos"
-		// para avisar o dominio-analise que o usuário deve ganhar pontos de recompensa!
 	}
 }
