@@ -38,6 +38,5 @@ public class AvaliarFilmeCasoDeUso {
 		avaliacaoRepositorio.salvar(avaliacao);
 
 		
-		// NOTA ARQUITETURAL: No futuro, é aqui que chamaríamos um "PublicadorDeEventos"
 	}
 }

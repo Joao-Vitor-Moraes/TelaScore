@@ -9,6 +9,7 @@ public interface AvaliacaoRepositorio {
 	void salvar(Avaliacao avaliacao);
 	
 	Avaliacao obter(AvaliacaoId id);
+	void remover(AvaliacaoId id);
 	
 	List<Avaliacao> pesquisarPorFilme(FilmeId filmeId);
 	List<Avaliacao> pesquisarPorUsuario(UsuarioId usuarioId);
