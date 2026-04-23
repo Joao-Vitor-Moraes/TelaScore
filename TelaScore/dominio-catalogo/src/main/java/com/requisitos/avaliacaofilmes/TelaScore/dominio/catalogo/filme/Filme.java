@@ -15,7 +15,7 @@ public class Filme {
 
 	private String titulo;
 	private String sinopse;
-	private Integer anoLancamento; // Muito importante para filmes!
+	private Integer anoLancamento;
 
 	private final List<DiretorId> diretores = new ArrayList<>();
 

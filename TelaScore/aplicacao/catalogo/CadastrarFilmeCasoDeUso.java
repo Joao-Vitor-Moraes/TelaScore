@@ -21,20 +21,18 @@ public class CadastrarFilmeCasoDeUso {
 	}
 
 	public void executar(CadastrarFilmeComando comando) {
-		// 1. Verifica se o Diretor selecionado realmente existe no banco de dados
 		DiretorId diretorId = new DiretorId(comando.diretorId());
 		if (diretorRepositorio.obter(diretorId) == null) {
 			throw new IllegalArgumentException("O diretor informado não existe no sistema.");
 		}
 		
-		// 2. Pede um novo ID ao banco
 		FilmeId novoFilmeId = new FilmeId(geradorId.gerarProximoIdFilme());
 		
-		// 3. Cria a entidade de Domínio (As regras como "Ano > 1888" são validadas aqui automaticamente!)
-		Filme filme = new Filme(novoFilmeId, comando.titulo(), comando.anoLancamento(), diretorId);
-		filme.setSinopse(comando.sinopse());
+		List<DiretorId> listaDiretores = new ArrayList<>();
+		listaDiretores.add(diretorId);
 		
-		// 4. Salva no banco de dados
+		Filme filme = new Filme(novoFilmeId, comando.titulo(), comando.sinopse(), comando.anoLancamento(), listaDiretores);
+		
 		filmeRepositorio.salvar(filme);
 	}
 }

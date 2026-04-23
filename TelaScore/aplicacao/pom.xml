@@ -29,5 +29,15 @@
             <artifactId>TelaScore-dominio-identidade</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>TelaScore-dominio-informacao</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>TelaScore-dominio-social</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
