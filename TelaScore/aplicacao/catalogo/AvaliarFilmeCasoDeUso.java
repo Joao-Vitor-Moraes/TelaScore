@@ -23,7 +23,7 @@ public class AvaliarFilmeCasoDeUso {
 	}
 
 	public void executar(AvaliarFilmeComando comando) {
-		FilmeId filmeId = new FilmeId(comando.filmeId());
+		FilmeId filmeId = new FilmeId(String.valueOf(comando.filmeId()));
 		if (filmeRepositorio.obter(filmeId) == null) {
 			throw new IllegalArgumentException("Não é possível avaliar um filme que não existe.");
 		}
@@ -34,8 +34,7 @@ public class AvaliarFilmeCasoDeUso {
 		
 		AvaliacaoId avaliacaoId = new AvaliacaoId(geradorId.gerarProximoIdAvaliacao());
 		
-		Avaliacao avaliacao = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota);
-		avaliacao.setComentario(comando.comentario());
+		Avaliacao avaliacao = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, comando.comentario());
 		
 		avaliacaoRepositorio.salvar(avaliacao);
 

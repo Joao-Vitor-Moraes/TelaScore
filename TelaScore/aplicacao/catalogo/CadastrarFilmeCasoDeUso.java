@@ -1,5 +1,8 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.servico;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.dto.CadastrarFilmeComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.servico.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.diretor.DiretorId;
@@ -26,7 +29,7 @@ public class CadastrarFilmeCasoDeUso {
 			throw new IllegalArgumentException("O diretor informado não existe no sistema.");
 		}
 		
-		FilmeId novoFilmeId = new FilmeId(geradorId.gerarProximoIdFilme());
+		FilmeId novoFilmeId = new FilmeId(String.valueOf(geradorId.gerarProximoIdFilme()));
 		
 		List<DiretorId> listaDiretores = new ArrayList<>();
 		listaDiretores.add(diretorId);
