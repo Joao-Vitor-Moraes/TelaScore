@@ -2,7 +2,7 @@
 .project
 .settings
 
-target
+target/
 
 schema.sql
 src-gen
