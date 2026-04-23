@@ -16,4 +16,6 @@ public interface GeradorId {
 	int gerarProximoIdConexao();
 	int gerarProximoIdComunidade();
 	int gerarProximoIdMensagem();
+
+	int gerarProximoIdLista();
 }
