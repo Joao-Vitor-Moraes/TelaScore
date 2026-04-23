@@ -45,19 +45,15 @@ public class AvaliacaoSteps {
 
     @Então("a avaliação deve ser criada com sucesso")
     public void a_avaliação_deve_ser_criada_com_sucesso() {
-        // Se a nota foi 4, não deve ter nenhuma exceção
         assertEquals(null, excecaoCapturada, "Nenhuma exceção deveria ter sido lançada");
         assertNotNull(avaliacaoCriada, "A entidade Avaliacao deveria ter sido criada");
     }
 
     @Então("o sistema deve bloquear a criação informando que a nota é inválida")
     public void o_sistema_deve_bloquear_a_criação_informando_que_a_nota_é_inválida() {
-        // Se a nota foi 6, o Validate tem que ter barrado!
         assertNotNull(excecaoCapturada, "Uma exceção deveria ter sido lançada pela classe Nota");
         assertEquals(IllegalArgumentException.class, excecaoCapturada.getClass());
         
-        // Dica: Se quiser, você pode verificar a mensagem exata do erro descomentando a linha abaixo
-        // e colando exatamente a mensagem que você escreveu no Validate do arquivo Nota.java:
-        // assertEquals("A nota deve ser entre 1 e 5", excecaoCapturada.getMessage());
+
     }
 }

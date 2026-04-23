@@ -12,3 +12,31 @@ Funcionalidade: Gerenciar listas
     Quando ela tenta criar uma lista sem nome
     Então o sistema rejeita a operação
     E retorna o erro "O título não pode estar em branco"
+
+    Cenário: Adicionar um filme à lista com sucesso
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista criada
+    Quando ela adiciona o filme com ID 5 à lista
+    Então a lista deve conter 1 item
+
+  Cenário: Tentar adicionar um filme repetido na lista
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista criada
+    E o filme com ID 5 já está na lista
+    Quando ela tenta adicionar o filme com ID 5 novamente
+    Então o sistema rejeita a operação
+    E retorna o erro "O filme já existe nesta lista"
+
+Cenário: Reordenar filmes numa lista ranqueada
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista ranqueada criada
+    E ela adicionou o filme com ID 10 na lista
+    E ela adicionou o filme com ID 20 na lista
+    E ela adicionou o filme com ID 30 na lista
+    Quando ela move o filme com ID 30 para a posição 1
+    Então o filme com ID 30 deve estar na posição 1
+    E o filme com ID 10 deve estar na posição 2
+
+  Cenário: Tentar reordenar numa lista não ranqueada
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista criada
+    E ela adicionou o filme com ID 10 na lista
+    Quando ela tenta mover o filme com ID 10 para a posição 1
+    Então o sistema rejeita a operação
+    E retorna o erro "Apenas listas ranqueadas permitem reordenação manual"

@@ -15,9 +15,9 @@ public class Lista {
 
 	private String titulo;
 	private String descricao;
-	private boolean ranqueada;
+	private final boolean ranqueada;
 
-	private List<ItemLista> itens = new ArrayList<>();
+	private final List<ItemLista> itens = new ArrayList<>();
 
 	public Lista(ListaId id, UsuarioId donoId, String titulo, String descricao, boolean ranqueada) {
 		notNull(id, "O id da lista não pode ser nulo");
@@ -67,5 +67,26 @@ public class Lista {
 	public void removerItemPorFilme(com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId) {
 		notNull(filmeId, "O id do filme não pode ser nulo");
 		itens.removeIf(item -> item.getFilmeId().equals(filmeId));
+	}
+
+	
+	public void moverFilmeParaPosicao(com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId, int novaPosicao) {
+		if (!this.ranqueada) {
+			throw new IllegalStateException("Apenas listas ranqueadas permitem reordenação manual");
+		}
+		
+		notNull(filmeId, "O id do filme não pode ser nulo");
+		
+		if (novaPosicao < 1 || novaPosicao > itens.size()) {
+			throw new IllegalArgumentException("Posição inválida");
+		}
+		
+		ItemLista itemParaMover = itens.stream()
+				.filter(i -> i.getFilmeId().equals(filmeId))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("O filme não está nesta lista"));
+		
+		itens.remove(itemParaMover);
+		itens.add(novaPosicao - 1, itemParaMover);
 	}
 }

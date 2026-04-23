@@ -21,7 +21,6 @@ public class ListaSteps {
 
     @Dado("que o usuário {string} com ID {int} quer criar uma lista")
     public void que_o_usuario_com_id_quer_criar_uma_lista(String nomeUsuario, Integer idUsuario) {
-        // Inicializamos os IDs fakes e limpamos os estados
         donoId = new UsuarioId(idUsuario);
         listaId = new ListaId(100); 
         listaCriada = null;
@@ -31,7 +30,6 @@ public class ListaSteps {
     @Quando("ela cria uma lista chamada {string}")
     public void ela_cria_uma_lista_chamada(String titulo) {
         try {
-            // Tentamos criar a lista instanciando diretamente o Domínio
             listaCriada = new Lista(listaId, donoId, titulo, "Meus filmes preferidos", false);
         } catch (Exception e) {
             excecaoCapturada = e;
@@ -52,7 +50,6 @@ public class ListaSteps {
     @Quando("ela tenta criar uma lista sem nome")
     public void ela_tenta_criar_uma_lista_sem_nome() {
         try {
-            // Enviamos uma String em branco ("") para acionar a barreira de segurança do Validate.notBlank
             listaCriada = new Lista(listaId, donoId, "", "Lista sem nome não pode", false);
         } catch (Exception e) {
             excecaoCapturada = e;
@@ -68,5 +65,95 @@ public class ListaSteps {
     @E("retorna o erro {string}")
     public void retorna_o_erro(String mensagemEsperada) {
         assertEquals(mensagemEsperada, excecaoCapturada.getMessage());
+    }
+    
+    @Dado("que a usuária {string} com ID {int} tem uma lista criada")
+    public void que_a_usuaria_com_id_tem_uma_lista_criada(String nomeUsuario, Integer idUsuario) {
+        donoId = new UsuarioId(idUsuario);
+        listaId = new ListaId(100); 
+        listaCriada = new Lista(listaId, donoId, "Lista de Teste", "Descrição", false);
+        excecaoCapturada = null;
+    }
+
+    @Quando("ela adiciona o filme com ID {int} à lista")
+    public void ela_adiciona_o_filme_com_id_a_lista(Integer idFilme) {
+        try {
+            com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
+                new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
+            
+            com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista novoItem = 
+                new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
+            
+            listaCriada.adicionarItem(novoItem);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Então("a lista deve conter {int} item")
+    public void a_lista_deve_conter_item(Integer quantidadeEsperada) {
+        assertEquals(null, excecaoCapturada, "Não deveria dar erro ao adicionar um filme válido");
+        assertEquals(quantidadeEsperada, listaCriada.getItens().size(), "A quantidade de itens na lista está incorreta");
+    }
+
+    @E("o filme com ID {int} já está na lista")
+    public void o_filme_com_id_ja_esta_na_lista(Integer idFilme) {
+        com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
+            new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
+        
+        com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista itemExistente = 
+            new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
+        
+        listaCriada.adicionarItem(itemExistente);
+    }
+
+    @Quando("ela tenta adicionar o filme com ID {int} novamente")
+    public void ela_tenta_adicionar_o_filme_com_id_novamente(Integer idFilme) {
+        ela_adiciona_o_filme_com_id_a_lista(idFilme);
+    }
+
+    @Dado("que a usuária {string} com ID {int} tem uma lista ranqueada criada")
+    public void que_a_usuaria_com_id_tem_uma_lista_ranqueada_criada(String nomeUsuario, Integer idUsuario) {
+        donoId = new UsuarioId(idUsuario);
+        listaId = new ListaId(100); 
+        listaCriada = new Lista(listaId, donoId, "Meu Top Filmes", "Descrição", true);
+        excecaoCapturada = null;
+    }
+
+    @Dado("ela adicionou o filme com ID {int} na lista")
+    public void ela_adicionou_o_filme_com_id_na_lista(Integer idFilme) {
+        com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
+            new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
+        com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista novoItem = 
+            new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
+        
+        listaCriada.adicionarItem(novoItem);
+    }
+
+    @Quando("ela move o filme com ID {int} para a posição {int}")
+    public void ela_move_o_filme_com_id_para_a_posicao(Integer idFilme, Integer novaPosicao) {
+        try {
+            com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
+                new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
+            
+            listaCriada.moverFilmeParaPosicao(filmeId, novaPosicao);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Quando("ela tenta mover o filme com ID {int} para a posição {int}")
+    public void ela_tenta_mover_o_filme_com_id_para_a_posicao(Integer idFilme, Integer novaPosicao) {
+        ela_move_o_filme_com_id_para_a_posicao(idFilme, novaPosicao);
+    }
+
+    @Então("o filme com ID {int} deve estar na posição {int}")
+    public void o_filme_com_id_deve_estar_na_posicao(Integer idFilmeEsperado, Integer posicao) {
+        assertEquals(null, excecaoCapturada, "Não deveria dar erro ao mover o filme");
+        
+        com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista itemNaPosicao = 
+            listaCriada.getItens().get(posicao - 1);
+            
+        assertEquals(String.valueOf(idFilmeEsperado), itemNaPosicao.getFilmeId().getCodigo(), "O filme na posição " + posicao + " não é o esperado.");
     }
 }
