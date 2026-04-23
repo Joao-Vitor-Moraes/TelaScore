@@ -28,15 +28,11 @@ public class AdicionarFilmeNaListaCasoDeUso {
 			throw new IllegalArgumentException("A lista informada não existe.");
 		}
 
-		if (!lista.getDonoId().equals(usuarioId)) {
-			throw new IllegalStateException("Apenas o criador da lista tem permissão para modificá-la.");
-		}
-
 		if (filmeRepositorio.obter(filmeId) == null) {
 			throw new IllegalArgumentException("O filme informado não existe no catálogo do sistema.");
 		}
 
-		lista.adicionarItem(new ItemLista(filmeId, null));
+		lista.adicionarItem(new ItemLista(filmeId, null), usuarioId);
 
 		listaRepositorio.salvar(lista);
 	}

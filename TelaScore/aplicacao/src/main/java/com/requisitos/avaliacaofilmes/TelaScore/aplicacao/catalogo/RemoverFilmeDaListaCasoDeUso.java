@@ -24,11 +24,7 @@ public class RemoverFilmeDaListaCasoDeUso {
 			throw new IllegalArgumentException("A lista informada não existe.");
 		}
 
-		if (!lista.getDonoId().equals(usuarioId)) {
-			throw new IllegalStateException("Apenas o criador da lista tem permissão para modificá-la.");
-		}
-
-		lista.removerItemPorFilme(filmeId); 
+		lista.removerItemPorFilme(filmeId, usuarioId); 
 
 		listaRepositorio.salvar(lista);
 	}

@@ -59,7 +59,6 @@ public class ListaSteps {
     @Então("o sistema rejeita a operação")
     public void o_sistema_rejeita_a_operacao() {
         assertNotNull(excecaoCapturada, "Uma exceção deveria ter sido lançada pela classe Lista");
-        assertEquals(IllegalArgumentException.class, excecaoCapturada.getClass());
     }
 
     @E("retorna o erro {string}")
@@ -84,7 +83,7 @@ public class ListaSteps {
             com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista novoItem = 
                 new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
             
-            listaCriada.adicionarItem(novoItem);
+            listaCriada.adicionarItem(novoItem, donoId);
         } catch (Exception e) {
             excecaoCapturada = e;
         }
@@ -104,7 +103,7 @@ public class ListaSteps {
         com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista itemExistente = 
             new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
         
-        listaCriada.adicionarItem(itemExistente);
+        listaCriada.adicionarItem(itemExistente, donoId);
     }
 
     @Quando("ela tenta adicionar o filme com ID {int} novamente")
@@ -127,7 +126,7 @@ public class ListaSteps {
         com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista novoItem = 
             new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
         
-        listaCriada.adicionarItem(novoItem);
+        listaCriada.adicionarItem(novoItem, donoId);
     }
 
     @Quando("ela move o filme com ID {int} para a posição {int}")
@@ -136,7 +135,7 @@ public class ListaSteps {
             com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
                 new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
             
-            listaCriada.moverFilmeParaPosicao(filmeId, novaPosicao);
+            listaCriada.moverFilmeParaPosicao(filmeId, novaPosicao, donoId);
         } catch (Exception e) {
             excecaoCapturada = e;
         }

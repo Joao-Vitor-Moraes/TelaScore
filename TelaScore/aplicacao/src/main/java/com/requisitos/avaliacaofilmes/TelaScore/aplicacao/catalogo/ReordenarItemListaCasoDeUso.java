@@ -24,18 +24,7 @@ public class ReordenarItemListaCasoDeUso {
 			throw new IllegalArgumentException("A lista informada não existe.");
 		}
 
-		if (!lista.getDonoId().equals(usuarioId)) {
-			throw new IllegalStateException("Apenas o criador da lista tem permissão para modificá-la.");
-		}
-
-		if (!lista.isRanqueada()) {
-			throw new IllegalStateException("Esta lista não é ranqueada, portanto não suporta reordenação manual.");
-		}
-
-		lista.getItens().stream()
-			.filter(item -> item.getFilmeId().equals(filmeId))
-			.findFirst()
-			.ifPresent(item -> item.setPosicao(comando.novaPosicao()));
+		lista.moverFilmeParaPosicao(filmeId, comando.novaPosicao(), usuarioId);
 
 		listaRepositorio.salvar(lista);
 	}

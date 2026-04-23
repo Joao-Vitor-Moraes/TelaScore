@@ -1,0 +1,14 @@
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\comunidade\ComunidadeRepositorio.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\mensagem\Mensagem.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\comunidade\ComunidadeId.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\conexao\Conexao.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\conexao\ConexaoId.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\conexao\ConexaoServico.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\comunidade\ComunidadeServico.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\mensagem\MensagemId.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\comunidade\PapelComunidade.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\mensagem\MensagemServico.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\comunidade\MembroComunidade.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\comunidade\Comunidade.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\mensagem\MensagemRepositorio.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\social\conexao\ConexaoRepositorio.class

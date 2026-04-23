@@ -51,7 +51,14 @@ public class Lista {
 		return Collections.unmodifiableList(itens);
 	}
 
-	public void adicionarItem(ItemLista item) {
+	private void garantirPermissao(UsuarioId usuarioId) {
+		if (!this.donoId.equals(usuarioId)) {
+			throw new IllegalStateException("Apenas o criador da lista tem permissão para modificá-la.");
+		}
+	}
+
+	public void adicionarItem(ItemLista item, UsuarioId usuarioId) {
+		garantirPermissao(usuarioId);
 		notNull(item, "O item não pode ser nulo");
 		
 		boolean filmeJaExiste = itens.stream()
@@ -64,13 +71,15 @@ public class Lista {
 		itens.add(item);
 	}
 	
-	public void removerItemPorFilme(com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId) {
+	public void removerItemPorFilme(com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId, UsuarioId usuarioId) {
+		garantirPermissao(usuarioId);
 		notNull(filmeId, "O id do filme não pode ser nulo");
 		itens.removeIf(item -> item.getFilmeId().equals(filmeId));
 	}
 
 	
-	public void moverFilmeParaPosicao(com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId, int novaPosicao) {
+	public void moverFilmeParaPosicao(com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId, int novaPosicao, UsuarioId usuarioId) {
+		garantirPermissao(usuarioId);
 		if (!this.ranqueada) {
 			throw new IllegalStateException("Apenas listas ranqueadas permitem reordenação manual");
 		}

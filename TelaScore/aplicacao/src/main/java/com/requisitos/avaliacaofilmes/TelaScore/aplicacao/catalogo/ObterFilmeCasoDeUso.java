@@ -39,10 +39,7 @@ public class ObterFilmeCasoDeUso {
 
 
         List<Avaliacao> avaliacoes = avaliacaoRepositorio.pesquisarPorFilme(filmeId);
-        double media = avaliacoes.stream()
-                .mapToInt(a -> a.getNota().getValor())
-                .average()
-                .orElse(0.0);
+        double media = new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.avaliacao.CalculadoraMediaAvaliacoes().calcular(avaliacoes);
 
         int idNumerico = Integer.parseInt(filme.getId().getCodigo()); 
 
