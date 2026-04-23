@@ -1,7 +1,6 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise;
 
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.CriarMetaComando;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.servico.GeradorId;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.Meta;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaRepositorio;
