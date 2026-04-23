@@ -6,4 +6,7 @@ public interface GeradorId {
 
 	int gerarProximoIdFilme();
 	int gerarProximoIdAvaliacao();
+
+	int gerarProximoIdMeta();
+	int gerarProximoIdRegistroPontuacao();
 }
