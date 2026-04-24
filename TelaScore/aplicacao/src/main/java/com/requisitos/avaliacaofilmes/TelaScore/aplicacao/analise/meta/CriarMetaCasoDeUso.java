@@ -1,4 +1,4 @@
-package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise;
+package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.Meta;

@@ -1,4 +1,4 @@
-package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise;
+package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta;
 
 import java.time.LocalDate;
 

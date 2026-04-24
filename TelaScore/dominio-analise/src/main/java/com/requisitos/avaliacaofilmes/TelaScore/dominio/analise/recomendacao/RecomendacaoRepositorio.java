@@ -5,7 +5,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuar
 
 public interface RecomendacaoRepositorio {
     void salvar(Recomendacao recomendacao);
-
+    Recomendacao obter(RecomendacaoId id);
     void removerAntigasPorUsuario(UsuarioId usuarioId); 
     List<Recomendacao> buscarTopRecomendacoesPorUsuario(UsuarioId usuarioId, int limite);
     List<Recomendacao> buscarRecomendacoesSociaisPorUsuario(UsuarioId usuarioId);
