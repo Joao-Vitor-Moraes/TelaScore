@@ -39,3 +39,20 @@ Funcionalidade: Gerenciar metas de consumo de filmes
     Quando ele tenta estender o prazo da meta para a próxima semana
     Então o sistema rejeita a operação
     E retorna o erro "Apenas metas em andamento podem ter o prazo estendido."
+    
+  Cenário: Estender o prazo de uma meta em andamento com sucesso
+    Dado que o usuário "joao_vitor" com ID 1 tem a meta "Ver Documentários" criada em andamento com alvo 10 e progresso 0
+    Quando ele tenta estender o prazo da meta para a próxima semana
+    Então a meta é atualizada com sucesso
+
+  Cenário: Tentar estender prazo para uma data anterior ao prazo atual
+    Dado que o usuário "joao_vitor" com ID 1 tem a meta "Ver Documentários" criada em andamento com alvo 10 e progresso 0
+    Quando ele tenta estender o prazo da meta para ontem
+    Então o sistema rejeita a operação
+    E retorna o erro "O novo prazo deve ser posterior ao prazo atual"
+
+  Cenário: Tentar adicionar uma quantidade de progresso inválida
+    Dado que o usuário "joao_vitor" com ID 1 tem a meta "Ver Documentários" criada em andamento com alvo 10 e progresso 0
+    Quando ele tenta adicionar 0 de progresso à meta
+    Então o sistema rejeita a operação
+    E retorna o erro "A quantidade de progresso a adicionar deve ser maior que zero"

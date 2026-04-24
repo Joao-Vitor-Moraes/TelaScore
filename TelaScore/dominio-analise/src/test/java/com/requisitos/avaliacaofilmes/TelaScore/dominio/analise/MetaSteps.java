@@ -141,7 +141,16 @@ public class MetaSteps {
     @Quando("ele tenta estender o prazo da meta para a próxima semana")
     public void tenta_estender_prazo() {
         try {
-            this.meta.estenderPrazo(LocalDate.now().plusDays(7));
+            this.meta.estenderPrazo(LocalDate.now().plusDays(15));
+        } catch (Exception e) {
+            this.excecaoCapturada = e;
+        }
+    }
+
+    @Quando("ele tenta estender o prazo da meta para ontem")
+    public void ele_tenta_estender_o_prazo_da_meta_para_ontem() {
+        try {
+            this.meta.estenderPrazo(LocalDate.now().minusDays(1));
         } catch (Exception e) {
             this.excecaoCapturada = e;
         }
