@@ -7,8 +7,7 @@ public interface RecomendacaoRepositorio {
     void salvar(Recomendacao recomendacao);
 
     void removerAntigasPorUsuario(UsuarioId usuarioId); 
-
     List<Recomendacao> buscarTopRecomendacoesPorUsuario(UsuarioId usuarioId, int limite);
-	
     List<Recomendacao> buscarRecomendacoesSociaisPorUsuario(UsuarioId usuarioId);
+    List<Recomendacao> buscarPendentesPorUsuario(UsuarioId usuarioId);
 }

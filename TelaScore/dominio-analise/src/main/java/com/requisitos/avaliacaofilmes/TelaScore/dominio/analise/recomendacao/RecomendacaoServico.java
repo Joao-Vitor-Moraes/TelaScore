@@ -31,6 +31,7 @@ public class RecomendacaoServico {
         notNull(filmeId, "O filme não pode ser nulo");
         
         isTrue(!remetenteId.equals(destinatarioId), "Você não pode enviar uma recomendação para si mesmo");
+        
         Recomendacao recomendacaoSocial = new Recomendacao(
             null, 
             destinatarioId,
@@ -41,5 +42,24 @@ public class RecomendacaoServico {
         );
 
         repositorio.salvar(recomendacaoSocial);
+    }
+
+
+    public void marcarComoVisualizada(Recomendacao recomendacao) {
+        notNull(recomendacao, "A recomendação não pode ser nula");
+        
+        recomendacao.marcarComoVisualizada();
+        repositorio.salvar(recomendacao);
+    }
+    public void reagirARecomendacao(Recomendacao recomendacao, boolean aceitou) {
+        notNull(recomendacao, "A recomendação não pode ser nula");
+        
+        if (aceitou) {
+            recomendacao.aceitar();
+        } else {
+            recomendacao.rejeitar();
+        }
+        
+        repositorio.salvar(recomendacao);
     }
 }

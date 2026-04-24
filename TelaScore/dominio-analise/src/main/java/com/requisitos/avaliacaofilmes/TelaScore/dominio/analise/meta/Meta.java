@@ -23,7 +23,6 @@ public class Meta {
 		notNull(usuarioId, "O id do utilizador não pode ser nulo");
 		notNull(dataPrazo, "A data de prazo não pode ser nula");
 		
-		// Regra de negócio: A meta deve terminar no futuro
 		isTrue(dataPrazo.isAfter(LocalDate.now()) || dataPrazo.isEqual(LocalDate.now()), 
 				"O prazo deve ser uma data futura ou o dia de hoje");
 
@@ -53,6 +52,13 @@ public class Meta {
 	public void setQuantidadeAlvo(int quantidadeAlvo) {
 		isTrue(quantidadeAlvo > 0, "A quantidade alvo deve ser maior que zero");
 		this.quantidadeAlvo = quantidadeAlvo;
+		
+		if (this.status == StatusMeta.EM_ANDAMENTO && this.quantidadeAtual >= this.quantidadeAlvo) {
+			this.quantidadeAtual = this.quantidadeAlvo;
+			this.status = StatusMeta.CONCLUIDA;
+		} else if (this.status == StatusMeta.CONCLUIDA && this.quantidadeAtual < this.quantidadeAlvo) {
+			this.status = StatusMeta.EM_ANDAMENTO;
+		}
 	}
 	public int getQuantidadeAlvo() { return quantidadeAlvo; }
 
@@ -70,8 +76,47 @@ public class Meta {
 			this.status = StatusMeta.CONCLUIDA;
 		}
 	}
+
+	public void removerProgresso(int quantidade) {
+		isTrue(quantidade > 0, "A quantidade a remover deve ser maior que zero");
+		
+		if (this.status == StatusMeta.FALHADA || this.status == StatusMeta.CANCELADA) {
+			throw new IllegalStateException("Não é possível alterar o progresso de uma meta encerrada.");
+		}
+
+		this.quantidadeAtual -= quantidade;
+		
+		if (this.quantidadeAtual < 0) {
+			this.quantidadeAtual = 0;
+		}
+
+		if (this.status == StatusMeta.CONCLUIDA && this.quantidadeAtual < this.quantidadeAlvo) {
+			this.status = StatusMeta.EM_ANDAMENTO;
+		}
+	}
+
+	public void estenderPrazo(LocalDate novoPrazo) {
+		notNull(novoPrazo, "O novo prazo não pode ser nulo");
+		isTrue(novoPrazo.isAfter(this.dataPrazo), "O novo prazo deve ser posterior ao prazo atual");
+		
+		if (this.status != StatusMeta.EM_ANDAMENTO) {
+			throw new IllegalStateException("Apenas metas em andamento podem ter o prazo estendido.");
+		}
+		
+		this.dataPrazo = novoPrazo;
+	}
+
+	public void cancelar() {
+		if (this.status != StatusMeta.EM_ANDAMENTO) {
+			throw new IllegalStateException("Apenas metas em andamento podem ser canceladas.");
+		}
+		this.status = StatusMeta.CANCELADA;
+	}
 	
 	public void marcarComoFalhada() {
+		if (this.status != StatusMeta.EM_ANDAMENTO) {
+			throw new IllegalStateException("Apenas metas em andamento podem ser marcadas como falhadas.");
+		}
 		this.status = StatusMeta.FALHADA;
 	}
 }

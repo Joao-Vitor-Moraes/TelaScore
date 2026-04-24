@@ -4,9 +4,8 @@ import java.util.List;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
 public interface MetaRepositorio {
-	void salvar(Meta meta);
-	
-	Meta obter(MetaId id);
-	
-	List<Meta> buscarPorUsuario(UsuarioId usuarioId);
+    void salvar(Meta meta);
+    Meta obter(MetaId id);
+    List<Meta> buscarPorUsuario(UsuarioId usuarioId);
+    List<Meta> buscarEmAndamentoPorUsuario(UsuarioId usuarioId);
 }
