@@ -96,15 +96,15 @@ public class Meta {
 	}
 
 	public void estenderPrazo(LocalDate novoPrazo) {
-		notNull(novoPrazo, "O novo prazo não pode ser nulo");
-		isTrue(novoPrazo.isAfter(this.dataPrazo), "O novo prazo deve ser posterior ao prazo atual");
-		
-		if (this.status != StatusMeta.EM_ANDAMENTO) {
-			throw new IllegalStateException("Apenas metas em andamento podem ter o prazo estendido.");
-		}
-		
-		this.dataPrazo = novoPrazo;
-	}
+        if (this.status != StatusMeta.EM_ANDAMENTO) {
+            throw new IllegalStateException("Apenas metas em andamento podem ter o prazo estendido.");
+        }
+        
+        notNull(novoPrazo, "O novo prazo não pode ser nulo");
+        isTrue(novoPrazo.isAfter(this.dataPrazo), "O novo prazo deve ser posterior ao prazo atual");
+        
+        this.dataPrazo = novoPrazo;
+    }
 
 	public void cancelar() {
 		if (this.status != StatusMeta.EM_ANDAMENTO) {

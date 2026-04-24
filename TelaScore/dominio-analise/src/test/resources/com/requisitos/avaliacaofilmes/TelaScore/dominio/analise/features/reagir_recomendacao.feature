@@ -13,5 +13,5 @@ Funcionalidade: Reagir a recomendações recebidas
   Cenário: Não deve ser possível aceitar uma recomendação já rejeitada
     Dado que o usuário com ID 2 possui uma recomendação do filme "FILME-001" que está com status "REJEITADA"
     Quando ele tenta reagir aceitando a recomendação
-    Então o sistema rejeita a operação
-    E retorna o erro "Não é possível aceitar uma recomendação que já foi rejeitada."
+    Então o sistema rejeita a recomendação
+    E a recomendação retorna o erro "Não é possível aceitar uma recomendação que já foi rejeitada."
