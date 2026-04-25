@@ -4,17 +4,24 @@ import static org.apache.commons.lang3.Validate.notNull;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuario;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeRepositorio;
 
 public class SolicitacaoServico {
 	private final SolicitacaoRepositorio repositorio;
+	private final FilmeRepositorio filmeRepositorio;
 
-	public SolicitacaoServico(SolicitacaoRepositorio repositorio) {
+	public SolicitacaoServico(SolicitacaoRepositorio repositorio, FilmeRepositorio filmeRepositorio) {
 		notNull(repositorio, "O repositório de solicitações não pode ser nulo");
+		notNull(filmeRepositorio, "O repositório de filmes não pode ser nulo");
 		this.repositorio = repositorio;
+		this.filmeRepositorio = filmeRepositorio;
 	}
 
 	public void enviarSolicitacao(SolicitacaoFilme solicitacao) {
 		notNull(solicitacao, "A solicitação não pode ser nula");
+		if (filmeRepositorio.existeComTitulo(solicitacao.getTituloSugerido())) {
+			throw new IllegalStateException("Filme já cadastrado");
+		}
 		repositorio.salvar(solicitacao);
 	}
 
