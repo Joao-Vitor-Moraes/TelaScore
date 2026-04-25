@@ -3,6 +3,7 @@ package com.requisitos.avaliacaofilmes.TelaScore.dominio.analise;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 
+// Imports de domínio (Estes funcionam porque estão no mesmo módulo)
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.*;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
@@ -18,7 +19,6 @@ public class QuizSteps {
 
     @Dado("que eu estou criando um quiz com o título {string}")
     public void preparar_criacao(String titulo) {
-        // Reinicia o estado para cada teste
         this.quiz = new Quiz(new QuizId(1), titulo, "Descrição Padrão");
         this.excecaoCapturada = null;
     }
@@ -35,7 +35,6 @@ public class QuizSteps {
     @Quando("eu tento finalizar a criação do quiz")
     public void finalizar_criacao() {
         try {
-            // Apenas disparar a validação que já existe no domínio
             this.quiz.validarQuizPronto();
         } catch (Exception e) {
             this.excecaoCapturada = e;
@@ -44,7 +43,7 @@ public class QuizSteps {
 
     @Então("o quiz deve ser salvo com sucesso")
     public void validar_sucesso() {
-        assertNull(excecaoCapturada, "Não deveria ter ocorrido erro");
+        assertNull(excecaoCapturada);
         assertNotNull(quiz);
     }
 
@@ -65,7 +64,6 @@ public class QuizSteps {
 
     @Quando("o usuário {int} responde {string} para a pergunta {string}")
     public void responder_quiz(Integer idUsuario, String resposta, String enunciado) {
-        // Simula a lógica de contagem de acertos sem precisar de Casos de Uso/Repositórios
         int acertos = 0;
         for (Pergunta p : quiz.getPerguntas()) {
             if (p.getEnunciado().equals(enunciado)) {
@@ -74,7 +72,6 @@ public class QuizSteps {
                 if (acertou) acertos++;
             }
         }
-        
         this.tentativa = new TentativaQuiz(quiz.getId(), new UsuarioId(idUsuario), acertos, quiz.getTotalPerguntas());
     }
 
@@ -85,9 +82,12 @@ public class QuizSteps {
         assertEquals(total, tentativa.getTotalPerguntas());
     }
     
+    // --- CENÁRIO DE REMOÇÃO (ESTILO METASTEPS) ---
+
     @Quando("o quiz é removido")
     public void o_quiz_e_removido() {
-        // No estilo simplificado, "remover" é apenas tornar a referência nula
+        // Simplificado: Igual ao que você faria se estivesse limpando uma Meta.
+        // Como estamos testando o DOMÍNIO, apenas anulamos o objeto.
         this.quiz = null;
     }
 

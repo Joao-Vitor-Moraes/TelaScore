@@ -21,7 +21,7 @@ public class RemoverQuizCasoDeUso {
         this.repositorio = repositorio;
     }
 
-    public void executar(int id) {
-        repositorio.remover(new QuizId(id));
+    public void executar(RemoverQuizComando comando) {
+        repositorio.remover(new QuizId(comando.quizId()));
     }
 }
