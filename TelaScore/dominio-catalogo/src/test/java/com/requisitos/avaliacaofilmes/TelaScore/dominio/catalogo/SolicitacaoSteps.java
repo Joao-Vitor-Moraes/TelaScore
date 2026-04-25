@@ -32,7 +32,7 @@ public class SolicitacaoSteps {
         excecaoCapturada = null;
         solicitacaoCriada = null;
         
-        when(filmeRepositorioMock.existeFilmeComTitulo(anyString())).thenReturn(false);
+        when(filmeRepositorioMock.existeComTitulo(anyString())).thenReturn(false);
     }
 
     @Quando("ela solicita o filme {string}")
@@ -52,7 +52,7 @@ public class SolicitacaoSteps {
         nomeFilmeContexto = tituloFilme;
         filmeRepositorioMock = mock(FilmeRepositorio.class);
         
-        when(filmeRepositorioMock.existeFilmeComTitulo(tituloFilme)).thenReturn(true);
+        when(filmeRepositorioMock.existeComTitulo(tituloFilme)).thenReturn(true);
     }
 
     @Quando("{string} tenta solicitá-lo")
@@ -74,7 +74,7 @@ public class SolicitacaoSteps {
     
     private void tentarCriarSolicitacao(String titulo, UsuarioId usuarioId) {
         try {
-            if (filmeRepositorioMock.existeFilmeComTitulo(titulo)) {
+            if (filmeRepositorioMock.existeComTitulo(titulo)) {
                 throw new IllegalArgumentException("Filme já cadastrado");
             }
             
