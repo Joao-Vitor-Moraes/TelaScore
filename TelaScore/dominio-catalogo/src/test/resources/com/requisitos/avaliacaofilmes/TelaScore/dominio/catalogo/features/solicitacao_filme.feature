@@ -9,5 +9,5 @@ Funcionalidade: Solicitação de filmes
   Cenário: Usuário solicita um filme já existente
     Dado que o filme "Interestelar" já existe no catálogo
     Quando "ana_lima" tenta solicitá-lo
-    Então o sistema rejeita a operação
-    E retorna o erro "Filme já cadastrado"
+    Então a solicitação do filme é rejeitada
+    E exibe a mensagem "Filme já cadastrado"

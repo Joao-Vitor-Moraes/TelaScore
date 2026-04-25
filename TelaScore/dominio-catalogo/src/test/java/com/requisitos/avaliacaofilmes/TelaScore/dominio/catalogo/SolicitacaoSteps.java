@@ -43,8 +43,8 @@ public class SolicitacaoSteps {
 
     @Então("a solicitação é registrada com sucesso")
     public void a_solicitacao_e_registrada_com_sucesso() {
-        assertEquals(null, excecaoCapturada, "A solicitação deveria ter sido aprovada sem erros.");
-        assertNotNull(solicitacaoCriada, "A entidade SolicitacaoFilme deveria ter sido criada.");
+        assertEquals(null, excecaoCapturada);
+        assertNotNull(solicitacaoCriada);
     }
 
     @Dado("que o filme {string} já existe no catálogo")
@@ -61,14 +61,14 @@ public class SolicitacaoSteps {
         tentarCriarSolicitacao(nomeFilmeContexto, idUsuario);
     }
 
-    @Então("o sistema rejeita a operação")
-    public void o_sistema_rejeita_a_operacao() {
-        assertNotNull(excecaoCapturada, "Uma exceção deveria ter sido lançada pelo Serviço de Domínio.");
+    @Então("a solicitação do filme é rejeitada")
+    public void a_solicitacao_do_filme_e_rejeitada() {
+        assertNotNull(excecaoCapturada);
         assertEquals(IllegalArgumentException.class, excecaoCapturada.getClass());
     }
 
-    @Então("retorna o erro {string}")
-    public void retorna_o_erro(String mensagemEsperada) {
+    @Então("exibe a mensagem {string}")
+    public void exibe_a_mensagem(String mensagemEsperada) {
         assertEquals(mensagemEsperada, excecaoCapturada.getMessage());
     }
     
