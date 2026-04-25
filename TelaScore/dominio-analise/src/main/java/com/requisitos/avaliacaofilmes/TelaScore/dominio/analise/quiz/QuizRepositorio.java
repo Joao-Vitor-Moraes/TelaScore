@@ -9,4 +9,5 @@ public interface QuizRepositorio {
 	
 	void salvarTentativa(TentativaQuiz tentativa);
 	List<TentativaQuiz> buscarTentativasPorUsuario(UsuarioId usuarioId);
+	void remover(QuizId id);
 }

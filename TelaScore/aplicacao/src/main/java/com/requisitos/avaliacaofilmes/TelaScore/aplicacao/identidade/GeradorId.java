@@ -19,4 +19,6 @@ public interface GeradorId {
 
 	int gerarProximoIdLista();
 	int gerarProximoIdSolicitacao();
+
+	int gerarProximoIdQuiz();
 }
