@@ -30,6 +30,42 @@ public class RecompensaSteps {
         this.registroPontuacao = null;
     }
 
+    @Dado("que o usuário {string} acertou um quiz")
+    public void que_o_usuario_acertou_um_quiz(String nomeUsuario) {
+        this.usuarioId = new UsuarioId(1);
+        this.acao = AcaoPontuada.ACERTAR_QUIZ;
+        this.pontos = new Pontos(15);
+        this.excecaoCapturada = null;
+        this.registroPontuacao = null;
+    }
+
+    @Dado("que o usuário {string} criou uma lista")
+    public void que_o_usuario_criou_uma_lista(String nomeUsuario) {
+        this.usuarioId = new UsuarioId(1);
+        this.acao = AcaoPontuada.CRIAR_LISTA;
+        this.pontos = new Pontos(5);
+        this.excecaoCapturada = null;
+        this.registroPontuacao = null;
+    }
+
+    @Dado("que o usuário {string} completou uma meta")
+    public void que_o_usuario_completou_uma_meta(String nomeUsuario) {
+        this.usuarioId = new UsuarioId(1);
+        this.acao = AcaoPontuada.COMPLETAR_META;
+        this.pontos = new Pontos(50);
+        this.excecaoCapturada = null;
+        this.registroPontuacao = null;
+    }
+
+    @Dado("que o usuário {string} convidou um amigo")
+    public void que_o_usuario_convidou_um_amigo(String nomeUsuario) {
+        this.usuarioId = new UsuarioId(1);
+        this.acao = AcaoPontuada.CONVIDAR_AMIGO;
+        this.pontos = new Pontos(20);
+        this.excecaoCapturada = null;
+        this.registroPontuacao = null;
+    }
+
     @Quando("o sistema calcula pontos")
     public void o_sistema_calcula_pontos() {
         try {
@@ -50,7 +86,6 @@ public class RecompensaSteps {
         assertNotNull(registroPontuacao, "O registro de pontuação deveria ter sido criado");
         assertNotNull(registroPontuacao.getPontosGanhos(), "Os pontos ganhos não deveriam ser nulos");
     }
-    
 
     @Dado("que uma ação inválida foi realizada")
     public void que_uma_acao_invalida_foi_realizada() {

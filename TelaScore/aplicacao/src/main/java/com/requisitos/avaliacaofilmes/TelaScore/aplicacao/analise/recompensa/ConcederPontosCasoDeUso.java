@@ -19,19 +19,14 @@ public class ConcederPontosCasoDeUso {
 	}
 
 	public void executar(ConcederPontosComando comando) {
-		// 1. Converte o ID simples que veio da tela para o Objeto de Valor do Domínio
 		UsuarioId usuarioId = new UsuarioId(comando.usuarioId());
 
-		// 2. Pede um novo ID para o registro de pontuação
 		RegistroPontuacaoId novoRegistroId = new RegistroPontuacaoId(geradorId.gerarProximoIdRegistroPontuacao());
 
-		// 3. Cria os objetos de valor (as regras de negócio são garantidas aqui)
 		Pontos pontos = new Pontos(comando.quantidadePontos());
 
-		// 4. Cria o registro de pontuação
 		RegistroPontuacao registro = new RegistroPontuacao(novoRegistroId, usuarioId, pontos, comando.acao());
 
-		// 5. Delega ao serviço de domínio que salva no banco de dados
 		pontuacaoServico.concederPontos(registro);
 	}
 }
