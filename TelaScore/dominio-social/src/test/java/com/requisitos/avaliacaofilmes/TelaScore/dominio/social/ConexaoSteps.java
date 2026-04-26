@@ -23,10 +23,6 @@ public class ConexaoSteps {
     private ConexaoRepositorio repositorio;
     private Exception excecaoCapturada;
 
-    // ─────────────────────────────────────────────
-    // Backgrounds / Dados compartilhados
-    // ─────────────────────────────────────────────
-
     @Dado("que {string} está autenticada com ID {int}")
     public void que_usuario_esta_autenticado_com_id(String nomeUsuario, Integer id) {
         this.seguidorId = new UsuarioId(id);
@@ -45,10 +41,6 @@ public class ConexaoSteps {
         );
         repositorio.salvar(conexaoExistente);
     }
-
-    // ─────────────────────────────────────────────
-    // Cenário 1: Usuário adiciona amigo
-    // ─────────────────────────────────────────────
 
     @Quando("ela segue o usuário com ID {int}")
     public void ela_segue_o_usuario_com_id(Integer idSeguido) {
@@ -70,10 +62,6 @@ public class ConexaoSteps {
         assertNull(excecaoCapturada, "Não deveria ter dado erro");
         assertNotNull(conexao, "A conexão deveria ter sido criada");
     }
-
-    // ─────────────────────────────────────────────
-    // Cenário 2: Usuário adiciona a si mesmo
-    // ─────────────────────────────────────────────
 
     @Quando("ela tenta seguir a si mesma com ID {int}")
     public void ela_tenta_seguir_a_si_mesma_com_id(Integer id) {
@@ -99,10 +87,6 @@ public class ConexaoSteps {
         assertEquals(mensagemEsperada, excecaoCapturada.getMessage());
     }
 
-    // ─────────────────────────────────────────────
-    // Cenário 3: Usuário tenta seguir alguém que já segue
-    // ─────────────────────────────────────────────
-
     @Quando("ela tenta seguir novamente o usuário com ID {int}")
     public void ela_tenta_seguir_novamente_o_usuario_com_id(Integer idSeguido) {
         try {
@@ -124,10 +108,6 @@ public class ConexaoSteps {
         assertEquals(mensagemEsperada, excecaoCapturada.getMessage());
     }
 
-    // ─────────────────────────────────────────────
-    // Cenário 4: Usuário deixa de seguir outro usuário
-    // ─────────────────────────────────────────────
-
     @Quando("ela deixa de seguir o usuário com ID {int}")
     public void ela_deixa_de_seguir_o_usuario_com_id(Integer idSeguido) {
         try {
@@ -147,10 +127,6 @@ public class ConexaoSteps {
         );
         assertNull(conexaoRemovida, "A conexão deveria ter sido removida do repositório");
     }
-
-    // ─────────────────────────────────────────────
-    // Repositório em memória para os testes
-    // ─────────────────────────────────────────────
 
     private static class ConexaoRepositorioEmMemoria implements ConexaoRepositorio {
         private final java.util.List<Conexao> conexoes = new java.util.ArrayList<>();
