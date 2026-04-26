@@ -10,8 +10,10 @@ import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
 
 @Suite
 @IncludeEngines("cucumber")
-@SelectPackages("com.requisitos.avaliacaofilmes")
-@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "com.requisitos.avaliacaofilmes")
+// Selecionamos o pacote 'social' para garantir que este Runner só execute o que for deste módulo
+@SelectPackages("com.requisitos.avaliacaofilmes.TelaScore.dominio.social")
+@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "com.requisitos.avaliacaofilmes.TelaScore.dominio.social")
+// Mantemos o plugin 'pretty' para você continuar vendo os logs detalhados no console
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")
 public class RunCucumberTest {
 }

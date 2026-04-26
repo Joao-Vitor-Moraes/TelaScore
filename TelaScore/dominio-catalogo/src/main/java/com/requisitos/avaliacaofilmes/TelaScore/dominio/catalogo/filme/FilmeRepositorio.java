@@ -4,4 +4,5 @@ public interface FilmeRepositorio {
 	void salvar(Filme filme);
 	Filme obter(FilmeId id);
 	void remover(FilmeId id);
+	boolean existeComTitulo(String titulo);
 }
