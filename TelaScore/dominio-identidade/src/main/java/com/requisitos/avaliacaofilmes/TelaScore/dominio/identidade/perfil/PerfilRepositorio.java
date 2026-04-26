@@ -6,4 +6,5 @@ public interface PerfilRepositorio {
 	void salvar(Perfil perfil);
 	Perfil obter(PerfilId id);
 	Perfil obterPorUsuario(UsuarioId usuarioId);
+	void removerPorUsuario(UsuarioId usuarioId);
 }

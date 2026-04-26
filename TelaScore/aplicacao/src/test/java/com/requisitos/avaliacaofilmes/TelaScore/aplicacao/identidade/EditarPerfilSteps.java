@@ -1,0 +1,151 @@
+package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.mockito.ArgumentCaptor;
+
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.Apelido;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.Perfil;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilServico;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioLogado;
+
+import io.cucumber.java.pt.Dado;
+import io.cucumber.java.pt.E;
+import io.cucumber.java.pt.Então;
+import io.cucumber.java.pt.Quando;
+
+public class EditarPerfilSteps {
+
+    private PerfilRepositorio perfilRepositorio;
+    private PerfilServico perfilServico;
+    private SessaoUsuario sessaoUsuario;
+    private EditarPerfilCasoDeUso editarPerfilCasoDeUso;
+
+    private Exception excecaoCapturada;
+
+    private void prepararCasoDeUso() {
+        perfilRepositorio = mock(PerfilRepositorio.class);
+        perfilServico = new PerfilServico(perfilRepositorio);
+        sessaoUsuario = new SessaoUsuario();
+        editarPerfilCasoDeUso = new EditarPerfilCasoDeUso(perfilServico, sessaoUsuario);
+        excecaoCapturada = null;
+    }
+
+    @Dado("que existe um usuário logado para edição de perfil com ID {int}")
+    public void que_existe_um_usuario_logado_para_edicao_de_perfil_com_id(Integer idUsuario) {
+        prepararCasoDeUso();
+        sessaoUsuario.iniciar(new UsuarioLogado(new UsuarioId(idUsuario), PapelUsuario.CINEFILO));
+    }
+
+    @Dado("que não há usuário logado para edição de perfil")
+    public void que_nao_ha_usuario_logado_para_edicao_de_perfil() {
+        prepararCasoDeUso();
+    }
+
+    @E("existe um perfil para edição com ID {int} do usuário {int} com apelido {string}")
+    public void existe_um_perfil_para_edicao_com_id_do_usuario_com_apelido(Integer idPerfil, Integer idUsuario, String apelido) {
+        PerfilId perfilId = new PerfilId(idPerfil);
+        Perfil perfil = new Perfil(
+            perfilId,
+            new UsuarioId(idUsuario),
+            new Apelido(apelido)
+        );
+
+        when(perfilRepositorio.obter(perfilId)).thenReturn(perfil);
+    }
+
+    @Quando("solicito a edição do perfil {int} com apelido {string}, biografia {string} e avatar {string}")
+    public void solicito_a_edicao_do_perfil_com_apelido_biografia_e_avatar(
+        Integer idPerfil,
+        String apelido,
+        String biografia,
+        String avatar
+    ) {
+        try {
+            EditarPerfilComando comando = new EditarPerfilComando(
+                idPerfil,
+                apelido,
+                biografia,
+                avatar
+            );
+
+            editarPerfilCasoDeUso.executar(comando);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Quando("solicito a edição do perfil {int} sem apelido, com biografia {string} e avatar {string}")
+    public void solicito_a_edicao_do_perfil_sem_apelido_com_biografia_e_avatar(
+        Integer idPerfil,
+        String biografia,
+        String avatar
+    ) {
+        try {
+            EditarPerfilComando comando = new EditarPerfilComando(
+                idPerfil,
+                null,
+                biografia,
+                avatar
+            );
+
+            editarPerfilCasoDeUso.executar(comando);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Então("a edição do perfil deve ser realizada com sucesso")
+    public void a_edicao_do_perfil_deve_ser_realizada_com_sucesso() {
+        assertNull(excecaoCapturada);
+        verify(perfilRepositorio, times(1)).salvar(any(Perfil.class));
+    }
+
+    @Então("a edição do perfil deve ser rejeitada")
+    public void a_edicao_do_perfil_deve_ser_rejeitada() {
+        assertNotNull(excecaoCapturada);
+        verify(perfilRepositorio, never()).salvar(any(Perfil.class));
+    }
+
+    @E("deve retornar o erro da edição de perfil {string}")
+    public void deve_retornar_o_erro_da_edicao_de_perfil(String mensagemErro) {
+        assertNotNull(excecaoCapturada);
+        assertEquals(mensagemErro, excecaoCapturada.getMessage());
+    }
+
+    @E("o apelido editado do perfil deve ser {string}")
+    public void o_apelido_editado_do_perfil_deve_ser(String apelidoEsperado) {
+        Perfil perfilSalvo = capturarPerfilSalvo();
+        assertEquals(apelidoEsperado, perfilSalvo.getApelido().getValor());
+    }
+
+    @E("a biografia editada do perfil deve ser {string}")
+    public void a_biografia_editada_do_perfil_deve_ser(String biografiaEsperada) {
+        Perfil perfilSalvo = capturarPerfilSalvo();
+        assertEquals(biografiaEsperada, perfilSalvo.getBiografia());
+    }
+
+    @E("o avatar editado do perfil deve ser {string}")
+    public void o_avatar_editado_do_perfil_deve_ser(String avatarEsperado) {
+        Perfil perfilSalvo = capturarPerfilSalvo();
+        assertEquals(avatarEsperado, perfilSalvo.getAvatarUrl());
+    }
+
+    private Perfil capturarPerfilSalvo() {
+        ArgumentCaptor<Perfil> captor = ArgumentCaptor.forClass(Perfil.class);
+        verify(perfilRepositorio).salvar(captor.capture());
+        return captor.getValue();
+    }
+}

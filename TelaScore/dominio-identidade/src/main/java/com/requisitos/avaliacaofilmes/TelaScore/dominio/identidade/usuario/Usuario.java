@@ -8,16 +8,17 @@ public class Usuario {
 
 	private String nome;
 	private Email email;
+	private Senha senha;
+	private PapelUsuario papel;
 
-    private PapelUsuario papel;
-
-	public Usuario(UsuarioId id, String nome, Email email, PapelUsuario papel) {
+	public Usuario(UsuarioId id, String nome, Email email, Senha senha, PapelUsuario papel) {
 		notNull(id, "O id do usuário não pode ser nulo");
 		notNull(papel, "O papel do usuário não pode ser nulo");
 		this.id = id;
 
 		setNome(nome);
 		setEmail(email);
+		setSenha(senha);
 		this.papel = papel;
 	}
 
@@ -40,23 +41,33 @@ public class Usuario {
 		return email;
 	}
 
-	public PapelUsuario getPapel() {
-		return papel;
-	}
-
 	private void setEmail(Email email) {
 		notNull(email, "O e-mail não pode ser nulo");
 
 		this.email = email;
 	}
 
+	public Senha getSenha() {
+		return senha;
+	}
+
+	private void setSenha(Senha senha) {
+		notNull(senha, "A senha não pode ser nula");
+
+		this.senha = senha;
+	}
+
+	public PapelUsuario getPapel() {
+		return papel;
+	}
+
+	public void setPapel(PapelUsuario papel) {
+		notNull(papel, "O papel do usuário não pode ser nulo");
+		this.papel = papel;
+	}
+
 	@Override
 	public String toString() {
 		return nome;
 	}
-
-    public void setPapel(PapelUsuario papel) {
-        notNull(papel, "O papel do usuário não pode ser nulo");
-        this.papel = papel;
-    }
 }
