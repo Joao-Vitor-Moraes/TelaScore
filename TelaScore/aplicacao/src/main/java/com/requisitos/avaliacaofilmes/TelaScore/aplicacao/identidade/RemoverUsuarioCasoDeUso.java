@@ -1,5 +1,6 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade;
 
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
@@ -8,9 +9,11 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuar
 public class RemoverUsuarioCasoDeUso {
 
     private final UsuarioServico usuarioServico;
+    private final PerfilServico perfilServico;
 
-    public RemoverUsuarioCasoDeUso(UsuarioServico usuarioServico) {
+    public RemoverUsuarioCasoDeUso(UsuarioServico usuarioServico, PerfilServico perfilServico) {
         this.usuarioServico = usuarioServico;
+        this.perfilServico = perfilServico;
     }
 
     public void executar(RemoverUsuarioComando comando) {
@@ -26,5 +29,6 @@ public class RemoverUsuarioCasoDeUso {
 
         UsuarioId usuarioId = new UsuarioId(comando.usuarioId());
         usuarioServico.remover(usuarioId);
+        perfilServico.removerPorUsuario(usuarioId);
     }
 }

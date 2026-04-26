@@ -9,8 +9,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Email;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Senha;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
@@ -25,6 +28,8 @@ public class RemoverUsuariosSteps {
 
     private UsuarioRepositorio usuarioRepositorio;
     private UsuarioServico usuarioServico;
+    private PerfilRepositorio perfilRepositorio;
+    private PerfilServico perfilServico;
     private RemoverUsuarioCasoDeUso removerUsuarioCasoDeUso;
 
     private UsuarioId usuarioIdSolicitado;
@@ -33,7 +38,9 @@ public class RemoverUsuariosSteps {
     private void prepararCasoDeUso() {
         usuarioRepositorio = mock(UsuarioRepositorio.class);
         usuarioServico = new UsuarioServico(usuarioRepositorio);
-        removerUsuarioCasoDeUso = new RemoverUsuarioCasoDeUso(usuarioServico);
+        perfilRepositorio = mock(PerfilRepositorio.class);
+        perfilServico = new PerfilServico(perfilRepositorio);
+        removerUsuarioCasoDeUso = new RemoverUsuarioCasoDeUso(usuarioServico, perfilServico);
         usuarioIdSolicitado = null;
         excecaoCapturada = null;
     }
@@ -47,6 +54,7 @@ public class RemoverUsuariosSteps {
             administradorId,
             "Administrador",
             new Email("admin@admin.com"),
+            new Senha("123456"),
             PapelUsuario.ADMIN
         );
 
@@ -62,6 +70,7 @@ public class RemoverUsuariosSteps {
             usuarioId,
             "Gabriel Reis",
             new Email("grmp@cesar.school"),
+            new Senha("123456"),
             PapelUsuario.CINEFILO
         );
 
@@ -83,6 +92,7 @@ public class RemoverUsuariosSteps {
             usuarioId,
             "Gabriel Pires",
             new Email("gp@gmail.com"),
+            new Senha("123456"),
             PapelUsuario.CINEFILO
         );
 
@@ -121,10 +131,16 @@ public class RemoverUsuariosSteps {
         verify(usuarioRepositorio, times(1)).remover(usuarioIdSolicitado);
     }
 
+    @E("o perfil do usuário removido também deve ser removido")
+    public void o_perfil_do_usuario_removido_tambem_deve_ser_removido() {
+        verify(perfilRepositorio, times(1)).removerPorUsuario(usuarioIdSolicitado);
+    }
+
     @Então("a remoção deve ser rejeitada")
     public void a_remocao_deve_ser_rejeitada() {
         assertNotNull(excecaoCapturada);
         verify(usuarioRepositorio, never()).remover(usuarioIdSolicitado);
+        verify(perfilRepositorio, never()).removerPorUsuario(usuarioIdSolicitado);
     }
 
     @E("deve retornar o erro da remoção {string}")

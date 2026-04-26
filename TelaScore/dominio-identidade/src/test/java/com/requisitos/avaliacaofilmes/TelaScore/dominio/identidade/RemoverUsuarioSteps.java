@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Email;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Senha;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
@@ -36,6 +37,7 @@ public class RemoverUsuarioSteps {
             usuarioId,
             "Gabriel Reis",
             new Email("grmp@cesar.school"),
+            new Senha("123456"),
             PapelUsuario.CINEFILO
         );
 

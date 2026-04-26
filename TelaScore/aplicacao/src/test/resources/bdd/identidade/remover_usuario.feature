@@ -9,6 +9,7 @@ Funcionalidade: Remoção de usuário
         E existe um usuário alvo cadastrado com ID 1
         Quando o administrador da remoção com ID 10 solicita remover o usuário com ID 1
         Então a remoção deve ser realizada com sucesso
+        E o perfil do usuário removido também deve ser removido
 
     Cenário: Não deve remover usuário inexistente
         Dado que o administrador da remoção tem ID 10

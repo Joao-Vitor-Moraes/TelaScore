@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Email;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Senha;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
@@ -34,6 +35,7 @@ public class ListarUsuarioSteps {
             new UsuarioId(1),
             "Gabriel Reis",
             new Email("grmp@cesar.school"),
+            new Senha("123456"),
             PapelUsuario.CINEFILO
         );
 
@@ -41,6 +43,7 @@ public class ListarUsuarioSteps {
             new UsuarioId(2),
             "Gabriel Pires",
             new Email("13grmp@gmail.com"),
+            new Senha("123456"),
             PapelUsuario.CINEFILO
         );
 

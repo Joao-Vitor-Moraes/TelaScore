@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Email;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Senha;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
@@ -38,15 +39,17 @@ public class CadastrarUsuarioSteps {
         excecaoCapturada = null;
     }
 
-    @Quando("informo o e-mail {string}")
-    public void informo_o_email(String enderecoEmail) {
+    @Quando("informo o e-mail {string} e a senha {string}")
+    public void informo_o_email_e_a_senha(String enderecoEmail, String valorSenha) {
         try {
             Email email = new Email(enderecoEmail);
+            Senha senha = new Senha(valorSenha);
 
             usuarioCriado = new Usuario(
                 usuarioId,
                 nome,
                 email,
+                senha,
                 PapelUsuario.CINEFILO
             );
         } catch (Exception e) {
@@ -69,6 +72,12 @@ public class CadastrarUsuarioSteps {
     @Então("o sistema deve bloquear o cadastro informando que o nome não pode estar em branco")
     public void o_sistema_deve_bloquear_o_cadastro_informando_que_o_nome_nao_pode_estar_em_branco() {
         assertNotNull(excecaoCapturada, "Uma exceção deveria ter sido lançada pela classe Usuario");
+        assertEquals(IllegalArgumentException.class, excecaoCapturada.getClass());
+    }
+
+    @Então("o sistema deve bloquear o cadastro informando que a senha não pode estar em branco")
+    public void o_sistema_deve_bloquear_o_cadastro_informando_que_a_senha_nao_pode_estar_em_branco() {
+        assertNotNull(excecaoCapturada, "Uma exceção deveria ter sido lançada pela classe Senha");
         assertEquals(IllegalArgumentException.class, excecaoCapturada.getClass());
     }
 }
