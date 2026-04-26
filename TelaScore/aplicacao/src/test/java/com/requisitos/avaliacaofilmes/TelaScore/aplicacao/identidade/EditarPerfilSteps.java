@@ -17,7 +17,9 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.Perfil
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilServico;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioLogado;
 
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.E;
@@ -28,6 +30,7 @@ public class EditarPerfilSteps {
 
     private PerfilRepositorio perfilRepositorio;
     private PerfilServico perfilServico;
+    private SessaoUsuario sessaoUsuario;
     private EditarPerfilCasoDeUso editarPerfilCasoDeUso;
 
     private Exception excecaoCapturada;
@@ -35,14 +38,24 @@ public class EditarPerfilSteps {
     private void prepararCasoDeUso() {
         perfilRepositorio = mock(PerfilRepositorio.class);
         perfilServico = new PerfilServico(perfilRepositorio);
-        editarPerfilCasoDeUso = new EditarPerfilCasoDeUso(perfilServico);
+        sessaoUsuario = new SessaoUsuario();
+        editarPerfilCasoDeUso = new EditarPerfilCasoDeUso(perfilServico, sessaoUsuario);
         excecaoCapturada = null;
     }
 
-    @Dado("que existe um perfil com ID {int} do usuário {int} com apelido {string}")
-    public void que_existe_um_perfil_com_id_do_usuario_com_apelido(Integer idPerfil, Integer idUsuario, String apelido) {
+    @Dado("que existe um usuário logado para edição de perfil com ID {int}")
+    public void que_existe_um_usuario_logado_para_edicao_de_perfil_com_id(Integer idUsuario) {
         prepararCasoDeUso();
+        sessaoUsuario.iniciar(new UsuarioLogado(new UsuarioId(idUsuario), PapelUsuario.CINEFILO));
+    }
 
+    @Dado("que não há usuário logado para edição de perfil")
+    public void que_nao_ha_usuario_logado_para_edicao_de_perfil() {
+        prepararCasoDeUso();
+    }
+
+    @E("existe um perfil para edição com ID {int} do usuário {int} com apelido {string}")
+    public void existe_um_perfil_para_edicao_com_id_do_usuario_com_apelido(Integer idPerfil, Integer idUsuario, String apelido) {
         PerfilId perfilId = new PerfilId(idPerfil);
         Perfil perfil = new Perfil(
             perfilId,
@@ -53,9 +66,8 @@ public class EditarPerfilSteps {
         when(perfilRepositorio.obter(perfilId)).thenReturn(perfil);
     }
 
-    @Quando("o usuário {int} solicita a edição do perfil {int} com apelido {string}, biografia {string} e avatar {string}")
-    public void o_usuario_solicita_a_edicao_do_perfil_com_apelido_biografia_e_avatar(
-        Integer idUsuario,
+    @Quando("solicito a edição do perfil {int} com apelido {string}, biografia {string} e avatar {string}")
+    public void solicito_a_edicao_do_perfil_com_apelido_biografia_e_avatar(
         Integer idPerfil,
         String apelido,
         String biografia,
@@ -64,7 +76,6 @@ public class EditarPerfilSteps {
         try {
             EditarPerfilComando comando = new EditarPerfilComando(
                 idPerfil,
-                idUsuario,
                 apelido,
                 biografia,
                 avatar
@@ -76,9 +87,8 @@ public class EditarPerfilSteps {
         }
     }
 
-    @Quando("o usuário {int} solicita a edição do perfil {int} sem apelido, com biografia {string} e avatar {string}")
-    public void o_usuario_solicita_a_edicao_do_perfil_sem_apelido_com_biografia_e_avatar(
-        Integer idUsuario,
+    @Quando("solicito a edição do perfil {int} sem apelido, com biografia {string} e avatar {string}")
+    public void solicito_a_edicao_do_perfil_sem_apelido_com_biografia_e_avatar(
         Integer idPerfil,
         String biografia,
         String avatar
@@ -86,7 +96,6 @@ public class EditarPerfilSteps {
         try {
             EditarPerfilComando comando = new EditarPerfilComando(
                 idPerfil,
-                idUsuario,
                 null,
                 biografia,
                 avatar

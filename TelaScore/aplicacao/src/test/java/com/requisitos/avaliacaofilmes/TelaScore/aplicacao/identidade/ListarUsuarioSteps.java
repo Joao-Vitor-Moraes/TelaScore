@@ -13,6 +13,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Papel
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Senha;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioLogado;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioServico;
 
@@ -25,6 +26,7 @@ public class ListarUsuarioSteps {
 
     private UsuarioRepositorio usuarioRepositorio;
     private UsuarioServico usuarioServico;
+    private SessaoUsuario sessaoUsuario;
     private ListarUsuariosCasoDeUso listarUsuariosCasoDeUso;
 
     private List<Usuario> usuariosRetornados;
@@ -33,53 +35,31 @@ public class ListarUsuarioSteps {
     private void prepararCasoDeUso() {
         usuarioRepositorio = mock(UsuarioRepositorio.class);
         usuarioServico = new UsuarioServico(usuarioRepositorio);
-        listarUsuariosCasoDeUso = new ListarUsuariosCasoDeUso(usuarioServico);
+        sessaoUsuario = new SessaoUsuario();
+        listarUsuariosCasoDeUso = new ListarUsuariosCasoDeUso(usuarioServico, sessaoUsuario);
         usuariosRetornados = null;
         excecaoCapturada = null;
     }
 
-    @Dado("que o usuário com ID {int} é um administrador")
-    public void que_o_usuario_com_id_e_um_administrador(Integer id) {
+    @Dado("que existe um administrador logado para listagem com ID {int}")
+    public void que_existe_um_administrador_logado_para_listagem_com_id(Integer id) {
         prepararCasoDeUso();
-
-        UsuarioId administradorId = new UsuarioId(id);
-        Usuario administrador = new Usuario(
-            administradorId,
-            "Administrador",
-            new Email("admin@admin.com"),
-            new Senha("123456"),
-            PapelUsuario.ADMIN
-        );
-
-        when(usuarioRepositorio.obter(administradorId)).thenReturn(administrador);
+        sessaoUsuario.iniciar(new UsuarioLogado(new UsuarioId(id), PapelUsuario.ADMIN));
     }
 
-    @Dado("que o usuário com ID {int} é um cinefilo")
-    public void que_o_usuario_com_id_e_um_cinefilo(Integer id) {
+    @Dado("que existe um usuário comum logado para listagem com ID {int}")
+    public void que_existe_um_usuario_comum_logado_para_listagem_com_id(Integer id) {
         prepararCasoDeUso();
-
-        UsuarioId usuarioId = new UsuarioId(id);
-        Usuario usuario = new Usuario(
-            usuarioId,
-            "Gabriel Reis",
-            new Email("grmp@cesar.school"),
-            new Senha("123456"),
-            PapelUsuario.CINEFILO
-        );
-
-        when(usuarioRepositorio.obter(usuarioId)).thenReturn(usuario);
+        sessaoUsuario.iniciar(new UsuarioLogado(new UsuarioId(id), PapelUsuario.CINEFILO));
     }
 
-    @Dado("que não existe usuário cadastrado com ID {int}")
-    public void que_nao_existe_usuario_cadastrado_com_id(Integer id) {
+    @Dado("que não há usuário logado para listagem")
+    public void que_nao_ha_usuario_logado_para_listagem() {
         prepararCasoDeUso();
-
-        UsuarioId usuarioId = new UsuarioId(id);
-        when(usuarioRepositorio.obter(usuarioId)).thenReturn(null);
     }
 
-    @E("existem usuários cadastrados na plataforma")
-    public void existem_usuarios_cadastrados_na_plataforma() {
+    @E("existem usuários cadastrados na plataforma para listagem")
+    public void existem_usuarios_cadastrados_na_plataforma_para_listagem() {
         Usuario usuario1 = new Usuario(
             new UsuarioId(1),
             "Gabriel Pires",
@@ -91,7 +71,7 @@ public class ListarUsuarioSteps {
         Usuario usuario2 = new Usuario(
             new UsuarioId(2),
             "Pires",
-            new Email("Pires@gmail.com"),
+            new Email("pires@gmail.com"),
             new Senha("123456"),
             PapelUsuario.CINEFILO
         );
@@ -99,20 +79,10 @@ public class ListarUsuarioSteps {
         when(usuarioRepositorio.listarTodos()).thenReturn(List.of(usuario1, usuario2));
     }
 
-    @Quando("o administrador com ID {int} solicita a listagem de usuários")
-    public void o_administrador_com_id_solicita_a_listagem_de_usuarios(Integer administradorId) {
-        solicitarListagem(administradorId);
-    }
-
-    @Quando("o usuário com ID {int} solicita a listagem de usuários")
-    public void o_usuario_com_id_solicita_a_listagem_de_usuarios(Integer usuarioId) {
-        solicitarListagem(usuarioId);
-    }
-
-    private void solicitarListagem(Integer administradorId) {
+    @Quando("solicito a listagem de usuários")
+    public void solicito_a_listagem_de_usuarios() {
         try {
-            ListarUsuariosComando comando = new ListarUsuariosComando(administradorId);
-            usuariosRetornados = listarUsuariosCasoDeUso.executar(comando);
+            usuariosRetornados = listarUsuariosCasoDeUso.executar(new ListarUsuariosComando());
         } catch (Exception e) {
             excecaoCapturada = e;
         }

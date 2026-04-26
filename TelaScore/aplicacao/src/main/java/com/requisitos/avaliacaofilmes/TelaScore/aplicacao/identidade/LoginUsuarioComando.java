@@ -1,5 +1,6 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade;
 
-public record RemoverUsuarioComando(
-    int usuarioId
+public record LoginUsuarioComando(
+    String email,
+    String senha
 ) {}

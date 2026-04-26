@@ -16,6 +16,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Papel
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Senha;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioLogado;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioServico;
 
@@ -30,6 +31,7 @@ public class RemoverUsuariosSteps {
     private UsuarioServico usuarioServico;
     private PerfilRepositorio perfilRepositorio;
     private PerfilServico perfilServico;
+    private SessaoUsuario sessaoUsuario;
     private RemoverUsuarioCasoDeUso removerUsuarioCasoDeUso;
 
     private UsuarioId usuarioIdSolicitado;
@@ -40,53 +42,31 @@ public class RemoverUsuariosSteps {
         usuarioServico = new UsuarioServico(usuarioRepositorio);
         perfilRepositorio = mock(PerfilRepositorio.class);
         perfilServico = new PerfilServico(perfilRepositorio);
-        removerUsuarioCasoDeUso = new RemoverUsuarioCasoDeUso(usuarioServico, perfilServico);
+        sessaoUsuario = new SessaoUsuario();
+        removerUsuarioCasoDeUso = new RemoverUsuarioCasoDeUso(usuarioServico, perfilServico, sessaoUsuario);
         usuarioIdSolicitado = null;
         excecaoCapturada = null;
     }
 
-    @Dado("que o administrador da remoção tem ID {int}")
-    public void que_o_administrador_da_remocao_tem_id(Integer id) {
+    @Dado("que existe um administrador logado para remoção com ID {int}")
+    public void que_existe_um_administrador_logado_para_remocao_com_id(Integer id) {
         prepararCasoDeUso();
-
-        UsuarioId administradorId = new UsuarioId(id);
-        Usuario administrador = new Usuario(
-            administradorId,
-            "Administrador",
-            new Email("admin@admin.com"),
-            new Senha("123456"),
-            PapelUsuario.ADMIN
-        );
-
-        when(usuarioRepositorio.obter(administradorId)).thenReturn(administrador);
+        sessaoUsuario.iniciar(new UsuarioLogado(new UsuarioId(id), PapelUsuario.ADMIN));
     }
 
-    @Dado("que o usuário comum da remoção tem ID {int}")
-    public void que_o_usuario_comum_da_remocao_tem_id(Integer id) {
+    @Dado("que existe um usuário comum logado para remoção com ID {int}")
+    public void que_existe_um_usuario_comum_logado_para_remocao_com_id(Integer id) {
         prepararCasoDeUso();
-
-        UsuarioId usuarioId = new UsuarioId(id);
-        Usuario usuario = new Usuario(
-            usuarioId,
-            "Gabriel Reis",
-            new Email("grmp@cesar.school"),
-            new Senha("123456"),
-            PapelUsuario.CINEFILO
-        );
-
-        when(usuarioRepositorio.obter(usuarioId)).thenReturn(usuario);
+        sessaoUsuario.iniciar(new UsuarioLogado(new UsuarioId(id), PapelUsuario.CINEFILO));
     }
 
-    @Dado("que não existe administrador da remoção com ID {int}")
-    public void que_nao_existe_administrador_da_remocao_com_id(Integer id) {
+    @Dado("que não há usuário logado para remoção")
+    public void que_nao_ha_usuario_logado_para_remocao() {
         prepararCasoDeUso();
-
-        UsuarioId administradorId = new UsuarioId(id);
-        when(usuarioRepositorio.obter(administradorId)).thenReturn(null);
     }
 
-    @E("existe um usuário alvo cadastrado com ID {int}")
-    public void existe_um_usuario_alvo_cadastrado_com_id(Integer id) {
+    @E("existe um usuário alvo cadastrado para remoção com ID {int}")
+    public void existe_um_usuario_alvo_cadastrado_para_remocao_com_id(Integer id) {
         UsuarioId usuarioId = new UsuarioId(id);
         Usuario usuario = new Usuario(
             usuarioId,
@@ -99,26 +79,17 @@ public class RemoverUsuariosSteps {
         when(usuarioRepositorio.obter(usuarioId)).thenReturn(usuario);
     }
 
-    @E("não existe usuário alvo cadastrado com ID {int}")
-    public void nao_existe_usuario_alvo_cadastrado_com_id(Integer id) {
+    @E("não existe usuário alvo cadastrado para remoção com ID {int}")
+    public void nao_existe_usuario_alvo_cadastrado_para_remocao_com_id(Integer id) {
         UsuarioId usuarioId = new UsuarioId(id);
         when(usuarioRepositorio.obter(usuarioId)).thenReturn(null);
     }
 
-    @Quando("o administrador da remoção com ID {int} solicita remover o usuário com ID {int}")
-    public void o_administrador_da_remocao_com_id_solicita_remover_o_usuario_com_id(Integer administradorId, Integer usuarioId) {
-        solicitarRemocao(administradorId, usuarioId);
-    }
-
-    @Quando("o usuário da remoção com ID {int} solicita remover o usuário com ID {int}")
-    public void o_usuario_da_remocao_com_id_solicita_remover_o_usuario_com_id(Integer usuarioExecutorId, Integer usuarioId) {
-        solicitarRemocao(usuarioExecutorId, usuarioId);
-    }
-
-    private void solicitarRemocao(Integer administradorId, Integer usuarioId) {
+    @Quando("solicito remover o usuário com ID {int}")
+    public void solicito_remover_o_usuario_com_id(Integer usuarioId) {
         try {
             usuarioIdSolicitado = new UsuarioId(usuarioId);
-            RemoverUsuarioComando comando = new RemoverUsuarioComando(usuarioId, administradorId);
+            RemoverUsuarioComando comando = new RemoverUsuarioComando(usuarioId);
             removerUsuarioCasoDeUso.executar(comando);
         } catch (Exception e) {
             excecaoCapturada = e;

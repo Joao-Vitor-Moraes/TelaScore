@@ -1,29 +1,30 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilServico;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioLogado;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioServico;
 
 public class RemoverUsuarioCasoDeUso {
 
     private final UsuarioServico usuarioServico;
     private final PerfilServico perfilServico;
+    private final SessaoUsuario sessaoUsuario;
 
-    public RemoverUsuarioCasoDeUso(UsuarioServico usuarioServico, PerfilServico perfilServico) {
+    public RemoverUsuarioCasoDeUso(UsuarioServico usuarioServico, PerfilServico perfilServico, SessaoUsuario sessaoUsuario) {
         this.usuarioServico = usuarioServico;
         this.perfilServico = perfilServico;
+        this.sessaoUsuario = sessaoUsuario;
     }
 
     public void executar(RemoverUsuarioComando comando) {
-        Usuario administrador = usuarioServico.obter(new UsuarioId(comando.administradorId()));
+        UsuarioLogado usuarioLogado = sessaoUsuario.obterUsuarioLogado();
 
-        if (administrador == null) {
-            throw new IllegalArgumentException("O usuário administrador não existe");
+        if (usuarioLogado == null) {
+            throw new IllegalStateException("Usuário não está logado");
         }
 
-        if (administrador.getPapel() != PapelUsuario.ADMIN) {
+        if (!usuarioLogado.isAdmin()) {
             throw new IllegalStateException("Apenas administradores podem remover usuários");
         }
 
