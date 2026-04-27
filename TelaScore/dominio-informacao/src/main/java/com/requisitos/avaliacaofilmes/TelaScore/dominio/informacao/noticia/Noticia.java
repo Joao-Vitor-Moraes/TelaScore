@@ -2,6 +2,7 @@ package com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia;
 
 import static org.apache.commons.lang3.Validate.notBlank;
 import static org.apache.commons.lang3.Validate.notNull;
+import static org.apache.commons.lang3.Validate.isTrue; // Adicionado
 
 import java.time.LocalDateTime;
 
@@ -10,7 +11,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuar
 public class Noticia {
 	private final NoticiaId id;
 	private final UsuarioId autorId;
-	
+
 	private String titulo;
 	private String conteudo;
 	private final LocalDateTime dataPublicacao;
@@ -19,12 +20,12 @@ public class Noticia {
 	public Noticia(NoticiaId id, UsuarioId autorId, String titulo, String conteudo, CategoriaNoticia categoria) {
 		notNull(id, "O id da notícia não pode ser nulo");
 		notNull(autorId, "O id do autor não pode ser nulo");
-		
+
 		this.id = id;
 		this.autorId = autorId;
 		this.dataPublicacao = LocalDateTime.now();
 		this.categoria = categoria;
-		
+
 		setTitulo(titulo);
 		setConteudo(conteudo);
 	}
@@ -36,6 +37,7 @@ public class Noticia {
 	public void setTitulo(String titulo) {
 		notNull(titulo, "O título da notícia não pode ser nulo");
 		notBlank(titulo, "O título não pode estar em branco");
+		isTrue(titulo.trim().length() >= 5, "Título muito curto");
 		this.titulo = titulo;
 	}
 	public String getTitulo() { return titulo; }

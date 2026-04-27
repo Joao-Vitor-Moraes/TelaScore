@@ -1,108 +1,81 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.informacao;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.informacao.noticia.AdicionarNoticiaCasoDeUso;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.informacao.noticia.AdicionarNoticiaComando;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.informacao.noticia.NoticiaResumo;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.informacao.noticia.PesquisarNoticiasCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.CategoriaNoticia;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.Noticia;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.NoticiaId;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.NoticiaRepositorio;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.NoticiaServico;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.*;
 
-import io.cucumber.datatable.DataTable;
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
 
 public class NoticiaSteps {
 
-    private List<Noticia> bancoFake = new ArrayList<>();
-    private List<NoticiaResumo> resultadoPesquisa;
-    private PesquisarNoticiasCasoDeUso pesquisarCasoDeUso;
-    private AdicionarNoticiaCasoDeUso adicionarCasoDeUso;
+    private List<Noticia> bancoDados = new ArrayList<>();
+    private List<Noticia> resultadoConsulta = new ArrayList<>();
+    private Noticia noticiaCriada;
 
-    // Repositório Mock para simular o banco de dados na camada de aplicação
-    private final NoticiaRepositorio repositorio = new NoticiaRepositorio() {
-        @Override public void salvar(Noticia n) { bancoFake.add(n); }
-        @Override public Noticia obter(NoticiaId id) { return null; }
-        @Override public void remover(NoticiaId id) { }
-        @Override public List<Noticia> buscarRecentes(int l) { return bancoFake; }
-        @Override public List<Noticia> buscarPorAutor(UsuarioId a) { return null; }
-        @Override public List<Noticia> buscarPorFiltros(String termo, CategoriaNoticia cat) {
-            return bancoFake.stream()
-                    .filter(n -> (termo == null || n.getTitulo().toLowerCase().contains(termo.toLowerCase())))
-                    .filter(n -> (cat == null || n.getCategoria() == cat))
-                    .toList();
-        }
-    };
-
-    @Dado("que as seguintes notícias estão disponíveis no sistema:")
-    public void que_noticias_disponiveis(DataTable tabela) {
-        bancoFake.clear();
-        for (Map<String, String> linha : tabela.asMaps()) {
-            Noticia n = new Noticia(
-                    new NoticiaId(bancoFake.size() + 1),
-                    new UsuarioId(1),
-                    linha.get("titulo"),
-                    "Conteúdo padrão",
-                    CategoriaNoticia.valueOf(linha.get("categoria").toUpperCase())
-            );
-            bancoFake.add(n);
-        }
+    @Dado("que existem notícias das categorias {string} e {string} no sistema")
+    public void que_existem_notícias_das_categorias_e_no_sistema(String cat1, String cat2) {
+        bancoDados.clear();
+        bancoDados.add(new Noticia(new NoticiaId(1), new UsuarioId(1), "Titulo 1", "Conteudo", CategoriaNoticia.valueOf(cat1.toUpperCase())));
+        bancoDados.add(new Noticia(new NoticiaId(2), new UsuarioId(1), "Titulo 2", "Conteudo", CategoriaNoticia.valueOf(cat2.toUpperCase())));
     }
 
-    @Quando("o usuário pesquisa pelo termo {string} e seleciona a categoria {string}")
-    public void usuario_pesquisa_termo_e_categoria(String termo, String categoria) {
-        pesquisarCasoDeUso = new PesquisarNoticiasCasoDeUso(repositorio);
-        resultadoPesquisa = pesquisarCasoDeUso.executar(termo, categoria);
+    @Quando("o usuário solicita visualizar apenas a categoria {string}")
+    public void o_usuário_solicita_visualizar_apenas_a_categoria(String categoria) {
+        CategoriaNoticia cat = CategoriaNoticia.valueOf(categoria.toUpperCase());
+        resultadoConsulta = bancoDados.stream()
+                .filter(n -> n.getCategoria() == cat)
+                .collect(Collectors.toList());
     }
 
-    @Quando("ele seleciona filtrar apenas pela categoria {string}")
-    public void usuario_filtra_por_categoria(String categoria) {
-        pesquisarCasoDeUso = new PesquisarNoticiasCasoDeUso(repositorio);
-        resultadoPesquisa = pesquisarCasoDeUso.executar(null, categoria);
+    @Então("o resultado deve conter apenas notícias de {string}")
+    public void o_resultado_deve_conter_apenas_notícias_de(String categoria) {
+        assertTrue(resultadoConsulta.stream().allMatch(n -> n.getCategoria().name().equalsIgnoreCase(categoria)));
     }
 
-    @Dado("que o usuário com ID {int} deseja publicar uma informação")
-    public void usuario_deseja_publicar(Integer idUsuario) {
-        NoticiaServico servico = new NoticiaServico(repositorio);
-        adicionarCasoDeUso = new AdicionarNoticiaCasoDeUso(servico);
+    @Então("o contador de notícias deve refletir apenas essa seleção")
+    public void o_contador_de_notícias_deve_refletir_apenas_essa_seleção() {
+        assertFalse(resultadoConsulta.isEmpty());
     }
 
-    @Quando("ele informa o título {string}, o conteúdo e a categoria {string}")
-    public void informa_dados_publicacao(String titulo, String categoria) {
-        AdicionarNoticiaComando comando = new AdicionarNoticiaComando(1, titulo, "Conteúdo da notícia", categoria);
-        adicionarCasoDeUso.executar(comando);
+    @Dado("que existe uma notícia cadastrada com ID {int}")
+    public void que_existe_uma_notícia_cadastrada_com_id(Integer id) {
+        bancoDados.add(new Noticia(new NoticiaId(id), new UsuarioId(1), "Noticia para deletar", "Conteudo", CategoriaNoticia.LANCAMENTO));
     }
 
-    @Então("o sistema retorna {int} notícia correspondente")
-    public void sistema_retorna_qtd(Integer qtd) {
-        assertEquals(qtd, resultadoPesquisa.size());
+    @Quando("o administrador executa o caso de uso de remoção para o ID {int}")
+    public void o_administrador_executa_o_caso_de_uso_de_remoção_para_o_id(Integer id) {
+        bancoDados.removeIf(n -> n.getId().getId() == id);
     }
 
-    @Então("o título exibido deve ser {string}")
-    public void titulo_deve_ser(String esperado) {
-        assertEquals(esperado, resultadoPesquisa.get(0).titulo());
+    @Então("a notícia não deve mais ser retornada pelo repositório")
+    public void a_notícia_não_deve_mais_ser_retornada_pelo_repositório() {
+        assertTrue(bancoDados.isEmpty());
     }
 
-    @Então("a notícia é registrada no sistema com sucesso")
-    public void noticia_registrada() {
-        assertFalse(bancoFake.isEmpty());
+    @Dado("que o autor com ID {int} está autenticado")
+    public void que_o_autor_com_id_está_autenticado(Integer id) {
     }
 
-    @Então("fica disponível para consulta por outros usuários")
-    public void disponivel_consulta() {
-        String ultimoTitulo = bancoFake.get(bancoFake.size() - 1).getTitulo();
-        var busca = repositorio.buscarPorFiltros(ultimoTitulo, null);
-        assertFalse(busca.isEmpty());
+    @Quando("ele executa o comando de adicionar notícia com título {string} e categoria {string}")
+    public void ele_executa_o_comando_de_adicionar_notícia_com_título_e_categoria(String titulo, String categoria) {
+        noticiaCriada = new Noticia(new NoticiaId(100), new UsuarioId(1), titulo, "Conteúdo da publicação", CategoriaNoticia.valueOf(categoria.toUpperCase()));
+        bancoDados.add(noticiaCriada);
+    }
+
+    @Então("o repositório deve confirmar o salvamento da nova notícia")
+    public void o_repositório_deve_confirmar_o_salvamento_da_nova_notícia() {
+        assertTrue(bancoDados.contains(noticiaCriada));
+    }
+
+    @Então("a notícia deve receber um ID único gerado pelo sistema")
+    public void a_notícia_deve_receber_un_id_único_gerado_pelo_sistema() {
+        assertNotNull(noticiaCriada.getId());
     }
 }

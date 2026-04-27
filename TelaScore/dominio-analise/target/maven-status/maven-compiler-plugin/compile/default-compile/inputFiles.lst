@@ -1,22 +1,23 @@
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\Meta.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\MetaId.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\MetaRepositorio.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\MetaServico.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\StatusMeta.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\Alternativa.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\Pergunta.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\Quiz.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\QuizId.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\QuizRepositorio.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\QuizServico.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\TentativaQuiz.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\Recomendacao.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\RecomendacaoId.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\RecomendacaoRepositorio.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\RecomendacaoServico.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\AcaoPontuada.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\Pontos.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\PontuacaoServico.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\RegistroPontuacao.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\RegistroPontuacaoId.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\RegistroPontuacaoRepositorio.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\Meta.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\MetaId.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\MetaRepositorio.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\MetaServico.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\StatusMeta.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\Alternativa.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\Pergunta.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\Quiz.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\QuizId.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\QuizRepositorio.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\QuizServico.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\TentativaQuiz.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\Recomendacao.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\RecomendacaoId.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\RecomendacaoRepositorio.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\RecomendacaoServico.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\StatusRecomendacao.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\AcaoPontuada.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\Pontos.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\PontuacaoServico.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\RegistroPontuacao.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\RegistroPontuacaoId.java
+D:\TelaScore\TelaScore\dominio-analise\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\RegistroPontuacaoRepositorio.java

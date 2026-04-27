@@ -1,27 +1,81 @@
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\CriarMetaCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\CriarMetaComando.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AdicionarFilmeNaListaCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AdicionarFilmeNaListaComando.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AtualizarAvaliacaoCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AtualizarAvaliacaoComando.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AtualizarFilmeCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AtualizarFilmeComando.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AvaliacaoResumo.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AvaliarFilmeCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AvaliarFilmeComando.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CadastrarFilmeCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CadastrarFilmeComando.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CriarListaCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CriarListaComando.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\FilmeResumo.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ListarAvaliacoesPorFilmeCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ListaResumo.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ObterAvaliacaoCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ObterFilmeCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\RemoverAvaliacaoCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\RemoverFilmeCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\RemoverFilmeDaListaCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\RemoverFilmeDaListaComando.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ReordenarItemListaCasoDeUso.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ReordenarItemListaComando.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\GeradorId.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\AdicionarProgressoMetaCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\AdicionarProgressoMetaComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\CriarMetaCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\CriarMetaComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\EstenderPrazoMetaCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\EstenderPrazoMetaComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\RemoverProgressoMetaCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\RemoverProgressoMetaComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\quiz\CriarQuizCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\quiz\CriarQuizComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\quiz\RemoverQuizCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\quiz\RemoverQuizComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\quiz\ResponderQuizCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\quiz\ResponderQuizComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\recomendacao\EnviarRecomendacaoCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\recomendacao\EnviarRecomendacaoComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\recomendacao\ResponderRecomendacaoCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\recomendacao\ResponderRecomendacaoComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\recompensa\ConcederPontosCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\recompensa\ConcederPontosComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AdicionarFilmeNaListaCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AdicionarFilmeNaListaComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AtualizarAvaliacaoCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AtualizarAvaliacaoComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AtualizarFilmeCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AtualizarFilmeComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AvaliacaoResumo.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AvaliarFilmeCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AvaliarFilmeComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AvaliarSolicitacaoFilmeCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AvaliarSolicitacaoFilmeComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CadastrarFilmeCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CadastrarFilmeComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CriarListaCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CriarListaComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\FilmeResumo.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ListarAvaliacoesPorFilmeCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ListaResumo.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ObterAvaliacaoCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ObterFilmeCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\RemoverAvaliacaoCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\RemoverFilmeCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\RemoverFilmeDaListaCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\RemoverFilmeDaListaComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ReordenarItemListaCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ReordenarItemListaComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\SolicitacaoResumo.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\SolicitarFilmeCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\SolicitarFilmeComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\CadastrarUsuarioCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\CadastrarUsuarioComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\ConsultarPerfilIdUsuarioCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\ConsultarPerfilIdUsuarioComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\EditarPerfilCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\EditarPerfilComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\GeradorId.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\ListarUsuariosCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\ListarUsuariosComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\LoginUsuarioCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\LoginUsuarioComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\RemoverUsuarioCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\RemoverUsuarioComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\SessaoUsuario.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\informacao\noticia\AdicionarNoticiaCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\informacao\noticia\AdicionarNoticiaComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\informacao\noticia\NoticiaResumo.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\informacao\noticia\PesquisarNoticiasCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\informacao\noticia\RemoverNoticiaCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\comunidade\ComunidadeResumo.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\comunidade\CriarComunidadeCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\comunidade\CriarComunidadeComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\comunidade\EntrarComunidadeCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\comunidade\RemoverMembroCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\conexao\DeixarDeSeguirCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\conexao\DeixarDeSeguirComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\conexao\SeguirUsuarioCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\conexao\SeguirUsuarioComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\EnviarMensagemCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\EnviarMensagemComando.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\RemoverMensagemCasoDeUso.java
+D:\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\RemoverMensagemComando.java
