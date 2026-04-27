@@ -527,4 +527,28 @@ BoundedContext IdentidadeContext implements CinemaAppDomain {
         void delete(NoticiaId id);
       }
     }
+
+    Aggregate ComunidadeAggregate {
+        Entity Comunidade {
+          aggregateRoot
+          - ComunidadeId id
+          - String nome
+          - String descricao
+          - Date dataCriacao
+        }
+
+        Entity MembroComunidade {
+          - UsuarioId usuarioId
+          - PapelComunidade papel
+        }
+
+        enum PapelComunidade {
+          CRIADOR, MODERADOR, MEMBRO
+        }
+
+        Service ComunidadeServico {
+          void criarComunidade(@Comunidade comunidade, UsuarioId criadorId);
+          void entrarNaComunidade(ComunidadeId id, UsuarioId usuarioId);
+        }
+    }
 }
