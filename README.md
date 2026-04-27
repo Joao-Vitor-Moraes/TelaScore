@@ -24,7 +24,3 @@ Além disso, muitos amantes de cinema demonstram interesse em testar e expandir 
 ## 🎨 Protótipos
 [Link dos Protótipos digitalizados](https://drive.google.com/drive/folders/1E7BqRoQI8SytqiydP5ptddj06PrGCgtM?usp=sharing)
 
-## Context Mapper
-
-## 🧪 Cenários de Teste BDD
-[Link dos cenários de Teste BDD](https://docs.google.com/document/d/1EmFClQxJ9P6FoeYFepJB9ckl0WHs-gYfcIe4Wqy6_2U/edit?usp=sharing)
