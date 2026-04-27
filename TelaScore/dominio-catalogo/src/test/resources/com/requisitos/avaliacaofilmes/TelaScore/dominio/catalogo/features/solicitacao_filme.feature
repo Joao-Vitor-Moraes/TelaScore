@@ -24,3 +24,21 @@ Funcionalidade: Solicitação de filmes
     Quando "pedro_comum" tenta avaliar a solicitação como aprovada
     Então a solicitação do filme é rejeitada
     E exibe a mensagem "Apenas administradores podem avaliar solicitações de filmes."
+
+  Cenário: Usuário cancela sua própria solicitação pendente
+    Dado que existe uma solicitação pendente para o filme "Avatar"
+    Quando o próprio solicitante cancela a solicitação
+    Então a solicitação deve constar como cancelada
+
+  Cenário: Usuário tenta cancelar solicitação de outra pessoa
+    Dado que existe uma solicitação pendente para o filme "Avatar"
+    Quando um usuário diferente tenta cancelar a solicitação
+    Então a solicitação do filme é rejeitada
+    E exibe a mensagem "Apenas o criador pode cancelar esta solicitação"
+
+  Cenário: Administrador solicita ajustes na solicitação
+    Dado que existe uma solicitação pendente para o filme "Avatar"
+    E o usuário "admin" é um "administrador"
+    Quando "admin" solicita ajustes com o feedback "Faltou o ano de lançamento"
+    Então a solicitação deve constar como aguardando ajustes
+    E o feedback salvo na solicitação deve ser "Faltou o ano de lançamento"

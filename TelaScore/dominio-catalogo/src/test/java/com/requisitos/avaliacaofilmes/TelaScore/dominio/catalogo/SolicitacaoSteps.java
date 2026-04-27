@@ -116,6 +116,53 @@ public class SolicitacaoSteps {
         assertEquals(StatusSolicitacao.APROVADA, solicitacaoCriada.getStatus());
     }
 
+    @Quando("o próprio solicitante cancela a solicitação")
+    public void o_proprio_solicitante_cancela_a_solicitacao() {
+        try {
+            SolicitacaoServico servico = new SolicitacaoServico(solicitacaoRepositorioMock, filmeRepositorioMock);
+            servico.cancelarSolicitacao(solicitacaoCriada, new UsuarioId(2));
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Então("a solicitação deve constar como cancelada")
+    public void a_solicitacao_deve_constar_como_cancelada() {
+        assertEquals(null, excecaoCapturada);
+        assertEquals(StatusSolicitacao.CANCELADA, solicitacaoCriada.getStatus());
+    }
+
+    @Quando("um usuário diferente tenta cancelar a solicitação")
+    public void um_usuario_diferente_tenta_cancelar_a_solicitacao() {
+        try {
+            SolicitacaoServico servico = new SolicitacaoServico(solicitacaoRepositorioMock, filmeRepositorioMock);
+            servico.cancelarSolicitacao(solicitacaoCriada, new UsuarioId(99));
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Quando("{string} solicita ajustes com o feedback {string}")
+    public void solicita_ajustes_com_o_feedback(String nomeUsuario, String feedback) {
+        try {
+            SolicitacaoServico servico = new SolicitacaoServico(solicitacaoRepositorioMock, filmeRepositorioMock);
+            servico.solicitarAjustes(solicitacaoCriada, avaliadorMock, feedback);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Então("a solicitação deve constar como aguardando ajustes")
+    public void a_solicitacao_deve_constar_como_aguardando_ajustes() {
+        assertEquals(null, excecaoCapturada);
+        assertEquals(StatusSolicitacao.AGUARDANDO_AJUSTES, solicitacaoCriada.getStatus());
+    }
+
+    @Então("o feedback salvo na solicitação deve ser {string}")
+    public void o_feedback_salvo_na_solicitacao_deve_ser(String feedbackEsperado) {
+        assertEquals(feedbackEsperado, solicitacaoCriada.getFeedbackAdmin());
+    }
+
     private void tentarCriarSolicitacao(String titulo, UsuarioId usuarioId) {
         try {
             if (filmeRepositorioMock.existeComTitulo(titulo)) {
