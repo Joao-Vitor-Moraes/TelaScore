@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="TelaScore-dominio-analise" />
+        <module name="TelaScore-dominio-compartilhado" />
+        <module name="TelaScore-dominio-informacao" />
+        <module name="TelaScore-dominio-social" />
+        <module name="TelaScore-dominio-identidade" />
+        <module name="TelaScore-apresentacao-frontend" />
+        <module name="TelaScore-dominio-catalogo" />
+        <module name="TelaScore-aplicacao" />
+        <module name="TelaScore-apresentacao-backend" />
+        <module name="TelaScore-infraestrutura" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="TelaScore-aplicacao" options="-parameters" />
+      <module name="TelaScore-apresentacao-backend" options="-parameters" />
+      <module name="TelaScore-apresentacao-frontend" options="-parameters" />
+      <module name="TelaScore-dominio-analise" options="-parameters" />
+      <module name="TelaScore-dominio-catalogo" options="-parameters" />
+      <module name="TelaScore-dominio-compartilhado" options="-parameters" />
+      <module name="TelaScore-dominio-identidade" options="-parameters" />
+      <module name="TelaScore-dominio-informacao" options="-parameters" />
+      <module name="TelaScore-dominio-social" options="-parameters" />
+      <module name="TelaScore-infraestrutura" options="-parameters" />
+    </option>
+  </component>
+</project>

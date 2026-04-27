@@ -1,5 +1,7 @@
 package com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia;
 
+import java.util.List;
+
 import static org.apache.commons.lang3.Validate.notNull;
 
 public class NoticiaServico {
@@ -18,5 +20,10 @@ public class NoticiaServico {
 	public void excluirNoticia(NoticiaId id) {
 		notNull(id, "O id da notícia não pode ser nulo");
 		repositorio.remover(id);
+	}
+
+	public List<Noticia> pesquisarNoticias(String termo, CategoriaNoticia categoria) {
+		// Aqui você pode adicionar regras, como: se o termo for muito curto, ignorar, etc.
+		return repositorio.buscarPorFiltros(termo, categoria);
 	}
 }

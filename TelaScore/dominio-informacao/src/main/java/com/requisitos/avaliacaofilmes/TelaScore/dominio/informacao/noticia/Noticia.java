@@ -14,14 +14,16 @@ public class Noticia {
 	private String titulo;
 	private String conteudo;
 	private final LocalDateTime dataPublicacao;
+	private CategoriaNoticia categoria;
 
-	public Noticia(NoticiaId id, UsuarioId autorId, String titulo, String conteudo) {
+	public Noticia(NoticiaId id, UsuarioId autorId, String titulo, String conteudo, CategoriaNoticia categoria) {
 		notNull(id, "O id da notícia não pode ser nulo");
 		notNull(autorId, "O id do autor não pode ser nulo");
 		
 		this.id = id;
 		this.autorId = autorId;
 		this.dataPublicacao = LocalDateTime.now();
+		this.categoria = categoria;
 		
 		setTitulo(titulo);
 		setConteudo(conteudo);
@@ -44,4 +46,10 @@ public class Noticia {
 		this.conteudo = conteudo;
 	}
 	public String getConteudo() { return conteudo; }
+
+	public CategoriaNoticia getCategoria() { return categoria; }
+	public void setCategoria(CategoriaNoticia categoria) {
+		notNull(categoria, "A categoria não pode ser nula");
+		this.categoria = categoria;
+	}
 }
