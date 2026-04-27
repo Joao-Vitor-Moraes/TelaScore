@@ -11,4 +11,6 @@ public interface NoticiaRepositorio {
 	List<Noticia> buscarRecentes(int limite);
 	
 	List<Noticia> buscarPorAutor(UsuarioId autorId);
+
+	List<Noticia> buscarPorFiltros(String termo, CategoriaNoticia categoria);
 }

@@ -489,4 +489,42 @@ BoundedContext IdentidadeContext implements CinemaAppDomain {
       @ConfiguracaoUsuario save(@ConfiguracaoUsuario configuracao);
     }
   }
+
+  Aggregate NoticiaAggregate {
+
+      Entity Noticia {
+        aggregateRoot
+
+        - NoticiaId id
+        - UsuarioId autorId
+        - String titulo
+        - String conteudo
+        - CategoriaNoticia categoria
+        - Date dataPublicacao
+      }
+
+      ValueObject NoticiaId {
+        - UUID id
+      }
+
+      enum CategoriaNoticia {
+        CRITICA,
+        LANCAMENTO,
+        EVENTO,
+        CURIOSIDADE
+      }
+
+      Service NoticiaService {
+        @Noticia publicarNoticia(UsuarioId autorId, String titulo, String conteudo, String categoria);
+        void removerNoticia(NoticiaId noticiaId);
+      }
+
+      Repository NoticiaRepository {
+        @Noticia findById(NoticiaId id);
+        List<@Noticia> findRecentes();
+        List<@Noticia> findByFiltros(String termo, String categoria);
+        @Noticia save(@Noticia noticia);
+        void delete(NoticiaId id);
+      }
+    }
 }
