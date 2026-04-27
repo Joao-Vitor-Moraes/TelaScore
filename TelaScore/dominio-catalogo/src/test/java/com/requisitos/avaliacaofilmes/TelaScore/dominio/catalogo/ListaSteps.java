@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.Lista;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.TipoLista;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.Visibilidade;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
 import io.cucumber.java.pt.Dado;
@@ -30,7 +32,7 @@ public class ListaSteps {
     @Quando("ela cria uma lista chamada {string}")
     public void ela_cria_uma_lista_chamada(String titulo) {
         try {
-            listaCriada = new Lista(listaId, donoId, titulo, "Meus filmes preferidos", false);
+            listaCriada = new Lista(listaId, donoId, titulo, "Meus filmes preferidos", false, Visibilidade.PUBLICA, TipoLista.NORMAL);
         } catch (Exception e) {
             excecaoCapturada = e;
         }
@@ -50,7 +52,7 @@ public class ListaSteps {
     @Quando("ela tenta criar uma lista sem nome")
     public void ela_tenta_criar_uma_lista_sem_nome() {
         try {
-            listaCriada = new Lista(listaId, donoId, "", "Lista sem nome não pode", false);
+            listaCriada = new Lista(listaId, donoId, "", "Lista sem nome não pode", false, Visibilidade.PUBLICA, TipoLista.NORMAL);
         } catch (Exception e) {
             excecaoCapturada = e;
         }
@@ -70,7 +72,7 @@ public class ListaSteps {
     public void que_a_usuaria_com_id_tem_uma_lista_criada(String nomeUsuario, Integer idUsuario) {
         donoId = new UsuarioId(idUsuario);
         listaId = new ListaId(100); 
-        listaCriada = new Lista(listaId, donoId, "Lista de Teste", "Descrição", false);
+        listaCriada = new Lista(listaId, donoId, "Lista de Teste", "Descrição", false, Visibilidade.PUBLICA, TipoLista.NORMAL);
         excecaoCapturada = null;
     }
 
@@ -79,11 +81,10 @@ public class ListaSteps {
         try {
             com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
                 new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
-            
             com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista novoItem = 
                 new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
             
-            listaCriada.adicionarItem(novoItem, donoId);
+            listaCriada.adicionarItem(novoItem, donoId, true);
         } catch (Exception e) {
             excecaoCapturada = e;
         }
@@ -91,7 +92,7 @@ public class ListaSteps {
 
     @Então("a lista deve conter {int} item")
     public void a_lista_deve_conter_item(Integer quantidadeEsperada) {
-        assertEquals(null, excecaoCapturada, "Não deveria dar erro ao adicionar um filme válido");
+        assertEquals(null, excecaoCapturada);
         assertEquals(quantidadeEsperada, listaCriada.getItens().size(), "A quantidade de itens na lista está incorreta");
     }
 
@@ -99,11 +100,10 @@ public class ListaSteps {
     public void o_filme_com_id_ja_esta_na_lista(Integer idFilme) {
         com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
             new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
-        
         com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista itemExistente = 
             new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
         
-        listaCriada.adicionarItem(itemExistente, donoId);
+        listaCriada.adicionarItem(itemExistente, donoId, true);
     }
 
     @Quando("ela tenta adicionar o filme com ID {int} novamente")
@@ -115,7 +115,7 @@ public class ListaSteps {
     public void que_a_usuaria_com_id_tem_uma_lista_ranqueada_criada(String nomeUsuario, Integer idUsuario) {
         donoId = new UsuarioId(idUsuario);
         listaId = new ListaId(100); 
-        listaCriada = new Lista(listaId, donoId, "Meu Top Filmes", "Descrição", true);
+        listaCriada = new Lista(listaId, donoId, "Meu Top Filmes", "Descrição", true, Visibilidade.PUBLICA, TipoLista.NORMAL);
         excecaoCapturada = null;
     }
 
@@ -126,7 +126,7 @@ public class ListaSteps {
         com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista novoItem = 
             new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
         
-        listaCriada.adicionarItem(novoItem, donoId);
+        listaCriada.adicionarItem(novoItem, donoId, true);
     }
 
     @Quando("ela move o filme com ID {int} para a posição {int}")
@@ -134,7 +134,6 @@ public class ListaSteps {
         try {
             com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
                 new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
-            
             listaCriada.moverFilmeParaPosicao(filmeId, novaPosicao, donoId);
         } catch (Exception e) {
             excecaoCapturada = e;
@@ -149,10 +148,69 @@ public class ListaSteps {
     @Então("o filme com ID {int} deve estar na posição {int}")
     public void o_filme_com_id_deve_estar_na_posicao(Integer idFilmeEsperado, Integer posicao) {
         assertEquals(null, excecaoCapturada, "Não deveria dar erro ao mover o filme");
-        
         com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista itemNaPosicao = 
             listaCriada.getItens().get(posicao - 1);
-            
-        assertEquals(String.valueOf(idFilmeEsperado), itemNaPosicao.getFilmeId().getCodigo(), "O filme na posição " + posicao + " não é o esperado.");
+        assertEquals(String.valueOf(idFilmeEsperado), itemNaPosicao.getFilmeId().getCodigo());
+    }
+
+
+    @Dado("que a usuária {string} tornou a lista colaborativa")
+    public void que_a_usuaria_tornou_a_lista_colaborativa(String nomeUsuario) {
+        listaCriada.tornarColaborativa();
+    }
+
+    @Dado("adicionou o usuário com ID {int} como colaborador")
+    public void adicionou_o_usuario_com_id_como_colaborador(Integer idColaborador) {
+        listaCriada.adicionarColaborador(donoId, new UsuarioId(idColaborador));
+    }
+
+    @Quando("o usuário com ID {int} adiciona o filme com ID {int} à lista")
+    public void o_usuario_com_id_adiciona_o_filme_com_id_a_lista(Integer idUsuario, Integer idFilme) {
+        try {
+            com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
+                new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
+            com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista novoItem = 
+                new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
+            listaCriada.adicionarItem(novoItem, new UsuarioId(idUsuario), true);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Quando("ela tenta adicionar o filme com ID {int} à lista informando que não assistiu")
+    public void ela_tenta_adicionar_o_filme_com_id_a_lista_informando_que_nao_assistiu(Integer idFilme) {
+        try {
+            com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
+                new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
+            com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista novoItem = 
+                new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
+            listaCriada.adicionarItem(novoItem, donoId, false);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Dado("que a usuária {string} com ID {int} tem uma watchlist criada")
+    public void que_a_usuaria_com_id_tem_uma_watchlist_criada(String nomeUsuario, Integer idUsuario) {
+        donoId = new UsuarioId(idUsuario);
+        listaId = new ListaId(100); 
+        listaCriada = new Lista(listaId, donoId, "Minha Watchlist", "Para ver depois", false, Visibilidade.PRIVADA, TipoLista.WATCHLIST);
+        excecaoCapturada = null;
+    }
+
+    @Dado("ela adicionou o filme com ID {int} à watchlist")
+    public void ela_adicionou_o_filme_com_id_a_watchlist(Integer idFilme) {
+        com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
+            new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
+        com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista novoItem = 
+            new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
+        listaCriada.adicionarItem(novoItem, donoId, false);
+    }
+
+    @Quando("ela registra que assistiu ao filme com ID {int}")
+    public void ela_registra_que_assistiu_ao_filme_com_id(Integer idFilme) {
+        com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
+            new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
+        listaCriada.processarFilmeAssistido(filmeId, donoId);
     }
 }

@@ -40,3 +40,22 @@ Cenário: Reordenar filmes numa lista ranqueada
     Quando ela tenta mover o filme com ID 10 para a posição 1
     Então o sistema rejeita a operação
     E retorna o erro "Apenas listas ranqueadas permitem reordenação manual"
+
+  Cenário: Lista Colaborativa permite que outro usuário adicione filmes
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista criada
+    E que a usuária "ana_lima" tornou a lista colaborativa
+    E adicionou o usuário com ID 2 como colaborador
+    Quando o usuário com ID 2 adiciona o filme com ID 99 à lista
+    Então a lista deve conter 1 item
+
+  Cenário: Lista normal não aceita filmes não assistidos
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista criada
+    Quando ela tenta adicionar o filme com ID 99 à lista informando que não assistiu
+    Então o sistema rejeita a operação
+    E retorna o erro "Listas normais só podem conter filmes que você já assistiu"
+
+  Cenário: Watchlist auto-remove filme ao ser assistido
+    Dado que a usuária "ana_lima" com ID 1 tem uma watchlist criada
+    E ela adicionou o filme com ID 50 à watchlist
+    Quando ela registra que assistiu ao filme com ID 50
+    Então a lista deve conter 0 item
