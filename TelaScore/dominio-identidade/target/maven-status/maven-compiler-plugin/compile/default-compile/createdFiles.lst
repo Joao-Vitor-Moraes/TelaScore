@@ -1,11 +1,11 @@
-com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\Email.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\Perfil.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\PerfilServico.class
-com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\Apelido.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\PerfilRepositorio.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\PapelUsuario.class
-com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\Usuario.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\UsuarioRepositorio.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\Email.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\Apelido.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\Usuario.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\UsuarioServico.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\UsuarioId.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\PerfilId.class

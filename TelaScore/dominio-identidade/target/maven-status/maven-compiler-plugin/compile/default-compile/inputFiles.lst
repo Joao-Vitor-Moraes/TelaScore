@@ -1,11 +1,13 @@
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\Apelido.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\Perfil.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\PerfilId.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\PerfilRepositorio.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\PerfilServico.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\Email.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\PapelUsuario.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\Usuario.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\UsuarioId.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\UsuarioRepositorio.java
-C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\UsuarioServico.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\Apelido.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\Perfil.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\PerfilId.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\PerfilRepositorio.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\PerfilServico.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\Email.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\PapelUsuario.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\Senha.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\Usuario.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\UsuarioId.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\UsuarioLogado.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\UsuarioRepositorio.java
+D:\TelaScore\TelaScore\dominio-identidade\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\UsuarioServico.java
