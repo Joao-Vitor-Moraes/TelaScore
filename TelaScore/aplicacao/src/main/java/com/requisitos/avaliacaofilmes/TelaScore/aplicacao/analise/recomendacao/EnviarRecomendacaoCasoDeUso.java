@@ -1,31 +1,22 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao;
 
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.Recomendacao;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoId;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
 public class EnviarRecomendacaoCasoDeUso {
+    private final RecomendacaoServico recomendacaoServico;
 
-    private final RecomendacaoRepositorio repositorio;
-    private final GeradorId geradorId;
-
-    public EnviarRecomendacaoCasoDeUso(RecomendacaoRepositorio repositorio, GeradorId geradorId) {
-        this.repositorio = repositorio;
-        this.geradorId = geradorId;
+    public EnviarRecomendacaoCasoDeUso(RecomendacaoServico recomendacaoServico) {
+        this.recomendacaoServico = recomendacaoServico;
     }
 
     public void executar(EnviarRecomendacaoComando comando) {
-        UsuarioId remetente = new UsuarioId(comando.remetenteId());
-        UsuarioId destinatario = new UsuarioId(comando.destinatarioId());
-        FilmeId filme = new FilmeId(comando.filmeId());
-        RecomendacaoId id = new RecomendacaoId(geradorId.gerarProximoIdMeta()); 
-        Recomendacao recomendacao = new Recomendacao(
-            id, destinatario, filme, comando.pesoAcerto(), remetente, comando.mensagem()
+        recomendacaoServico.enviarParaAmigo(
+            new UsuarioId(comando.remetenteId),
+            new UsuarioId(comando.destinatarioId),
+            comando.conteudoId,
+            comando.tipoConteudo,
+            comando.mensagem
         );
-
-        repositorio.salvar(recomendacao);
     }
 }

@@ -31,7 +31,6 @@ public class RecomendacaoSteps {
         this.excecaoCapturada = null;
     }
 
-    // PASSO NOVO PREPARADO PARA OS QUIZZES
     @Dado("que o usuário remetente com ID {int} quer recomendar o quiz {string}")
     public void que_o_usuario_remetente_com_id_quer_recomendar_o_quiz(Integer id, String codQuiz) {
         this.remetenteId = new UsuarioId(id);
