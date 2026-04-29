@@ -4,7 +4,6 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 
-import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
