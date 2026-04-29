@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.Recomendacao;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoId;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.TipoConteudo;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
 import io.cucumber.java.pt.Dado;
@@ -18,14 +18,25 @@ public class RecomendacaoSteps {
 
     private UsuarioId remetenteId;
     private UsuarioId destinatarioId;
-    private FilmeId filmeId;
+    private String conteudoId;
+    private TipoConteudo tipoConteudo;
     private Recomendacao recomendacao;
     private Exception excecaoCapturada;
 
     @Dado("que o usuário remetente com ID {int} quer recomendar o filme {string}")
     public void que_o_usuario_remetente_com_id_quer_recomendar_o_filme(Integer id, String codFilme) {
         this.remetenteId = new UsuarioId(id);
-        this.filmeId = new FilmeId(codFilme);
+        this.conteudoId = codFilme;
+        this.tipoConteudo = TipoConteudo.FILME;
+        this.excecaoCapturada = null;
+    }
+
+    // PASSO NOVO PREPARADO PARA OS QUIZZES
+    @Dado("que o usuário remetente com ID {int} quer recomendar o quiz {string}")
+    public void que_o_usuario_remetente_com_id_quer_recomendar_o_quiz(Integer id, String codQuiz) {
+        this.remetenteId = new UsuarioId(id);
+        this.conteudoId = codQuiz;
+        this.tipoConteudo = TipoConteudo.QUIZ;
         this.excecaoCapturada = null;
     }
 
@@ -33,7 +44,7 @@ public class RecomendacaoSteps {
     public void ele_envia_a_recomendacao_para_o_destinatario_com_id_com_a_mensagem(Integer idDest, String msg) {
         this.destinatarioId = new UsuarioId(idDest);
         try {
-            this.recomendacao = new Recomendacao(new RecomendacaoId(1), destinatarioId, filmeId, 100.0, remetenteId, msg);
+            this.recomendacao = new Recomendacao(new RecomendacaoId(1), destinatarioId, conteudoId, tipoConteudo, 100.0, remetenteId, msg);
         } catch (Exception e) {
             this.excecaoCapturada = e;
         }
@@ -43,7 +54,7 @@ public class RecomendacaoSteps {
     public void ele_tenta_enviar_a_recomendacao_para_o_destinatario_com_id(Integer idDest) {
         this.destinatarioId = new UsuarioId(idDest);
         try {
-            this.recomendacao = new Recomendacao(new RecomendacaoId(1), destinatarioId, filmeId, 100.0, remetenteId, "Indicação");
+            this.recomendacao = new Recomendacao(new RecomendacaoId(1), destinatarioId, conteudoId, tipoConteudo, 100.0, remetenteId, "Indicação");
         } catch (Exception e) {
             this.excecaoCapturada = e;
         }
@@ -67,7 +78,7 @@ public class RecomendacaoSteps {
 
     @Dado("que o usuário com ID {int} possui uma recomendação pendente do filme {string}")
     public void possui_uma_recomendacao_pendente(Integer idDest, String codFilme) {
-        this.recomendacao = new Recomendacao(new RecomendacaoId(1), new UsuarioId(idDest), new FilmeId(codFilme), 95.0, new UsuarioId(99), "Veja!");
+        this.recomendacao = new Recomendacao(new RecomendacaoId(1), new UsuarioId(idDest), codFilme, TipoConteudo.FILME, 95.0, new UsuarioId(99), "Veja!");
         this.excecaoCapturada = null;
     }
 
@@ -92,7 +103,7 @@ public class RecomendacaoSteps {
 
     @Dado("que o usuário com ID {int} possui uma recomendação do filme {string} que está com status {string}")
     public void possui_uma_recomendacao_com_status_rejeitada(Integer idDest, String codFilme, String statusAtual) {
-        this.recomendacao = new Recomendacao(new RecomendacaoId(1), new UsuarioId(idDest), new FilmeId(codFilme), 95.0, new UsuarioId(99), "Veja!");
+        this.recomendacao = new Recomendacao(new RecomendacaoId(1), new UsuarioId(idDest), codFilme, TipoConteudo.FILME, 95.0, new UsuarioId(99), "Veja!");
         if (statusAtual.equals("REJEITADA")) {
             this.recomendacao.rejeitar(); 
         }
@@ -113,5 +124,10 @@ public class RecomendacaoSteps {
     public void a_recomendacao_retorna_o_erro(String mensagemEsperada) {
         assertNotNull(excecaoCapturada, "Nenhuma exceção capturada para a Recomendação");
         assertEquals(mensagemEsperada, excecaoCapturada.getMessage());
+    }
+    @Dado("que o usuário com ID {int} possui uma recomendação pendente do quiz {string}")
+    public void possui_uma_recomendacao_pendente_do_quiz(Integer idDest, String codQuiz) {
+        this.recomendacao = new Recomendacao(new RecomendacaoId(1), new UsuarioId(idDest), codQuiz, TipoConteudo.QUIZ, 95.0, new UsuarioId(99), "Veja!");
+        this.excecaoCapturada = null;
     }
 }

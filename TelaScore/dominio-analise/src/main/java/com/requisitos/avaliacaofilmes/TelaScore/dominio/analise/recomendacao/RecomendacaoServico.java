@@ -4,7 +4,6 @@ import static org.apache.commons.lang3.Validate.notNull;
 import static org.apache.commons.lang3.Validate.isTrue;
 import java.util.List;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId;
 
 public class RecomendacaoServico {
     private final RecomendacaoRepositorio repositorio;
@@ -25,17 +24,19 @@ public class RecomendacaoServico {
         }
     }
 
-    public void enviarParaAmigo(UsuarioId remetenteId, UsuarioId destinatarioId, FilmeId filmeId, String mensagem) {
+    public void enviarParaAmigo(UsuarioId remetenteId, UsuarioId destinatarioId, String conteudoId, TipoConteudo tipoConteudo, String mensagem) {
         notNull(remetenteId, "O remetente não pode ser nulo");
         notNull(destinatarioId, "O destinatário não pode ser nulo");
-        notNull(filmeId, "O filme não pode ser nulo");
+        notNull(conteudoId, "O conteúdo não pode ser nulo");
+        notNull(tipoConteudo, "O tipo não pode ser nulo");
         
         isTrue(!remetenteId.equals(destinatarioId), "Você não pode enviar uma recomendação para si mesmo");
         
         Recomendacao recomendacaoSocial = new Recomendacao(
             null, 
             destinatarioId,
-            filmeId,
+            conteudoId,
+            tipoConteudo,
             100.0,
             remetenteId,
             mensagem
@@ -44,13 +45,13 @@ public class RecomendacaoServico {
         repositorio.salvar(recomendacaoSocial);
     }
 
-
     public void marcarComoVisualizada(Recomendacao recomendacao) {
         notNull(recomendacao, "A recomendação não pode ser nula");
         
         recomendacao.marcarComoVisualizada();
         repositorio.salvar(recomendacao);
     }
+    
     public void reagirARecomendacao(Recomendacao recomendacao, boolean aceitou) {
         notNull(recomendacao, "A recomendação não pode ser nula");
         
