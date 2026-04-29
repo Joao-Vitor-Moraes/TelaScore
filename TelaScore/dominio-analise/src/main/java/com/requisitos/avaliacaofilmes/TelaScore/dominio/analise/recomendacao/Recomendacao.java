@@ -6,13 +6,13 @@ import static org.apache.commons.lang3.Validate.isTrue;
 
 import java.time.LocalDateTime;
 
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
 public class Recomendacao {
     private final RecomendacaoId id;
     private final UsuarioId usuarioId; 
-    private final FilmeId filmeId;
+    private final String conteudoId; 
+    private final TipoConteudo tipoConteudo; 
     
     private final UsuarioId remetenteId; 
     private String mensagem;
@@ -21,10 +21,11 @@ public class Recomendacao {
     private final LocalDateTime dataGeracao;
     private StatusRecomendacao status;
 
-    public Recomendacao(RecomendacaoId id, UsuarioId usuarioId, FilmeId filmeId, double pontuacaoCompatibilidade, UsuarioId remetenteId, String mensagem) {
+    public Recomendacao(RecomendacaoId id, UsuarioId usuarioId, String conteudoId, TipoConteudo tipoConteudo, double pontuacaoCompatibilidade, UsuarioId remetenteId, String mensagem) {
         notNull(id, "O id da recomendação não pode ser nulo");
         notNull(usuarioId, "O id do utilizador não pode ser nulo");
-        notNull(filmeId, "O id do filme não pode ser nulo");
+        notNull(conteudoId, "O id do conteúdo não pode ser nulo");
+        notNull(tipoConteudo, "O tipo de conteúdo não pode ser nulo");
         
         if (remetenteId != null) {
             isTrue(!remetenteId.equals(usuarioId), "O remetente não pode ser o mesmo que o destinatário");
@@ -32,7 +33,8 @@ public class Recomendacao {
         
         this.id = id;
         this.usuarioId = usuarioId;
-        this.filmeId = filmeId;
+        this.conteudoId = conteudoId;
+        this.tipoConteudo = tipoConteudo;
         this.remetenteId = remetenteId; 
         this.dataGeracao = LocalDateTime.now();
         this.status = StatusRecomendacao.PENDENTE;
@@ -41,10 +43,9 @@ public class Recomendacao {
         setMensagem(mensagem);
     }
 
-    public Recomendacao(RecomendacaoId id, UsuarioId usuarioId, FilmeId filmeId, double pontuacaoCompatibilidade) {
-        this(id, usuarioId, filmeId, pontuacaoCompatibilidade, null, null);
+    public Recomendacao(RecomendacaoId id, UsuarioId usuarioId, String conteudoId, TipoConteudo tipoConteudo, double pontuacaoCompatibilidade) {
+        this(id, usuarioId, conteudoId, tipoConteudo, pontuacaoCompatibilidade, null, null);
     }
-
 
     public void marcarComoVisualizada() {
         if (this.status == StatusRecomendacao.PENDENTE) {
@@ -69,7 +70,8 @@ public class Recomendacao {
 
     public RecomendacaoId getId() { return id; }
     public UsuarioId getUsuarioId() { return usuarioId; }
-    public FilmeId getFilmeId() { return filmeId; }
+    public String getConteudoId() { return conteudoId; }
+    public TipoConteudo getTipoConteudo() { return tipoConteudo; }
     public UsuarioId getRemetenteId() { return remetenteId; }
     public LocalDateTime getDataGeracao() { return dataGeracao; }
     public String getMensagem() { return mensagem; }
