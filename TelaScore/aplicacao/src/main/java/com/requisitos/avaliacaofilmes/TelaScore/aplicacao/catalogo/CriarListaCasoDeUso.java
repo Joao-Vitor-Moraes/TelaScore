@@ -3,16 +3,18 @@ package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.Lista;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaId;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaServico;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.TipoLista;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.Visibilidade;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
 public class CriarListaCasoDeUso {
 
-	private final ListaRepositorio listaRepositorio;
+	private final ListaServico listaServico;
 	private final GeradorId geradorId;
 
-	public CriarListaCasoDeUso(ListaRepositorio listaRepositorio, GeradorId geradorId) {
-		this.listaRepositorio = listaRepositorio;
+	public CriarListaCasoDeUso(ListaServico listaServico, GeradorId geradorId) {
+		this.listaServico = listaServico;
 		this.geradorId = geradorId;
 	}
 
@@ -20,8 +22,16 @@ public class CriarListaCasoDeUso {
 		UsuarioId criadorId = new UsuarioId(comando.criadorId());
 		ListaId novaListaId = new ListaId(geradorId.gerarProximoIdLista());
 		
-		Lista lista = new Lista(novaListaId, criadorId, comando.nome(), comando.descricao(), comando.rankeada());
+		Lista lista = new Lista(
+				novaListaId, 
+				criadorId, 
+				comando.nome(), 
+				comando.descricao(), 
+				comando.rankeada(),
+				Visibilidade.valueOf(comando.visibilidade().toUpperCase()),
+				TipoLista.valueOf(comando.tipo().toUpperCase())
+		);
 		
-		listaRepositorio.salvar(lista);
+		listaServico.salvar(lista);
 	}
 }

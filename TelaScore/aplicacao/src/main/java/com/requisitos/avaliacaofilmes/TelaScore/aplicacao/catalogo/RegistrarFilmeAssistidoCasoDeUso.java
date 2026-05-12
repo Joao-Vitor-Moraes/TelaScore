@@ -7,17 +7,17 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaRepo
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
-public class ReordenarItemListaCasoDeUso {
+public class RegistrarFilmeAssistidoCasoDeUso {
 
 	private final ListaRepositorio listaRepositorio;
 	private final ListaServico listaServico;
 
-	public ReordenarItemListaCasoDeUso(ListaRepositorio listaRepositorio, ListaServico listaServico) {
+	public RegistrarFilmeAssistidoCasoDeUso(ListaRepositorio listaRepositorio, ListaServico listaServico) {
 		this.listaRepositorio = listaRepositorio;
 		this.listaServico = listaServico;
 	}
 
-	public void executar(ReordenarItemListaComando comando) {
+	public void executar(RegistrarFilmeAssistidoComando comando) {
 		ListaId listaId = new ListaId(comando.listaId());
 		UsuarioId usuarioId = new UsuarioId(comando.usuarioId());
 		FilmeId filmeId = new FilmeId(String.valueOf(comando.filmeId()));
@@ -27,6 +27,6 @@ public class ReordenarItemListaCasoDeUso {
 			throw new IllegalArgumentException("A lista informada não existe.");
 		}
 
-		listaServico.reordenarFilme(lista, filmeId, comando.novaPosicao(), usuarioId);
+		listaServico.registrarFilmeAssistido(lista, filmeId, usuarioId);
 	}
 }

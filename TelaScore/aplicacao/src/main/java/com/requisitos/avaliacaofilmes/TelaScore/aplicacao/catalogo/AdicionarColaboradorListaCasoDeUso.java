@@ -1,32 +1,31 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo;
 
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.Lista;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
-public class ReordenarItemListaCasoDeUso {
+public class AdicionarColaboradorListaCasoDeUso {
 
 	private final ListaRepositorio listaRepositorio;
 	private final ListaServico listaServico;
 
-	public ReordenarItemListaCasoDeUso(ListaRepositorio listaRepositorio, ListaServico listaServico) {
+	public AdicionarColaboradorListaCasoDeUso(ListaRepositorio listaRepositorio, ListaServico listaServico) {
 		this.listaRepositorio = listaRepositorio;
 		this.listaServico = listaServico;
 	}
 
-	public void executar(ReordenarItemListaComando comando) {
+	public void executar(AdicionarColaboradorListaComando comando) {
 		ListaId listaId = new ListaId(comando.listaId());
-		UsuarioId usuarioId = new UsuarioId(comando.usuarioId());
-		FilmeId filmeId = new FilmeId(String.valueOf(comando.filmeId()));
+		UsuarioId donoId = new UsuarioId(comando.donoId());
+		UsuarioId novoColaboradorId = new UsuarioId(comando.novoColaboradorId());
 
 		Lista lista = listaRepositorio.obter(listaId);
 		if (lista == null) {
 			throw new IllegalArgumentException("A lista informada não existe.");
 		}
 
-		listaServico.reordenarFilme(lista, filmeId, comando.novaPosicao(), usuarioId);
+		listaServico.adicionarColaborador(lista, donoId, novoColaboradorId);
 	}
 }
