@@ -76,4 +76,19 @@ public class SolicitacaoFilme {
         this.feedbackAdmin = feedback;
         this.status = StatusSolicitacao.AGUARDANDO_AJUSTES;
     }
+
+    private SolicitacaoFilme(SolicitacaoId id, UsuarioId solicitanteId, String tituloSugerido, String justificativa, StatusSolicitacao status, LocalDateTime dataCriacao, String feedbackAdmin) {
+        this.id = id;
+        this.solicitanteId = solicitanteId;
+        this.tituloSugerido = tituloSugerido;
+        this.justificativa = justificativa;
+        this.status = status;
+        this.dataCriacao = dataCriacao;
+        this.feedbackAdmin = feedbackAdmin;
+    }
+
+    public static SolicitacaoFilme restaurar(SolicitacaoId id, UsuarioId solicitanteId, String tituloSugerido, String justificativa, StatusSolicitacao status, LocalDateTime dataCriacao, String feedbackAdmin) {
+        return new SolicitacaoFilme(id, solicitanteId, tituloSugerido, justificativa, status, dataCriacao, feedbackAdmin);
+    }
+
 }

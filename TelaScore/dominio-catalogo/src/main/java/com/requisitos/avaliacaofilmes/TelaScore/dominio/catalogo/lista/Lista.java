@@ -64,6 +64,10 @@ public class Lista {
         return Collections.unmodifiableList(itens);
     }
 
+    public List<UsuarioId> getColaboradores() {
+        return Collections.unmodifiableList(colaboradores);
+    }
+
     public void tornarColaborativa() {
         this.colaborativa = true;
     }
@@ -140,4 +144,26 @@ public class Lista {
         itens.remove(itemParaMover);
         itens.add(novaPosicao - 1, itemParaMover);
     }
+
+    private Lista(ListaId id, UsuarioId donoId, String titulo, String descricao, boolean ranqueada, Visibilidade visibilidade, TipoLista tipo, boolean colaborativa, List<UsuarioId> colaboradores, List<ItemLista> itens) {
+        this.id = id;
+        this.donoId = donoId;
+        this.titulo = titulo;
+        this.descricao = descricao;
+        this.ranqueada = ranqueada;
+        this.visibilidade = visibilidade;
+        this.tipo = tipo;
+        this.colaborativa = colaborativa;
+        if (colaboradores != null) {
+            this.colaboradores.addAll(colaboradores);
+        }
+        if (itens != null) {
+            this.itens.addAll(itens);
+        }
+    }
+
+    public static Lista restaurar(ListaId id, UsuarioId donoId, String titulo, String descricao, boolean ranqueada, Visibilidade visibilidade, TipoLista tipo, boolean colaborativa, List<UsuarioId> colaboradores, List<ItemLista> itens) {
+        return new Lista(id, donoId, titulo, descricao, ranqueada, visibilidade, tipo, colaborativa, colaboradores, itens);
+    }
+
 }

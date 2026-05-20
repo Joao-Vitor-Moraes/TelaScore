@@ -34,4 +34,15 @@ public class ItemLista {
 		}
 		this.posicao = posicao;
 	}
+
+	private ItemLista(FilmeId filmeId, Integer posicao, LocalDate dataAdicao) {
+		this.filmeId = filmeId;
+		this.posicao = posicao;
+		this.dataAdicao = dataAdicao;
+	}
+
+	public static ItemLista restaurar(FilmeId filmeId, Integer posicao, LocalDate dataAdicao) {
+		return new ItemLista(filmeId, posicao, dataAdicao);
+	}
+
 }

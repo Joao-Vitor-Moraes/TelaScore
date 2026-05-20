@@ -4,6 +4,7 @@ com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\TentativaQuiz.clas
 com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\Meta.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\AcaoPontuada.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\Pontos.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\StatusRecomendacao.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\RegistroPontuacaoId.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\RecomendacaoId.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\MetaServico.class
@@ -14,6 +15,7 @@ com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\Alternativa.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\RecomendacaoServico.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\QuizId.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\quiz\QuizServico.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\TipoConteudo.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recompensa\PontuacaoServico.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\recomendacao\Recomendacao.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\analise\meta\StatusMeta.class

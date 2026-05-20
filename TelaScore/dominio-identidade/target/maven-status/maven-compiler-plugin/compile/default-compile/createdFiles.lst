@@ -1,5 +1,7 @@
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\Perfil.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\PerfilServico.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\Senha.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\UsuarioLogado.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\perfil\PerfilRepositorio.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\PapelUsuario.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\identidade\usuario\UsuarioRepositorio.class
