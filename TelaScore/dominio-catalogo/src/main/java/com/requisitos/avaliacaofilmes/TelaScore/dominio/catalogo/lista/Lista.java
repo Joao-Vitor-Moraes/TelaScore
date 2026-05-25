@@ -2,6 +2,7 @@ package com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.apache.commons.lang3.Validate.notBlank;
@@ -9,7 +10,7 @@ import static org.apache.commons.lang3.Validate.notNull;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
-public class Lista {
+public class Lista implements Iterable<ItemLista> {
     private final ListaId id;
     private final UsuarioId donoId;
 
@@ -62,6 +63,18 @@ public class Lista {
 
     public List<ItemLista> getItens() {
         return Collections.unmodifiableList(itens);
+    }
+
+    public IteradorDeItens criarIterador() {
+        if (this.ranqueada) {
+            return new IteradorRanqueadoDeItens(itens);
+        }
+        return new IteradorSequencialDeItens(itens);
+    }
+
+    @Override
+    public Iterator<ItemLista> iterator() {
+        return criarIterador();
     }
 
     public List<UsuarioId> getColaboradores() {
