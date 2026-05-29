@@ -119,4 +119,13 @@ public class Meta {
 		}
 		this.status = StatusMeta.FALHADA;
 	}
+	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, int quantidadeAtual, LocalDate dataPrazo, StatusMeta status) {
+        this.id = id;
+        this.usuarioId = usuarioId;
+        this.titulo = titulo;
+        this.quantidadeAlvo = quantidadeAlvo;
+        this.quantidadeAtual = quantidadeAtual;
+        this.dataPrazo = dataPrazo;
+        this.status = status;
+    }
 }

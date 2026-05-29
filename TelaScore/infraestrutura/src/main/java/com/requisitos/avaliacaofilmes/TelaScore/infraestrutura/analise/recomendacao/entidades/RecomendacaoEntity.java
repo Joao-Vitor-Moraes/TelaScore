@@ -1,0 +1,60 @@
+package com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recomendacao.entidades;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "recomendacao")
+public class RecomendacaoEntity {
+
+    @Id
+    private Integer id;
+
+    @Column(name = "usuario_id", nullable = false)
+    private Integer usuarioId;
+
+    @Column(name = "conteudo_id", nullable = false)
+    private String conteudoId;
+
+    @Column(name = "tipo_conteudo", nullable = false)
+    private String tipoConteudo;
+
+    @Column(name = "pontuacao_compatibilidade")
+    private Double pontuacaoCompatibilidade;
+
+    @Column(name = "remetente_id")
+    private Integer remetenteId;
+
+    @Column(columnDefinition = "TEXT")
+    private String mensagem;
+
+    @Column(name = "data_geracao", nullable = false)
+    private LocalDateTime dataGeracao;
+
+    @Column(nullable = false)
+    private String status;
+
+    public RecomendacaoEntity() {}
+
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
+    public Integer getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(Integer usuarioId) { this.usuarioId = usuarioId; }
+    public String getConteudoId() { return conteudoId; }
+    public void setConteudoId(String conteudoId) { this.conteudoId = conteudoId; }
+    public String getTipoConteudo() { return tipoConteudo; }
+    public void setTipoConteudo(String tipoConteudo) { this.tipoConteudo = tipoConteudo; }
+    public Double getPontuacaoCompatibilidade() { return pontuacaoCompatibilidade; }
+    public void setPontuacaoCompatibilidade(Double pc) { this.pontuacaoCompatibilidade = pc; }
+    public Integer getRemetenteId() { return remetenteId; }
+    public void setRemetenteId(Integer remetenteId) { this.remetenteId = remetenteId; }
+    public String getMensagem() { return mensagem; }
+    public void setMensagem(String mensagem) { this.mensagem = mensagem; }
+    public LocalDateTime getDataGeracao() { return dataGeracao; }
+    public void setDataGeracao(LocalDateTime dataGeracao) { this.dataGeracao = dataGeracao; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+}

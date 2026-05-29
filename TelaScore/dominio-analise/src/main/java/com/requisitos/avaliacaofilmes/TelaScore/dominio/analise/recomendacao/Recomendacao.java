@@ -47,7 +47,28 @@ public class Recomendacao {
         this(id, usuarioId, conteudoId, tipoConteudo, pontuacaoCompatibilidade, null, null);
     }
 
-    public void marcarComoVisualizada() {
+    public Recomendacao(RecomendacaoId id, UsuarioId usuarioId, String conteudoId, TipoConteudo tipoConteudo,
+                        Double pontuacaoCompatibilidade, UsuarioId remetenteId, String mensagem, LocalDateTime dataGeracao,
+                        StatusRecomendacao status) {
+        notNull(id, "O id da recomendação não pode ser nulo");
+        notNull(usuarioId, "O id do utilizador não pode ser nulo");
+        notNull(conteudoId, "O id do conteúdo não pode ser nulo");
+        notNull(tipoConteudo, "O tipo de conteúdo não pode ser nulo");
+        notNull(dataGeracao, "A data de geração não pode ser nula");
+        notNull(status, "O status não pode ser nulo");
+
+        this.id = id;
+        this.usuarioId = usuarioId;
+        this.conteudoId = conteudoId;
+        this.tipoConteudo = tipoConteudo;
+        this.pontuacaoCompatibilidade = pontuacaoCompatibilidade;
+        this.remetenteId = remetenteId;
+        this.mensagem = mensagem;
+        this.dataGeracao = dataGeracao;
+        this.status = status;
+    }
+
+	public void marcarComoVisualizada() {
         if (this.status == StatusRecomendacao.PENDENTE) {
             this.status = StatusRecomendacao.VISUALIZADA;
         }
