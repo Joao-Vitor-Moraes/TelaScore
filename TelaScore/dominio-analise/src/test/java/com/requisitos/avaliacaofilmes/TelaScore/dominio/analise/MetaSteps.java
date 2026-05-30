@@ -92,7 +92,7 @@ public class MetaSteps {
         if (statusAtual.equals("CANCELADA")) {
             this.meta.cancelar(); 
         } else if (statusAtual.equals("FALHADA")) {
-            this.meta.cancelar(); 
+        	this.meta.marcarComoFalhada(); 
         }
         this.excecaoCapturada = null;
     }
