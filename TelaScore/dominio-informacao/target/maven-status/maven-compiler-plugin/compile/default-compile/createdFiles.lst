@@ -9,6 +9,8 @@ com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\evento\EventoId.clas
 com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\evento\EventoServico.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\calendario\CalendarioServico.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\noticia\CategoriaNoticia.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\calendario\ObservadorEstreia.class
+com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\calendario\NotificadorPush.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\calendario\CalendarioId.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\calendario\CalendarioRepositorio.class
 com\requisitos\avaliacaofilmes\TelaScore\dominio\informacao\noticia\NoticiaServico.class

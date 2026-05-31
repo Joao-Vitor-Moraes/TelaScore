@@ -1,6 +1,7 @@
 package com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.calendario;
 
 import static org.apache.commons.lang3.Validate.notNull;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,14 +12,16 @@ public class CalendarioEstreia {
 	private final CalendarioId id;
 	private final UsuarioId usuarioId;
 	private final List<EntradaCalendario> entradas;
+	private final List<ObservadorEstreia> observadores;
 
 	public CalendarioEstreia(CalendarioId id, UsuarioId usuarioId) {
 		notNull(id, "O id do calendário não pode ser nulo");
 		notNull(usuarioId, "O id do utilizador não pode ser nulo");
-		
+
 		this.id = id;
 		this.usuarioId = usuarioId;
 		this.entradas = new ArrayList<>();
+		this.observadores = new ArrayList<>();
 	}
 
 	public CalendarioId getId() { return id; }
@@ -49,6 +52,33 @@ public class CalendarioEstreia {
 			if (entradas.get(i).getFilmeId().equals(filmeId)) {
 				entradas.remove(i);
 			}
+		}
+	}
+
+	public void adicionarObservador(ObservadorEstreia observador) {
+		notNull(observador, "O observador não pode ser nulo");
+		if (!observadores.contains(observador)) {
+			observadores.add(observador);
+		}
+	}
+
+	public void removerObservador(ObservadorEstreia observador) {
+		observadores.remove(observador);
+	}
+
+	public void dispararLembretesDoDia(LocalDate dataReferencia) {
+		notNull(dataReferencia, "A data de referência não pode ser nula");
+
+		for (EntradaCalendario entrada : entradas) {
+			if (entrada.isLembreteAtivo() && entrada.getDataEstreiaPrevista().equals(dataReferencia)) {
+				notificarObservadores(entrada);
+			}
+		}
+	}
+
+	private void notificarObservadores(EntradaCalendario entrada) {
+		for (ObservadorEstreia observador : observadores) {
+			observador.estreiaChegou(usuarioId, entrada);
 		}
 	}
 }
