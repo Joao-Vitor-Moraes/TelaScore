@@ -4,6 +4,9 @@ C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\avaliacao\AvaliacaoServico.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\avaliacao\CalculadoraMediaAvaliacoes.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\avaliacao\Nota.java
+C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\avaliacao\observer\AvaliacaoLogObserver.java
+C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\avaliacao\observer\AvaliacaoObserver.java
+C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\avaliacao\observer\MediaNotasObserver.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\diretor\Diretor.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\diretor\DiretorId.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\diretor\DiretorRepositorio.java
@@ -13,6 +16,9 @@ C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\filme\FilmeRepositorio.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\filme\FilmeServico.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\lista\ItemLista.java
+C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\lista\IteradorDeItens.java
+C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\lista\IteradorRanqueadoDeItens.java
+C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\lista\IteradorSequencialDeItens.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\lista\Lista.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\lista\ListaId.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\dominio-catalogo\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\dominio\catalogo\lista\ListaRepositorio.java

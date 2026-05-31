@@ -36,6 +36,7 @@ com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\LoginUsuarioCasoDe
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CriarListaCasoDeUso.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ObterFilmeCasoDeUso.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\RemoverFilmeDaListaCasoDeUso.class
+com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\template\AtualizadorMetaComNotificacao.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\recomendacao\EnviarRecomendacaoComando.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\recomendacao\ResponderRecomendacaoComando.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\comunidade\ComunidadeResumo.class
@@ -78,6 +79,7 @@ com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AvaliarSolicitacaoFi
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ListaResumo.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\identidade\SessaoUsuario.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\AdicionarProgressoMetaCasoDeUso.class
+com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\template\AtualizadorMetaSilencioso.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\conexao\DeixarDeSeguirCasoDeUso.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AtualizarAvaliacaoComando.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\RegistrarFilmeAssistidoComando.class
@@ -86,6 +88,7 @@ com\requisitos\avaliacaofilmes\TelaScore\aplicacao\informacao\noticia\NoticiaRes
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\EnviarMensagemComando.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CadastrarFilmeComando.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\social\RemoverMensagemComando.class
+com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\template\AtualizadorMetaTemplate.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\RemoverFilmeCasoDeUso.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\AvaliacaoResumo.class
 com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ReordenarItemListaComando.class

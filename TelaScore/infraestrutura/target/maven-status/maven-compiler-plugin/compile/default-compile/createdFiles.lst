@@ -1,6 +1,6 @@
 com\requisitos\avaliacaofilmes\TelaScore\infraestrutura\catalogo\solicitacao\SolicitacaoRepositorioImpl.class
 com\requisitos\avaliacaofilmes\TelaScore\infraestrutura\catalogo\lista\ListaRepositorioImpl.class
-com\requisitos\avaliacaofilmes\TelaScore\infraestrutura\catalogo\solicitacao\entidades\SolicitacaoFilmeEntity.class
 com\requisitos\avaliacaofilmes\TelaScore\infraestrutura\catalogo\lista\entidades\ListaEntity.class
 com\requisitos\avaliacaofilmes\TelaScore\infraestrutura\config\ConexaoBanco.class
 com\requisitos\avaliacaofilmes\TelaScore\infraestrutura\catalogo\lista\entidades\ItemListaEntity.class
+com\requisitos\avaliacaofilmes\TelaScore\infraestrutura\catalogo\solicitacao\entidades\SolicitacaoFilmeEntity.class

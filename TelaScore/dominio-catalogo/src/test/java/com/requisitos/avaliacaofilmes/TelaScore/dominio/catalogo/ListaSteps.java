@@ -93,7 +93,11 @@ public class ListaSteps {
     @Então("a lista deve conter {int} item")
     public void a_lista_deve_conter_item(Integer quantidadeEsperada) {
         assertEquals(null, excecaoCapturada);
-        assertEquals(quantidadeEsperada, listaCriada.getItens().size(), "A quantidade de itens na lista está incorreta");
+        int total = 0;
+        for (com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista item : listaCriada) {
+            total++;
+        }
+        assertEquals(quantidadeEsperada, total, "A quantidade de itens na lista está incorreta");
     }
 
     @E("o filme com ID {int} já está na lista")
@@ -148,8 +152,16 @@ public class ListaSteps {
     @Então("o filme com ID {int} deve estar na posição {int}")
     public void o_filme_com_id_deve_estar_na_posicao(Integer idFilmeEsperado, Integer posicao) {
         assertEquals(null, excecaoCapturada, "Não deveria dar erro ao mover o filme");
-        com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista itemNaPosicao = 
-            listaCriada.getItens().get(posicao - 1);
+        com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista itemNaPosicao = null;
+        int index = 1;
+        for (com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista item : listaCriada) {
+            if (index == posicao) {
+                itemNaPosicao = item;
+                break;
+            }
+            index++;
+        }
+        assertNotNull(itemNaPosicao);
         assertEquals(String.valueOf(idFilmeEsperado), itemNaPosicao.getFilmeId().getCodigo());
     }
 

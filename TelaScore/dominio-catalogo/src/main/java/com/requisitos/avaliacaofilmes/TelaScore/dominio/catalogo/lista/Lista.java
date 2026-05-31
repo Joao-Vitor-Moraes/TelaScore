@@ -122,6 +122,9 @@ public class Lista implements Iterable<ItemLista> {
         }
         
         itens.add(item);
+        if (this.ranqueada && item.getPosicao() == null) {
+            item.setPosicao(itens.size());
+        }
     }
     
     public void removerItemPorFilme(com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId, UsuarioId usuarioId) {
@@ -156,6 +159,9 @@ public class Lista implements Iterable<ItemLista> {
         
         itens.remove(itemParaMover);
         itens.add(novaPosicao - 1, itemParaMover);
+        for (int i = 0; i < itens.size(); i++) {
+            itens.get(i).setPosicao(i + 1);
+        }
     }
 
     private Lista(ListaId id, UsuarioId donoId, String titulo, String descricao, boolean ranqueada, Visibilidade visibilidade, TipoLista tipo, boolean colaborativa, List<UsuarioId> colaboradores, List<ItemLista> itens) {

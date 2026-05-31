@@ -6,6 +6,9 @@ C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\re
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\EstenderPrazoMetaComando.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\RemoverProgressoMetaCasoDeUso.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\RemoverProgressoMetaComando.java
+C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\template\AtualizadorMetaComNotificacao.java
+C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\template\AtualizadorMetaSilencioso.java
+C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\meta\template\AtualizadorMetaTemplate.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\quiz\CriarQuizCasoDeUso.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\quiz\CriarQuizComando.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\analise\quiz\RemoverQuizCasoDeUso.java
@@ -35,9 +38,11 @@ C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\re
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CadastrarFilmeComando.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CancelarSolicitacaoFilmeCasoDeUso.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CancelarSolicitacaoFilmeComando.java
+C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ConsultarItensListaCasoDeUso.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CriarListaCasoDeUso.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\CriarListaComando.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\FilmeResumo.java
+C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ItemListaDetalhe.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ListarAvaliacoesPorFilmeCasoDeUso.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ListaResumo.java
 C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore\aplicacao\src\main\java\com\requisitos\avaliacaofilmes\TelaScore\aplicacao\catalogo\ObterAvaliacaoCasoDeUso.java
