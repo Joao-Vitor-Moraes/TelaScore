@@ -1,16 +1,27 @@
+# === Build (Maven) ===
+target/
+src-gen
+schema.sql
+
+# === IDEs / Editores ===
+# Eclipse
 .classpath
 .project
 .settings
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+# VS Code
+.vscode/
 
-target/
-
-schema.sql
-src-gen
-
+# === Logs e bancos locais ===
+*.log
 *.db
 
+# === Frontend ===
 **/src/main/frontend
-
 **/node_modules
 **/src/main/angular/node
 **/src/main/resources/static
