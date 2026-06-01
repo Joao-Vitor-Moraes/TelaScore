@@ -1,16 +1,22 @@
 package com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.avaliacao.Avaliacao;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.avaliacao.AvaliacaoId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.avaliacao.Nota;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.diretor.DiretorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.Filme;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeServico;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.observer.RemoverAvaliacoesDoFilmeObserver;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.E;
@@ -26,6 +32,9 @@ public class FilmeSteps {
 
     private Filme filmeCriado;
     private Exception excecaoCapturada;
+
+    private FilmeRepositorioFake filmeRepositorioFake;
+    private AvaliacaoRepositorioFake avaliacaoRepositorioFake;
 
     // ─── Contexto: criando um filme do zero ──────────────────────────────────
 
@@ -46,8 +55,7 @@ public class FilmeSteps {
 
     @E("que o filme tem a sinopse {string}")
     public void que_o_filme_tem_a_sinopse(String sinopse) {
-        // String vazia representa sinopse em branco — passamos direto para o domínio validar
-        this.sinopse = sinopse.isBlank() ? sinopse : sinopse;
+        this.sinopse = sinopse;
     }
 
     @Quando("eu tento criar o filme")
@@ -67,7 +75,6 @@ public class FilmeSteps {
         filmeCriado = null;
         excecaoCapturada = null;
 
-        // Cria o filme inicial que será manipulado nos próximos passos
         FilmeId filmeId = new FilmeId("1");
         DiretorId diretor = new DiretorId(idDiretor);
         filmeCriado = new Filme(filmeId, titulo, null, ano, List.of(diretor));
@@ -95,6 +102,41 @@ public class FilmeSteps {
     public void eu_adiciono_o_diretor_ao_filme(Integer idDiretor) {
         try {
             filmeCriado.adicionarDiretor(new DiretorId(idDiretor));
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    // ─── Contexto: testando o Observer ───────────────────────────────────────
+
+    @E("que existem avaliações cadastradas para esse filme")
+    public void que_existem_avaliacoes_cadastradas_para_esse_filme() {
+        filmeRepositorioFake = new FilmeRepositorioFake();
+        avaliacaoRepositorioFake = new AvaliacaoRepositorioFake();
+
+        filmeRepositorioFake.salvar(filmeCriado);
+
+        Avaliacao av1 = new Avaliacao(
+            new AvaliacaoId(1), filmeCriado.getId(),
+            new UsuarioId(10), new Nota(4), "Ótimo filme!"
+        );
+        Avaliacao av2 = new Avaliacao(
+            new AvaliacaoId(2), filmeCriado.getId(),
+            new UsuarioId(20), new Nota(5), "Obra prima!"
+        );
+
+        avaliacaoRepositorioFake.salvar(av1);
+        avaliacaoRepositorioFake.salvar(av2);
+    }
+
+    @Quando("eu removo o filme")
+    public void eu_removo_o_filme() {
+        try {
+            FilmeServico filmeServico = new FilmeServico(filmeRepositorioFake);
+            filmeServico.adicionarObserver(
+                new RemoverAvaliacoesDoFilmeObserver(avaliacaoRepositorioFake));
+
+            filmeServico.remover(filmeCriado.getId());
         } catch (Exception e) {
             excecaoCapturada = e;
         }
@@ -133,6 +175,23 @@ public class FilmeSteps {
     public void a_sinopse_do_filme_deve_ser(String sinopseEsperada) {
         assertEquals(sinopseEsperada, filmeCriado.getSinopse(),
             "A sinopse do filme não corresponde ao esperado");
+    }
+
+    @Então("o filme deve ser removido com sucesso")
+    public void o_filme_deve_ser_removido_com_sucesso() {
+        assertAll("filme removido com sucesso",
+            () -> assertNull(excecaoCapturada, "Nenhuma exceção deveria ter sido lançada"),
+            () -> assertNull(filmeRepositorioFake.obter(filmeCriado.getId()),
+                    "O filme deveria ter sido removido do repositório")
+        );
+    }
+
+    @Então("as avaliações do filme devem ter sido removidas")
+    public void as_avaliacoes_do_filme_devem_ter_sido_removidas() {
+        List<Avaliacao> avaliacoes = avaliacaoRepositorioFake
+                .pesquisarPorFilme(filmeCriado.getId());
+        assertTrue(avaliacoes.isEmpty(),
+            "Todas as avaliações do filme deveriam ter sido removidas pelo Observer");
     }
 
     // ─── Verificações de erro ─────────────────────────────────────────────────

@@ -53,3 +53,10 @@ Funcionalidade: Gerenciamento de filmes
     Dado que existe um filme cadastrado com o título "Matrix" lançado em 1999 com o diretor de id 1
     Quando eu adiciono o diretor de id 2 ao filme
     Então o filme deve ter pelo menos um diretor
+
+  Cenário: Ao remover um filme suas avaliações devem ser removidas automaticamente
+    Dado que existe um filme cadastrado com o título "Matrix" lançado em 1999 com o diretor de id 1
+    E que existem avaliações cadastradas para esse filme
+    Quando eu removo o filme
+    Então o filme deve ser removido com sucesso
+    E as avaliações do filme devem ter sido removidas

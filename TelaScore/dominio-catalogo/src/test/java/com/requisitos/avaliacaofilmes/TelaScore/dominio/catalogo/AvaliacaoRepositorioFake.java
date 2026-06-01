@@ -6,13 +6,11 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.avaliacao.Avali
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-// Implementação em memória usada exclusivamente nos testes — sem banco de dados
 public class AvaliacaoRepositorioFake implements AvaliacaoRepositorio {
 
     private final Map<Integer, Avaliacao> armazenamento = new HashMap<>();
