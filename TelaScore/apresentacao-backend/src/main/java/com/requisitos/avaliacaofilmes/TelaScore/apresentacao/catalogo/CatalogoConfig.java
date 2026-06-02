@@ -2,11 +2,25 @@ package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.catalogo;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.*;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.avaliacao.AvaliacaoRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.diretor.DiretorRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.solicitacao.SolicitacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.solicitacao.SolicitacaoServico;
+
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AtualizarAvaliacaoCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AtualizarFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CadastrarFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarAvaliacoesPorFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterAvaliacaoCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverAvaliacaoCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.avaliacao.AvaliacaoRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.diretor.DiretorRepositorio;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,6 +78,58 @@ public class CatalogoConfig {
             SolicitacaoRepositorio solicitacaoRepositorio, SolicitacaoServico solicitacaoServico) {
         return new CancelarSolicitacaoFilmeCasoDeUso(solicitacaoRepositorio, solicitacaoServico);
     }
+    
+    // ─── Filmes ───────────────────────────────────────────────────────────────────
 
-    // AvaliarSolicitacaoFilmeCasoDeUso aguardando UsuarioRepositorioImpl do módulo identidade
+    @Bean
+    public CadastrarFilmeCasoDeUso cadastrarFilmeCasoDeUso(FilmeRepositorio filmeRepositorio,
+            DiretorRepositorio diretorRepositorio, GeradorId geradorId) {
+        return new CadastrarFilmeCasoDeUso(filmeRepositorio, diretorRepositorio, geradorId);
+    }
+
+    @Bean
+    public ObterFilmeCasoDeUso obterFilmeCasoDeUso(FilmeRepositorio filmeRepositorio,
+            DiretorRepositorio diretorRepositorio, AvaliacaoRepositorio avaliacaoRepositorio) {
+        return new ObterFilmeCasoDeUso(filmeRepositorio, diretorRepositorio, avaliacaoRepositorio);
+    }
+
+    @Bean
+    public AtualizarFilmeCasoDeUso atualizarFilmeCasoDeUso(FilmeRepositorio filmeRepositorio) {
+        return new AtualizarFilmeCasoDeUso(filmeRepositorio);
+    }
+
+    @Bean
+    public RemoverFilmeCasoDeUso removerFilmeCasoDeUso(FilmeRepositorio filmeRepositorio,
+            AvaliacaoRepositorio avaliacaoRepositorio) {
+        return new RemoverFilmeCasoDeUso(filmeRepositorio, avaliacaoRepositorio);
+    }
+
+    // ─── Avaliações ───────────────────────────────────────────────────────────────
+
+    @Bean
+    public AvaliarFilmeCasoDeUso avaliarFilmeCasoDeUso(AvaliacaoRepositorio avaliacaoRepositorio,
+            FilmeRepositorio filmeRepositorio, GeradorId geradorId) {
+        return new AvaliarFilmeCasoDeUso(avaliacaoRepositorio, filmeRepositorio, geradorId);
+    }
+
+    @Bean
+    public ObterAvaliacaoCasoDeUso obterAvaliacaoCasoDeUso(AvaliacaoRepositorio avaliacaoRepositorio) {
+        return new ObterAvaliacaoCasoDeUso(avaliacaoRepositorio);
+    }
+
+    @Bean
+    public AtualizarAvaliacaoCasoDeUso atualizarAvaliacaoCasoDeUso(AvaliacaoRepositorio avaliacaoRepositorio) {
+        return new AtualizarAvaliacaoCasoDeUso(avaliacaoRepositorio);
+    }
+
+    @Bean
+    public RemoverAvaliacaoCasoDeUso removerAvaliacaoCasoDeUso(AvaliacaoRepositorio avaliacaoRepositorio) {
+        return new RemoverAvaliacaoCasoDeUso(avaliacaoRepositorio);
+    }
+
+    @Bean
+    public ListarAvaliacoesPorFilmeCasoDeUso listarAvaliacoesPorFilmeCasoDeUso(
+            AvaliacaoRepositorio avaliacaoRepositorio, FilmeRepositorio filmeRepositorio) {
+        return new ListarAvaliacoesPorFilmeCasoDeUso(avaliacaoRepositorio, filmeRepositorio);
+    }
 }
