@@ -7,19 +7,21 @@
     <persistence-unit name="telascorePU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.lista.entidades.ListaEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.lista.entidades.ItemListaEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.lista.entidades.ListaEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.solicitacao.entidades.SolicitacaoFilmeEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.filme.entidades.FilmeEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.avaliacao.entidades.AvaliacaoEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.entidades.MetaEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recomendacao.entidades.RecomendacaoEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.ComunidadeEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.MembroComunidadeEntity</class>
 
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/telascore_db?useSSL=false&amp;serverTimezone=UTC" />
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/telascore_db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC" />
             <property name="jakarta.persistence.jdbc.user" value="root" />
-            <property name="jakarta.persistence.jdbc.password" value="Barbosa09_" />
+            <property name="jakarta.persistence.jdbc.password" value="bd123" />
 
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
             <property name="hibernate.hbm2ddl.auto" value="update" />
