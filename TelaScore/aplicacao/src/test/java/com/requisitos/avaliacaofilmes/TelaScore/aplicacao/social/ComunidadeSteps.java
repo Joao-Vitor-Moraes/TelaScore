@@ -1,14 +1,19 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.EntrarComunidade;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.EntrarComunidadeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.EntrarComunidadeProxy;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.*;
 
+import io.cucumber.java.en.Then;
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
@@ -18,6 +23,9 @@ public class ComunidadeSteps {
     private List<Comunidade> bancoComunidades = new ArrayList<>();
     private List<MembroComunidade> bancoMembros = new ArrayList<>();
     private ComunidadeServico servico;
+
+    private EntrarComunidade entrarComunidadeCasoDeUso;
+    private Exception excecaoCapturada;
 
     private final ComunidadeRepositorio repositorio = new ComunidadeRepositorio() {
         @Override public void salvarComunidade(Comunidade c) { bancoComunidades.add(c); }
@@ -32,9 +40,15 @@ public class ComunidadeSteps {
         @Override public List<MembroComunidade> buscarMembrosDaComunidade(ComunidadeId cid) { return bancoMembros; }
     };
 
+    private void inicializarComponentes() {
+        servico = new ComunidadeServico(repositorio);
+        EntrarComunidade casoReal = new EntrarComunidadeCasoDeUso(repositorio);
+        entrarComunidadeCasoDeUso = new EntrarComunidadeProxy(casoReal);
+    }
+
     @Dado("que o usuário {int} deseja criar a comunidade {string}")
     public void que_o_usuario_deseja_criar_a_comunidade(Integer idUsuario, String nome) {
-        servico = new ComunidadeServico(repositorio);
+        inicializarComponentes();
     }
 
     @Quando("o serviço de criação é acionado para o usuário {int}")
@@ -58,13 +72,17 @@ public class ComunidadeSteps {
 
     @Dado("que existe a comunidade {string} com ID {int}")
     public void que_existe_a_comunidade_com_id(String nome, Integer id) {
-        servico = new ComunidadeServico(repositorio);
+        inicializarComponentes();
         repositorio.salvarComunidade(new Comunidade(new ComunidadeId(id), nome, "Desc"));
     }
 
     @Quando("o usuário {int} solicita entrar na comunidade {int}")
     public void o_usuario_solicita_entrar_na_comunidade(Integer uid, Integer cid) {
-        servico.entrarNaComunidade(new ComunidadeId(cid), new UsuarioId(uid));
+        try {
+            entrarComunidadeCasoDeUso.executar(cid, new UsuarioId(uid));
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
     }
 
     @Então("o serviço deve registrar o usuário {int} como um novo {string}")
@@ -82,7 +100,7 @@ public class ComunidadeSteps {
 
     @Dado("que o usuário {int} é membro da comunidade {int}")
     public void que_o_usuário_é_membro_da_comunidade(Integer uid, Integer cid) {
-        servico = new ComunidadeServico(repositorio);
+        inicializarComponentes();
         repositorio.salvarMembro(new MembroComunidade(new ComunidadeId(cid), new UsuarioId(uid), PapelComunidade.MEMBRO));
     }
 
@@ -96,5 +114,12 @@ public class ComunidadeSteps {
         boolean aindaExiste = bancoMembros.stream()
                 .anyMatch(m -> m.getUsuarioId().getId() == uid && m.getComunidadeId().getId() == cid);
         assertTrue(!aindaExiste);
+    }
+
+    @Então("o sistema deve barrar a entrada informando uma violação de segurança")
+    public void o_sistema_deve_barrar_a_entrada_informando_uma_violacao_de_seguranca() {
+        assertNotNull(excecaoCapturada);
+        assertTrue(excecaoCapturada instanceof SecurityException);
+        assertEquals("Acesso negado: Usuário temporariamente bloqueado nesta comunidade por moderação.", excecaoCapturada.getMessage());
     }
 }
