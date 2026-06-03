@@ -17,6 +17,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterAvaliaca
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverAvaliacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RegistrarFilmeAssistidoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverFilmeDaListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ReordenarItemListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.SolicitarFilmeCasoDeUso;
@@ -71,6 +72,12 @@ public class CatalogoConfig {
     public AdicionarColaboradorListaCasoDeUso adicionarColaboradorListaCasoDeUso(ListaRepositorio listaRepositorio,
             ListaServico listaServico) {
         return new AdicionarColaboradorListaCasoDeUso(listaRepositorio, listaServico);
+    }
+
+    @Bean
+    public RegistrarFilmeAssistidoCasoDeUso registrarFilmeAssistidoCasoDeUso(ListaRepositorio listaRepositorio,
+            ListaServico listaServico) {
+        return new RegistrarFilmeAssistidoCasoDeUso(listaRepositorio, listaServico);
     }
 
     @Bean

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaComando;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RegistrarFilmeAssistidoCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RegistrarFilmeAssistidoComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarFilmeNaListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarFilmeNaListaComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ConsultarItensListaCasoDeUso;
@@ -40,6 +42,7 @@ public class ListaController {
     private final ReordenarItemListaCasoDeUso reordenarItem;
     private final TornarListaColaborativaCasoDeUso tornarColaborativa;
     private final AdicionarColaboradorListaCasoDeUso adicionarColaborador;
+    private final RegistrarFilmeAssistidoCasoDeUso registrarAssistido;
 
     public ListaController(CriarListaCasoDeUso criarLista,
             ConsultarItensListaCasoDeUso consultarItens,
@@ -47,7 +50,8 @@ public class ListaController {
             RemoverFilmeDaListaCasoDeUso removerFilme,
             ReordenarItemListaCasoDeUso reordenarItem,
             TornarListaColaborativaCasoDeUso tornarColaborativa,
-            AdicionarColaboradorListaCasoDeUso adicionarColaborador) {
+            AdicionarColaboradorListaCasoDeUso adicionarColaborador,
+            RegistrarFilmeAssistidoCasoDeUso registrarAssistido) {
         this.criarLista = criarLista;
         this.consultarItens = consultarItens;
         this.adicionarFilme = adicionarFilme;
@@ -55,6 +59,7 @@ public class ListaController {
         this.reordenarItem = reordenarItem;
         this.tornarColaborativa = tornarColaborativa;
         this.adicionarColaborador = adicionarColaborador;
+        this.registrarAssistido = registrarAssistido;
     }
 
     @PostMapping
@@ -105,8 +110,17 @@ public class ListaController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{listaId}/filmes/{filmeId}/assistido")
+    public ResponseEntity<Void> registrarAssistido(@PathVariable int listaId,
+            @PathVariable int filmeId,
+            @RequestBody RegistrarAssistidoRequest body) {
+        registrarAssistido.executar(new RegistrarFilmeAssistidoComando(listaId, body.usuarioId(), filmeId));
+        return ResponseEntity.noContent().build();
+    }
+
     public static record AdicionarFilmeRequest(int usuarioId, int filmeId, boolean filmeJaFoiAssistido) {}
     public static record ReordenarRequest(int usuarioId, int novaPosicao) {}
     public static record TornarColaborativaRequest(int usuarioId) {}
     public static record AdicionarColaboradorRequest(int donoId, int novoColaboradorId) {}
+    public static record RegistrarAssistidoRequest(int usuarioId) {}
 }
