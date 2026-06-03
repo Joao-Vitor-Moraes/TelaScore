@@ -1,12 +1,33 @@
 package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.catalogo;
 
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.*;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaComando;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarFilmeNaListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarFilmeNaListaComando;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ConsultarItensListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CriarListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CriarListaComando;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ItemListaDetalhe;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverFilmeDaListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverFilmeDaListaComando;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ReordenarItemListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ReordenarItemListaComando;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.TornarListaColaborativaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.TornarListaColaborativaComando;
 
 @RestController
 @RequestMapping("/api/listas")
@@ -84,8 +105,8 @@ public class ListaController {
         return ResponseEntity.noContent().build();
     }
 
-    private record AdicionarFilmeRequest(int usuarioId, int filmeId, boolean filmeJaFoiAssistido) {}
-    private record ReordenarRequest(int usuarioId, int novaPosicao) {}
-    private record TornarColaborativaRequest(int usuarioId) {}
-    private record AdicionarColaboradorRequest(int donoId, int novoColaboradorId) {}
+    public static record AdicionarFilmeRequest(int usuarioId, int filmeId, boolean filmeJaFoiAssistido) {}
+    public static record ReordenarRequest(int usuarioId, int novaPosicao) {}
+    public static record TornarColaborativaRequest(int usuarioId) {}
+    public static record AdicionarColaboradorRequest(int donoId, int novoColaboradorId) {}
 }
