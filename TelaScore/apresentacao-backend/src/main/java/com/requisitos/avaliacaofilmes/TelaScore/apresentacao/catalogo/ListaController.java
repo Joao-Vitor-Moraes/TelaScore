@@ -24,8 +24,13 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ConsultarIten
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CriarListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CriarListaComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ItemListaDetalhe;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarListasPorUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListaResumo;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverFilmeDaListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverFilmeDaListaComando;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverListaComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ReordenarItemListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ReordenarItemListaComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.TornarListaColaborativaCasoDeUso;
@@ -36,6 +41,9 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.TornarListaCo
 public class ListaController {
 
     private final CriarListaCasoDeUso criarLista;
+    private final ObterListaCasoDeUso obterLista;
+    private final ListarListasPorUsuarioCasoDeUso listarPorUsuario;
+    private final RemoverListaCasoDeUso removerLista;
     private final ConsultarItensListaCasoDeUso consultarItens;
     private final AdicionarFilmeNaListaCasoDeUso adicionarFilme;
     private final RemoverFilmeDaListaCasoDeUso removerFilme;
@@ -45,6 +53,9 @@ public class ListaController {
     private final RegistrarFilmeAssistidoCasoDeUso registrarAssistido;
 
     public ListaController(CriarListaCasoDeUso criarLista,
+            ObterListaCasoDeUso obterLista,
+            ListarListasPorUsuarioCasoDeUso listarPorUsuario,
+            RemoverListaCasoDeUso removerLista,
             ConsultarItensListaCasoDeUso consultarItens,
             AdicionarFilmeNaListaCasoDeUso adicionarFilme,
             RemoverFilmeDaListaCasoDeUso removerFilme,
@@ -53,6 +64,9 @@ public class ListaController {
             AdicionarColaboradorListaCasoDeUso adicionarColaborador,
             RegistrarFilmeAssistidoCasoDeUso registrarAssistido) {
         this.criarLista = criarLista;
+        this.obterLista = obterLista;
+        this.listarPorUsuario = listarPorUsuario;
+        this.removerLista = removerLista;
         this.consultarItens = consultarItens;
         this.adicionarFilme = adicionarFilme;
         this.removerFilme = removerFilme;
@@ -66,6 +80,23 @@ public class ListaController {
     public ResponseEntity<Void> criarLista(@RequestBody CriarListaComando comando) {
         criarLista.executar(comando);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/{listaId}")
+    public ListaResumo obterLista(@PathVariable int listaId) {
+        return obterLista.executar(listaId);
+    }
+
+    @GetMapping
+    public List<ListaResumo> listarPorUsuario(@RequestParam int usuarioId) {
+        return listarPorUsuario.executar(usuarioId);
+    }
+
+    @DeleteMapping("/{listaId}")
+    public ResponseEntity<Void> removerLista(@PathVariable int listaId,
+            @RequestParam int usuarioId) {
+        removerLista.executar(new RemoverListaComando(listaId, usuarioId));
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{listaId}/itens")

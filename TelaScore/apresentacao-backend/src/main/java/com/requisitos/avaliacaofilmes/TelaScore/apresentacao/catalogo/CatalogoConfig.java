@@ -4,6 +4,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarListasPorUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarSolicitacoesPorSolicitanteCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarSolicitacoesPorStatusCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarFilmeNaListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AtualizarAvaliacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AtualizarFilmeCasoDeUso;
@@ -90,7 +95,34 @@ public class CatalogoConfig {
             SolicitacaoRepositorio solicitacaoRepositorio, SolicitacaoServico solicitacaoServico) {
         return new CancelarSolicitacaoFilmeCasoDeUso(solicitacaoRepositorio, solicitacaoServico);
     }
-    
+
+    @Bean
+    public ObterListaCasoDeUso obterListaCasoDeUso(ListaRepositorio listaRepositorio) {
+        return new ObterListaCasoDeUso(listaRepositorio);
+    }
+
+    @Bean
+    public ListarListasPorUsuarioCasoDeUso listarListasPorUsuarioCasoDeUso(ListaRepositorio listaRepositorio) {
+        return new ListarListasPorUsuarioCasoDeUso(listaRepositorio);
+    }
+
+    @Bean
+    public RemoverListaCasoDeUso removerListaCasoDeUso(ListaRepositorio listaRepositorio) {
+        return new RemoverListaCasoDeUso(listaRepositorio);
+    }
+
+    @Bean
+    public ListarSolicitacoesPorSolicitanteCasoDeUso listarSolicitacoesPorSolicitanteCasoDeUso(
+            SolicitacaoRepositorio solicitacaoRepositorio) {
+        return new ListarSolicitacoesPorSolicitanteCasoDeUso(solicitacaoRepositorio);
+    }
+
+    @Bean
+    public ListarSolicitacoesPorStatusCasoDeUso listarSolicitacoesPorStatusCasoDeUso(
+            SolicitacaoRepositorio solicitacaoRepositorio) {
+        return new ListarSolicitacoesPorStatusCasoDeUso(solicitacaoRepositorio);
+    }
+
     // ─── Filmes ───────────────────────────────────────────────────────────────────
 
     @Bean

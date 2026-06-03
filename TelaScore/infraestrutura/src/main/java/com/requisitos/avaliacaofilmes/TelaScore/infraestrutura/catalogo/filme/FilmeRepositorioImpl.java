@@ -13,9 +13,6 @@ import jakarta.persistence.EntityTransaction;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Repository;
-
-@Repository
 public class FilmeRepositorioImpl implements FilmeRepositorio {
     @Override
     public void salvar(Filme filme) {

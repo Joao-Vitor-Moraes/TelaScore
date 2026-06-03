@@ -1,0 +1,27 @@
+package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo;
+
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.Lista;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaRepositorio;
+
+public class ObterListaCasoDeUso {
+
+    private final ListaRepositorio listaRepositorio;
+
+    public ObterListaCasoDeUso(ListaRepositorio listaRepositorio) {
+        this.listaRepositorio = listaRepositorio;
+    }
+
+    public ListaResumo executar(int listaId) {
+        Lista lista = listaRepositorio.obter(new ListaId(listaId));
+        if (lista == null) {
+            throw new IllegalArgumentException("Lista não encontrada.");
+        }
+        return new ListaResumo(
+                lista.getId().getId(),
+                lista.getTitulo(),
+                lista.isRanqueada(),
+                lista.getItens().size()
+        );
+    }
+}
