@@ -16,6 +16,7 @@
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recomendacao.entidades.RecomendacaoEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.ComunidadeEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.MembroComunidadeEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.noticia.entidades.NoticiaEntity</class>
 
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
