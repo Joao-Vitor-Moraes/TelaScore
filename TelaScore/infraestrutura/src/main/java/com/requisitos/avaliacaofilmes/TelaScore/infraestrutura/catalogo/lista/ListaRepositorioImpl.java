@@ -61,8 +61,6 @@ public class ListaRepositorioImpl implements ListaRepositorio {
             }
             
             if (!em.contains(entity)) {
-                em.merge(entity);
-            } else {
                 em.persist(entity);
             }
             

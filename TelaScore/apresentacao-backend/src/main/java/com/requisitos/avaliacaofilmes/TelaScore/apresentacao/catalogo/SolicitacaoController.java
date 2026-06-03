@@ -49,6 +49,6 @@ public class SolicitacaoController {
         if (status != null) {
             return listarPorStatus.executar(status);
         }
-        throw new IllegalArgumentException("Informe 'solicitanteId' ou 'status' como parâmetro.");
+        throw new com.requisitos.avaliacaofilmes.TelaScore.aplicacao.EntradaInvalidaException("Informe 'solicitanteId' ou 'status' como parâmetro.");
     }
 }

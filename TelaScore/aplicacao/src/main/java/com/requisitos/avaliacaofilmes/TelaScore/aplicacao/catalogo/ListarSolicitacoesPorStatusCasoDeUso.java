@@ -1,5 +1,6 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo;
 
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.EntradaInvalidaException;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.solicitacao.SolicitacaoFilme;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.solicitacao.SolicitacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.solicitacao.StatusSolicitacao;
@@ -20,7 +21,7 @@ public class ListarSolicitacoesPorStatusCasoDeUso {
         try {
             statusEnum = StatusSolicitacao.valueOf(status.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Status inválido: " + status);
+            throw new EntradaInvalidaException("Status inválido: " + status);
         }
         List<SolicitacaoFilme> solicitacoes = solicitacaoRepositorio.pesquisarPorStatus(statusEnum);
         return solicitacoes.stream()
