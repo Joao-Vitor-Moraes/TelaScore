@@ -25,3 +25,4 @@ schema.sql
 **/node_modules
 **/src/main/angular/node
 **/src/main/resources/static
+*.class
