@@ -6,20 +6,21 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.Notic
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.NoticiaId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.NoticiaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.noticia.entidades.NoticiaEntity;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.config.ConexaoBanco;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NoticiaRepositorioImpl implements NoticiaRepositorio {
 
-    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("telascorePU");
+    private EntityManager obterEntityManager() {
+        return ConexaoBanco.obterEntityManager();
+    }
 
     @Override
     public void salvar(Noticia noticia) {
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = obterEntityManager();
         try {
             em.getTransaction().begin();
             NoticiaEntity entity = new NoticiaEntity();
@@ -38,7 +39,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
 
     @Override
     public Noticia obter(NoticiaId id) {
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = obterEntityManager();
         try {
             NoticiaEntity entity = em.find(NoticiaEntity.class, id.getId());
             if (entity == null) return null;
@@ -57,7 +58,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
 
     @Override
     public void remover(NoticiaId id) {
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = obterEntityManager();
         try {
             em.getTransaction().begin();
             NoticiaEntity entity = em.find(NoticiaEntity.class, id.getId());
@@ -72,7 +73,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
 
     @Override
     public List<Noticia> buscarRecentes(int limite) {
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = obterEntityManager();
         try {
             List<NoticiaEntity> entidades = em.createQuery(
                             "FROM NoticiaEntity ORDER BY dataPublicacao DESC", NoticiaEntity.class)
@@ -86,7 +87,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
 
     @Override
     public List<Noticia> buscarPorAutor(UsuarioId autorId) {
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = obterEntityManager();
         try {
             List<NoticiaEntity> entidades = em.createQuery(
                             "FROM NoticiaEntity WHERE autorId = :autorId", NoticiaEntity.class)
@@ -100,7 +101,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
 
     @Override
     public List<Noticia> buscarPorFiltros(String termo, CategoriaNoticia categoria) {
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = obterEntityManager();
         try {
             StringBuilder jpql = new StringBuilder("FROM NoticiaEntity WHERE 1=1");
             if (termo != null && !termo.trim().isEmpty()) {

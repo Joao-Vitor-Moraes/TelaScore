@@ -4,14 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.Comunidade;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.ComunidadeId;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.MembroComunidade;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.PapelComunidade;
 
 public class ComunidadeRepositorioImplTest {
 
@@ -41,7 +38,7 @@ public class ComunidadeRepositorioImplTest {
         assertFalse(membros.isEmpty());
         assertEquals(usuarioId.getId(), membros.get(0).getUsuarioId().getId());
 
-        List<Comunidade> comunidadesDoUsuario = repositorio.buscarComunidadesDoUsuario(usuarioId);
+        List<ComunidadeUsuarioResumo> comunidadesDoUsuario = repositorio.buscarComunidadesDoUsuario(usuarioId);
         assertFalse(comunidadesDoUsuario.isEmpty());
 
         repositorio.removerMembro(comunidadeId, usuarioId);

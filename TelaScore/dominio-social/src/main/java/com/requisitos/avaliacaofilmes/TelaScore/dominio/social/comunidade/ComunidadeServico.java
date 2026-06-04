@@ -14,17 +14,21 @@ public class ComunidadeServico {
 	public void criarComunidade(Comunidade comunidade, UsuarioId criadorId) {
 		notNull(comunidade, "A comunidade não pode ser nula");
 		notNull(criadorId, "O id do criador não pode ser nulo");
-		
+
 		repositorio.salvarComunidade(comunidade);
-		
+
 		MembroComunidade dono = new MembroComunidade(comunidade.getId(), criadorId, PapelComunidade.CRIADOR);
 		repositorio.salvarMembro(dono);
 	}
-	
+
 	public void entrarNaComunidade(ComunidadeId comunidadeId, UsuarioId usuarioId) {
 		notNull(comunidadeId, "O id da comunidade não pode ser nulo");
 		notNull(usuarioId, "O id do utilizador não pode ser nulo");
-		
+
+		if (repositorio.existeMembro(comunidadeId, usuarioId)) {
+			throw new IllegalArgumentException("O usuário já faz parte desta comunidade.");
+		}
+
 		MembroComunidade novoMembro = new MembroComunidade(comunidadeId, usuarioId, PapelComunidade.MEMBRO);
 		repositorio.salvarMembro(novoMembro);
 	}

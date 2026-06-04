@@ -20,20 +20,13 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            ComunidadeEntity entity = em.find(ComunidadeEntity.class, comunidade.getId().getId());
 
-            if (entity == null) {
-                entity = new ComunidadeEntity();
-                entity.setId(comunidade.getId().getId());
-            }
-            entity.setNome(comunidade.getNome());
-            entity.setDescricao(comunidade.getDescricao());
+            em.createNativeQuery("INSERT INTO comunidade (id, nome, descricao) VALUES (?1, ?2, ?3)")
+                    .setParameter(1, comunidade.getId().getId())
+                    .setParameter(2, comunidade.getNome())
+                    .setParameter(3, comunidade.getDescricao())
+                    .executeUpdate();
 
-            if (!em.contains(entity)) {
-                em.persist(entity);
-            } else {
-                em.merge(entity);
-            }
             tx.commit();
         } catch (Exception e) {
             if (tx.isActive()) tx.rollback();
@@ -49,16 +42,40 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            MembroComunidadeEntity entity = new MembroComunidadeEntity();
-            entity.setComunidadeId(membro.getComunidadeId().getId());
-            entity.setUsuarioId(membro.getUsuarioId().getId());
-            entity.setPapel(membro.getPapel().name());
 
-            em.persist(entity);
+            em.createNativeQuery("INSERT INTO membro_comunidade (comunidade_id, usuario_id, papel) VALUES (?1, ?2, ?3)")
+                    .setParameter(1, membro.getComunidadeId().getId())
+                    .setParameter(2, membro.getUsuarioId().getId())
+                    .setParameter(3, membro.getPapel().name())
+                    .executeUpdate();
+
             tx.commit();
         } catch (Exception e) {
             if (tx.isActive()) tx.rollback();
             throw new RuntimeException("Erro ao salvar membro da comunidade.", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Comunidade> listarTodas() {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            List<Object[]> rows = em.createNativeQuery("SELECT id, nome, descricao FROM comunidade").getResultList();
+
+            List<Comunidade> comunidades = new ArrayList<>();
+            for (Object[] row : rows) {
+                int id = ((Number) row[0]).intValue();
+                String nome = (String) row[1];
+                String descricao = (String) row[2];
+
+                comunidades.add(new Comunidade(
+                        new ComunidadeId(id),
+                        nome,
+                        descricao
+                ));
+            }
+            return comunidades;
         } finally {
             em.close();
         }
@@ -96,18 +113,24 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
     }
 
     @Override
-    public List<Comunidade> buscarComunidadesDoUsuario(UsuarioId uid) {
+    public List<ComunidadeUsuarioResumo> buscarComunidadesDoUsuario(UsuarioId uid) {
         EntityManager em = ConexaoBanco.obterEntityManager();
         try {
-            List<ComunidadeEntity> entities = em.createQuery(
-                            "SELECT c FROM ComunidadeEntity c WHERE c.id IN " +
-                                    "(SELECT m.comunidadeId FROM MembroComunidadeEntity m WHERE m.usuarioId = :uid)", ComunidadeEntity.class)
-                    .setParameter("uid", uid.getId())
+            List<Object[]> rows = em.createNativeQuery(
+                            "SELECT c.id, c.nome, c.descricao, m.papel FROM comunidade c " +
+                                    "INNER JOIN membro_comunidade m ON c.id = m.comunidade_id " +
+                                    "WHERE m.usuario_id = ?1")
+                    .setParameter(1, uid.getId())
                     .getResultList();
 
-            List<Comunidade> comunidades = new ArrayList<>();
-            for (ComunidadeEntity entity : entities) {
-                comunidades.add(mapearParaDominio(entity));
+            List<ComunidadeUsuarioResumo> comunidades = new ArrayList<>();
+            for (Object[] row : rows) {
+                int id = ((Number) row[0]).intValue();
+                String nome = (String) row[1];
+                String descricao = (String) row[2];
+                String papel = (String) row[3];
+
+                comunidades.add(new ComunidadeUsuarioResumo(id, nome, descricao, papel));
             }
             return comunidades;
         } finally {
@@ -119,16 +142,107 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
     public List<MembroComunidade> buscarMembrosDaComunidade(ComunidadeId cid) {
         EntityManager em = ConexaoBanco.obterEntityManager();
         try {
-            List<MembroComunidadeEntity> entities = em.createQuery(
-                            "SELECT m FROM MembroComunidadeEntity m WHERE m.comunidadeId = :cid", MembroComunidadeEntity.class)
-                    .setParameter("cid", cid.getId())
+            List<Object[]> rows = em.createNativeQuery(
+                            "SELECT comunidade_id, usuario_id, papel FROM membro_comunidade WHERE comunidade_id = ?1")
+                    .setParameter(1, cid.getId())
                     .getResultList();
 
             List<MembroComunidade> membros = new ArrayList<>();
-            for (MembroComunidadeEntity entity : entities) {
-                membros.add(mapearParaMembroDominio(entity));
+            for (Object[] row : rows) {
+                int comunidadeId = ((Number) row[0]).intValue();
+                int usuarioId = ((Number) row[1]).intValue();
+                String papel = (String) row[2];
+
+                membros.add(new MembroComunidade(
+                        new ComunidadeId(comunidadeId),
+                        new UsuarioId(usuarioId),
+                        PapelComunidade.valueOf(papel)
+                ));
             }
             return membros;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void atualizarPapelMembro(ComunidadeId cid, UsuarioId uid, PapelComunidade novoPapel) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+
+            em.createNativeQuery("UPDATE membro_comunidade SET papel = ?1 WHERE comunidade_id = ?2 AND usuario_id = ?3")
+                    .setParameter(1, novoPapel.name())
+                    .setParameter(2, cid.getId())
+                    .setParameter(3, uid.getId())
+                    .executeUpdate();
+
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw new RuntimeException("Erro ao atualizar papel do membro.", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public boolean verificarSeEhCriador(ComunidadeId cid, UsuarioId uid) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            List<String> resultados = em.createNativeQuery(
+                            "SELECT papel FROM membro_comunidade WHERE comunidade_id = ?1 AND usuario_id = ?2")
+                    .setParameter(1, cid.getId())
+                    .setParameter(2, uid.getId())
+                    .getResultList();
+
+            if (resultados.isEmpty()) {
+                return false;
+            }
+
+            String papel = resultados.get(0);
+            return "CRIADOR".equalsIgnoreCase(papel);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public boolean existeMembro(ComunidadeId cid, UsuarioId uid) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            Long contagem = ((Number) em.createNativeQuery(
+                            "SELECT COUNT(*) FROM membro_comunidade WHERE comunidade_id = ?1 AND usuario_id = ?2")
+                    .setParameter(1, cid.getId())
+                    .setParameter(2, uid.getId())
+                    .getSingleResult()).longValue();
+
+            return contagem > 0;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void excluirComunidade(ComunidadeId cid) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+
+            em.createNativeQuery("DELETE FROM membro_comunidade WHERE comunidade_id = ?1")
+                    .setParameter(1, cid.getId())
+                    .executeUpdate();
+
+            em.createNativeQuery("DELETE FROM comunidade WHERE id = ?1")
+                    .setParameter(1, cid.getId())
+                    .executeUpdate();
+
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw new RuntimeException("Erro ao excluir comunidade.", e);
         } finally {
             em.close();
         }
