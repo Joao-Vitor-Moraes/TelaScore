@@ -19,8 +19,13 @@ public class ObterListaCasoDeUso {
         }
         return new ListaResumo(
                 lista.getId().getId(),
+                lista.getDonoId().getId(),
                 lista.getTitulo(),
+                lista.getDescricao(),
                 lista.isRanqueada(),
+                lista.getTipo().name(),
+                lista.getVisibilidade().name(),
+                lista.isColaborativa(),
                 lista.getItens().size()
         );
     }

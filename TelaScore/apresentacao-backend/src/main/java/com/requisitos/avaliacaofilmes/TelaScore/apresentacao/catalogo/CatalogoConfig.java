@@ -20,6 +20,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CriarListaCas
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarAvaliacoesPorFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterAvaliacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterSolicitacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverAvaliacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RegistrarFilmeAssistidoCasoDeUso;
@@ -109,6 +110,11 @@ public class CatalogoConfig {
     @Bean
     public RemoverListaCasoDeUso removerListaCasoDeUso(ListaRepositorio listaRepositorio) {
         return new RemoverListaCasoDeUso(listaRepositorio);
+    }
+
+    @Bean
+    public ObterSolicitacaoCasoDeUso obterSolicitacaoCasoDeUso(SolicitacaoRepositorio solicitacaoRepositorio) {
+        return new ObterSolicitacaoCasoDeUso(solicitacaoRepositorio);
     }
 
     @Bean

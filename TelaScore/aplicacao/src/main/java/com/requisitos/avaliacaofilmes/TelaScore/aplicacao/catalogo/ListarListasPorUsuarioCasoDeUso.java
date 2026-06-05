@@ -20,8 +20,13 @@ public class ListarListasPorUsuarioCasoDeUso {
         return listas.stream()
                 .map(l -> new ListaResumo(
                         l.getId().getId(),
+                        l.getDonoId().getId(),
                         l.getTitulo(),
+                        l.getDescricao(),
                         l.isRanqueada(),
+                        l.getTipo().name(),
+                        l.getVisibilidade().name(),
+                        l.isColaborativa(),
                         l.getItens().size()))
                 .collect(Collectors.toList());
     }

@@ -13,18 +13,26 @@ import java.util.List;
 public class SolicitacaoController {
 
     private final SolicitarFilmeCasoDeUso solicitarFilme;
+    private final ObterSolicitacaoCasoDeUso obterSolicitacao;
     private final CancelarSolicitacaoFilmeCasoDeUso cancelarSolicitacao;
     private final ListarSolicitacoesPorSolicitanteCasoDeUso listarPorSolicitante;
     private final ListarSolicitacoesPorStatusCasoDeUso listarPorStatus;
 
     public SolicitacaoController(SolicitarFilmeCasoDeUso solicitarFilme,
+            ObterSolicitacaoCasoDeUso obterSolicitacao,
             CancelarSolicitacaoFilmeCasoDeUso cancelarSolicitacao,
             ListarSolicitacoesPorSolicitanteCasoDeUso listarPorSolicitante,
             ListarSolicitacoesPorStatusCasoDeUso listarPorStatus) {
         this.solicitarFilme = solicitarFilme;
+        this.obterSolicitacao = obterSolicitacao;
         this.cancelarSolicitacao = cancelarSolicitacao;
         this.listarPorSolicitante = listarPorSolicitante;
         this.listarPorStatus = listarPorStatus;
+    }
+
+    @GetMapping("/{solicitacaoId}")
+    public SolicitacaoResumo obter(@PathVariable int solicitacaoId) {
+        return obterSolicitacao.executar(solicitacaoId);
     }
 
     @PostMapping

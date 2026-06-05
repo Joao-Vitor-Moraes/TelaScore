@@ -31,7 +31,8 @@ public class ListarSolicitacoesPorStatusCasoDeUso {
                         s.getTituloSugerido(),
                         s.getJustificativa(),
                         s.getStatus().name(),
-                        s.getDataCriacao()))
+                        s.getDataCriacao(),
+                        s.getFeedbackAdmin()))
                 .collect(Collectors.toList());
     }
 }

@@ -33,7 +33,8 @@ public class SolicitarFilmeCasoDeUso {
 				solicitacao.getTituloSugerido(),
 				solicitacao.getJustificativa(),
 				solicitacao.getStatus().name(),
-				solicitacao.getDataCriacao()
+				solicitacao.getDataCriacao(),
+				solicitacao.getFeedbackAdmin()
 		);
 	}
 }
