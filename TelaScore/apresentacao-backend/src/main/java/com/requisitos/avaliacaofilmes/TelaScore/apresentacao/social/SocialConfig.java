@@ -64,4 +64,9 @@ public class SocialConfig {
     public ListarMensagensCasoDeUso listarMensagensCasoDeUso(ComunidadeRepositorio comunidadeRepositorio) {
         return new ListarMensagensCasoDeUso(comunidadeRepositorio);
     }
+
+    @Bean
+    public ExcluirMensagemCasoDeUso excluirMensagemCasoDeUso(ComunidadeRepositorio comunidadeRepositorio) {
+        return new ExcluirMensagemCasoDeUso(comunidadeRepositorio);
+    }
 }

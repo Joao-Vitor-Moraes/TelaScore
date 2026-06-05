@@ -28,4 +28,8 @@ public interface ComunidadeRepositorio {
 	void salvarMensagem(MensagemComunidade mensagem);
 
 	List<MensagemComunidade> buscarMensagensDaComunidade(ComunidadeId cid);
+
+	MensagemComunidade obterMensagemPorId(int mensagemId);
+
+	void excluirMensagem(int mensagemId);
 }

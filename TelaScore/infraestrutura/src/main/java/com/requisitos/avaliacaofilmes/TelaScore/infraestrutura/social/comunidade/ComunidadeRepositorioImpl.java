@@ -303,6 +303,49 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
         }
     }
 
+    @Override
+    public MensagemComunidade obterMensagemPorId(int mensagemId) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            List<Object[]> rows = em.createNativeQuery(
+                            "SELECT id, comunidade_id, usuario_id, conteudo, enviado_em FROM mensagem_comunidade WHERE id = ?1")
+                    .setParameter(1, mensagemId)
+                    .getResultList();
+
+            if (rows.isEmpty()) return null;
+
+            Object[] row = rows.get(0);
+            int id = ((Number) row[0]).intValue();
+            int comunidadeId = ((Number) row[1]).intValue();
+            int usuarioId = ((Number) row[2]).intValue();
+            String conteudo = (String) row[3];
+            LocalDateTime enviadoEm = row[4] instanceof java.sql.Timestamp ?
+                    ((java.sql.Timestamp) row[4]).toLocalDateTime() : (LocalDateTime) row[4];
+
+            return new MensagemComunidade(id, comunidadeId, usuarioId, conteudo, enviadoEm);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void excluirMensagem(int mensagemId) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            em.createNativeQuery("DELETE FROM mensagem_comunidade WHERE id = ?1")
+                    .setParameter(1, mensagemId)
+                    .executeUpdate();
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw new RuntimeException("Erro ao excluir mensagem.", e);
+        } finally {
+            em.close();
+        }
+    }
+
     private Comunidade mapearParaDominio(ComunidadeEntity entity) {
         return new Comunidade(
                 new ComunidadeId(entity.getId()),

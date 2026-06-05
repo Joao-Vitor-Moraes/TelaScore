@@ -27,6 +27,7 @@ public class ComunidadeController {
     private final RebaixarMembroCasoDeUso rebaixarMembro;
     private final EnviarMensagemCasoDeUso enviarMensagem;
     private final ListarMensagensCasoDeUso listarMensagens;
+    private final ExcluirMensagemCasoDeUso excluirMensagem;
 
     public ComunidadeController(CriarComunidadeCasoDeUso criarComunidade,
                                 EntrarComunidade entrarComunidade,
@@ -38,7 +39,8 @@ public class ComunidadeController {
                                 ExcluirComunidadeCasoDeUso excluirComunidade,
                                 RebaixarMembroCasoDeUso rebaixarMembro,
                                 EnviarMensagemCasoDeUso enviarMensagem,
-                                ListarMensagensCasoDeUso listarMensagens) {
+                                ListarMensagensCasoDeUso listarMensagens,
+                                ExcluirMensagemCasoDeUso excluirMensagem) {
         this.criarComunidade = criarComunidade;
         this.entrarComunidade = entrarComunidade;
         this.removerMembro = removerMembro;
@@ -50,6 +52,7 @@ public class ComunidadeController {
         this.rebaixarMembro = rebaixarMembro;
         this.enviarMensagem = enviarMensagem;
         this.listarMensagens = listarMensagens;
+        this.excluirMensagem = excluirMensagem;
     }
 
     @PostMapping
@@ -135,6 +138,13 @@ public class ComunidadeController {
     @GetMapping("/{comunidadeId}/mensagens")
     public ResponseEntity<List<MensagemComunidade>> listarMensagens(@PathVariable int comunidadeId) {
         return ResponseEntity.ok(listarMensagens.executar(comunidadeId));
+    }
+
+    @DeleteMapping("/mensagens/{mensagemId}")
+    public ResponseEntity<Void> excluirMensagem(@PathVariable int mensagemId,
+                                                @RequestHeader("X-Usuario-Id") int solicitanteId) {
+        excluirMensagem.executar(mensagemId, solicitanteId);
+        return ResponseEntity.noContent().build();
     }
 
     public static record CriarComunidadeRequest(int idSugerido, String nome, String descricao, int criadorId) {}
