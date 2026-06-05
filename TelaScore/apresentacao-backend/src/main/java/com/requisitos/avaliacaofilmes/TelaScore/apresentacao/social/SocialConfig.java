@@ -16,8 +16,8 @@ public class SocialConfig {
 
     @Bean
     public EntrarComunidade entrarComunidade(ComunidadeRepositorio comunidadeRepositorio) {
-        EntrarComunidade casoDeUsoReal = new EntrarComunidadeCasoDeUso(comunidadeRepositorio);
-        return new EntrarComunidadeProxy(casoDeUsoReal);
+        EntrarComunidadeCasoDeUso real = new EntrarComunidadeCasoDeUso(comunidadeRepositorio);
+        return new EntrarComunidadeProxy(real);
     }
 
     @Bean
