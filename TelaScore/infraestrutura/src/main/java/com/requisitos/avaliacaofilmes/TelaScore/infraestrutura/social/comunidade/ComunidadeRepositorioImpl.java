@@ -1,5 +1,6 @@
 package com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -243,6 +244,60 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
         } catch (Exception e) {
             if (tx.isActive()) tx.rollback();
             throw new RuntimeException("Erro ao excluir comunidade.", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void salvarMensagem(MensagemComunidade mensagem) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            em.createNativeQuery(
+                            "INSERT INTO mensagem_comunidade (comunidade_id, usuario_id, conteudo, enviado_em) VALUES (?1, ?2, ?3, ?4)")
+                    .setParameter(1, mensagem.comunidadeId())
+                    .setParameter(2, mensagem.usuarioId())
+                    .setParameter(3, mensagem.conteudo())
+                    .setParameter(4, java.sql.Timestamp.valueOf(mensagem.enviadoEm()))
+                    .executeUpdate();
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw new RuntimeException("Erro ao salvar mensagem.", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<MensagemComunidade> buscarMensagensDaComunidade(ComunidadeId cid) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            List<Object[]> rows = em.createNativeQuery(
+                            "SELECT id, comunidade_id, usuario_id, conteudo, enviado_em FROM mensagem_comunidade " +
+                                    "WHERE comunidade_id = ?1 ORDER BY enviado_em ASC")
+                    .setParameter(1, cid.getId())
+                    .getResultList();
+
+            List<MensagemComunidade> mensagens = new ArrayList<>();
+            for (Object[] row : rows) {
+                int id = ((Number) row[0]).intValue();
+                int comunidadeId = ((Number) row[1]).intValue();
+                int usuarioId = ((Number) row[2]).intValue();
+                String conteudo = (String) row[3];
+
+                LocalDateTime enviadoEm;
+                if (row[4] instanceof java.sql.Timestamp) {
+                    enviadoEm = ((java.sql.Timestamp) row[4]).toLocalDateTime();
+                } else {
+                    enviadoEm = (LocalDateTime) row[4];
+                }
+
+                mensagens.add(new MensagemComunidade(id, comunidadeId, usuarioId, conteudo, enviadoEm));
+            }
+            return mensagens;
         } finally {
             em.close();
         }

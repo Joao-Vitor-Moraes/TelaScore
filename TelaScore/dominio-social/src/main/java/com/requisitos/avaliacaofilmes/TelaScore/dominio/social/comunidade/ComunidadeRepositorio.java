@@ -12,6 +12,7 @@ public interface ComunidadeRepositorio {
 	void salvarMembro(MembroComunidade membro);
 	void removerMembro(ComunidadeId comunidadeId, UsuarioId usuarioId);
 
+
 	List<ComunidadeUsuarioResumo> buscarComunidadesDoUsuario(UsuarioId uid);
 
 	void atualizarPapelMembro(ComunidadeId cid, UsuarioId uid, PapelComunidade novoPapel);
@@ -23,4 +24,8 @@ public interface ComunidadeRepositorio {
 	boolean existeMembro(ComunidadeId cid, UsuarioId uid);
 
 	void excluirComunidade(ComunidadeId cid);
+
+	void salvarMensagem(MensagemComunidade mensagem);
+
+	List<MensagemComunidade> buscarMensagensDaComunidade(ComunidadeId cid);
 }

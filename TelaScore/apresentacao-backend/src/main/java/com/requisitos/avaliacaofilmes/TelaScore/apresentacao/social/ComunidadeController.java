@@ -3,7 +3,9 @@ package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.social;
 import java.util.List;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.*;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.EnviarMensagemComando;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.MembroComunidade;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.MensagemComunidade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,8 @@ public class ComunidadeController {
     private final PromoverMembroCasoDeUso promoverMembro;
     private final ExcluirComunidadeCasoDeUso excluirComunidade;
     private final RebaixarMembroCasoDeUso rebaixarMembro;
+    private final EnviarMensagemCasoDeUso enviarMensagem;
+    private final ListarMensagensCasoDeUso listarMensagens;
 
     public ComunidadeController(CriarComunidadeCasoDeUso criarComunidade,
                                 EntrarComunidade entrarComunidade,
@@ -32,7 +36,9 @@ public class ComunidadeController {
                                 ListarMembrosComunidadeCasoDeUso listarMembros,
                                 PromoverMembroCasoDeUso promoverMembro,
                                 ExcluirComunidadeCasoDeUso excluirComunidade,
-                                RebaixarMembroCasoDeUso rebaixarMembro) {
+                                RebaixarMembroCasoDeUso rebaixarMembro,
+                                EnviarMensagemCasoDeUso enviarMensagem,
+                                ListarMensagensCasoDeUso listarMensagens) {
         this.criarComunidade = criarComunidade;
         this.entrarComunidade = entrarComunidade;
         this.removerMembro = removerMembro;
@@ -42,6 +48,8 @@ public class ComunidadeController {
         this.promoverMembro = promoverMembro;
         this.excluirComunidade = excluirComunidade;
         this.rebaixarMembro = rebaixarMembro;
+        this.enviarMensagem = enviarMensagem;
+        this.listarMensagens = listarMensagens;
     }
 
     @PostMapping
@@ -112,6 +120,24 @@ public class ComunidadeController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{comunidadeId}/mensagens")
+    public ResponseEntity<Void> enviarMensagem(@PathVariable int comunidadeId,
+                                               @RequestBody EnviarMensagemRequest body) {
+        EnviarMensagemComando comando = new EnviarMensagemComando(
+                comunidadeId,
+                body.usuarioId(),
+                body.conteudo()
+        );
+        enviarMensagem.executar(comando);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/{comunidadeId}/mensagens")
+    public ResponseEntity<List<MensagemComunidade>> listarMensagens(@PathVariable int comunidadeId) {
+        return ResponseEntity.ok(listarMensagens.executar(comunidadeId));
+    }
+
     public static record CriarComunidadeRequest(int idSugerido, String nome, String descricao, int criadorId) {}
     public static record EntrarComunidadeRequest(int usuarioId) {}
+    public static record EnviarMensagemRequest(int usuarioId, String conteudo) {}
 }

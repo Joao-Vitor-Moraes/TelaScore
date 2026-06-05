@@ -54,4 +54,14 @@ public class SocialConfig {
     public RebaixarMembroCasoDeUso rebaixarMembroCasoDeUso(ComunidadeRepositorio comunidadeRepositorio) {
         return new RebaixarMembroCasoDeUso(comunidadeRepositorio);
     }
+
+    @Bean
+    public EnviarMensagemCasoDeUso enviarMensagemCasoDeUso(ComunidadeRepositorio comunidadeRepositorio) {
+        return new EnviarMensagemCasoDeUso(comunidadeRepositorio);
+    }
+
+    @Bean
+    public ListarMensagensCasoDeUso listarMensagensCasoDeUso(ComunidadeRepositorio comunidadeRepositorio) {
+        return new ListarMensagensCasoDeUso(comunidadeRepositorio);
+    }
 }
