@@ -68,6 +68,16 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
-		</dependency>        
+		</dependency>
+		<dependency>
+			<groupId>com.requisitos.avaliacaofilmes</groupId>
+			<artifactId>TelaScore-dominio-catalogo</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.requisitos.avaliacaofilmes</groupId>
+			<artifactId>TelaScore-dominio-social</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
     </dependencies>    
 </project>
