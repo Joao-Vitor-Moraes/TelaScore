@@ -9,9 +9,6 @@ import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.config.ConexaoBan
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
-import org.springframework.stereotype.Repository;
-
-@Repository
 public class DiretorRepositorioImpl implements DiretorRepositorio {
 
     @Override

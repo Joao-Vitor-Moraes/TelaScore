@@ -4,6 +4,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarListasPorUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarSolicitacoesPorSolicitanteCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarSolicitacoesPorStatusCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarFilmeNaListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AtualizarAvaliacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AtualizarFilmeCasoDeUso;
@@ -15,6 +20,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CriarListaCas
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarAvaliacoesPorFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterAvaliacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterSolicitacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverAvaliacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RegistrarFilmeAssistidoCasoDeUso;
@@ -90,7 +96,39 @@ public class CatalogoConfig {
             SolicitacaoRepositorio solicitacaoRepositorio, SolicitacaoServico solicitacaoServico) {
         return new CancelarSolicitacaoFilmeCasoDeUso(solicitacaoRepositorio, solicitacaoServico);
     }
-    
+
+    @Bean
+    public ObterListaCasoDeUso obterListaCasoDeUso(ListaRepositorio listaRepositorio) {
+        return new ObterListaCasoDeUso(listaRepositorio);
+    }
+
+    @Bean
+    public ListarListasPorUsuarioCasoDeUso listarListasPorUsuarioCasoDeUso(ListaRepositorio listaRepositorio) {
+        return new ListarListasPorUsuarioCasoDeUso(listaRepositorio);
+    }
+
+    @Bean
+    public RemoverListaCasoDeUso removerListaCasoDeUso(ListaRepositorio listaRepositorio) {
+        return new RemoverListaCasoDeUso(listaRepositorio);
+    }
+
+    @Bean
+    public ObterSolicitacaoCasoDeUso obterSolicitacaoCasoDeUso(SolicitacaoRepositorio solicitacaoRepositorio) {
+        return new ObterSolicitacaoCasoDeUso(solicitacaoRepositorio);
+    }
+
+    @Bean
+    public ListarSolicitacoesPorSolicitanteCasoDeUso listarSolicitacoesPorSolicitanteCasoDeUso(
+            SolicitacaoRepositorio solicitacaoRepositorio) {
+        return new ListarSolicitacoesPorSolicitanteCasoDeUso(solicitacaoRepositorio);
+    }
+
+    @Bean
+    public ListarSolicitacoesPorStatusCasoDeUso listarSolicitacoesPorStatusCasoDeUso(
+            SolicitacaoRepositorio solicitacaoRepositorio) {
+        return new ListarSolicitacoesPorStatusCasoDeUso(solicitacaoRepositorio);
+    }
+
     // ─── Filmes ───────────────────────────────────────────────────────────────────
 
     @Bean

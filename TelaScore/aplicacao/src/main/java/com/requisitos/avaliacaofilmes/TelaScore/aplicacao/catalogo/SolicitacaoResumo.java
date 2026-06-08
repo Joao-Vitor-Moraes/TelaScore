@@ -8,5 +8,6 @@ public record SolicitacaoResumo(
 		String tituloSugerido,
 		String justificativa,
 		String status,
-		LocalDateTime dataCriacao
+		LocalDateTime dataCriacao,
+		String feedbackAdmin
 ) {}

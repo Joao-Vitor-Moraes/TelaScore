@@ -1,5 +1,8 @@
 package com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.filme;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.diretor.DiretorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.Filme;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId;
@@ -10,12 +13,6 @@ import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.config.ConexaoBan
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Repository;
-
-@Repository
 public class FilmeRepositorioImpl implements FilmeRepositorio {
     @Override
     public void salvar(Filme filme) {

@@ -15,9 +15,6 @@ import jakarta.persistence.EntityTransaction;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-
-@Repository
 public class AvaliacaoRepositorioImpl implements AvaliacaoRepositorio {
 
     @Override
