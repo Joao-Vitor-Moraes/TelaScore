@@ -18,7 +18,7 @@
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.perfil.entidades.PerfilEntity</class>
 
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.ComunidadeEntity</class>
-        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.MembroComunidadeEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.enti"dades.Memb"roComunidadeEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.noticia.entidades.NoticiaEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.lista.entidades.ItemListaEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.lista.entidades.ListaEntity</class>
