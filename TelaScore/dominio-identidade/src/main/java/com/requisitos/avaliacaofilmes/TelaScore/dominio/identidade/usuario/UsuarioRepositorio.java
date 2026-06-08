@@ -12,6 +12,8 @@ public interface UsuarioRepositorio {
 
 	void remover(UsuarioId id);
 
+	void removerPorEmail(Email email);
+
 	List<Usuario> listarTodos();
 
 }

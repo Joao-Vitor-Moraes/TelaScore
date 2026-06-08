@@ -6,9 +6,13 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaRepo
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.solicitacao.SolicitacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.solicitacao.SolicitacaoServico;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.filme.FilmeRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.lista.ListaRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.solicitacao.SolicitacaoRepositorioImpl;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.perfil.PerfilRepositorioImpl;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuario.UsuarioRepositorioImpl;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +38,16 @@ public class InfraestruturaConfig {
     @Bean
     public FilmeRepositorio filmeRepositorio() {
         return new FilmeRepositorioImpl();
+    }
+
+    @Bean
+    public UsuarioRepositorio usuarioRepositorio() {
+        return new UsuarioRepositorioImpl();
+    }
+
+    @Bean
+    public PerfilRepositorio perfilRepositorio() {
+        return new PerfilRepositorioImpl();
     }
 
     @Bean

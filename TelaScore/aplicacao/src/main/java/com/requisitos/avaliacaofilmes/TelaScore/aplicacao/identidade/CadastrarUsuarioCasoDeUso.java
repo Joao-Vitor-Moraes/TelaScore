@@ -52,6 +52,11 @@ public class CadastrarUsuarioCasoDeUso {
             new Apelido(usuario.getNome())
         );
 
-        perfilServico.salvar(perfil);
+        try {
+            perfilServico.salvar(perfil);
+        } catch (RuntimeException e) {
+            usuarioServico.remover(usuarioId);
+            throw e;
+        }
     }
 }

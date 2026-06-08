@@ -16,6 +16,16 @@ public class GeradorIdImpl implements GeradorId {
         }
     }
 
+    private int proximoIdNativo(String sql) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            Number max = (Number) em.createNativeQuery(sql).getSingleResult();
+            return max == null ? 1 : max.intValue() + 1;
+        } finally {
+            em.close();
+        }
+    }
+
     @Override
     public int gerarProximoIdLista() {
         return proximoId("SELECT MAX(l.id) FROM ListaEntity l");
@@ -37,57 +47,57 @@ public class GeradorIdImpl implements GeradorId {
     }
 
     @Override
-    public int gerarProximoIdFilme() {
-        throw new UnsupportedOperationException("Geração de ID de filme não implementada neste módulo");
+    public int gerarProximoIdUsuario() {
+        return proximoIdNativo("SELECT MAX(id) FROM usuario");
     }
 
     @Override
-    public int gerarProximoIdUsuario() {
-        throw new UnsupportedOperationException("Geração de ID de usuário não implementada neste módulo");
+    public int gerarProximoIdFilme() {
+        throw new UnsupportedOperationException("Geracao de ID de filme nao implementada neste modulo");
     }
 
     @Override
     public int gerarProximoIdPerfil() {
-        throw new UnsupportedOperationException("Geração de ID de perfil não implementada neste módulo");
+        return proximoIdNativo("SELECT MAX(id) FROM perfil");
     }
 
     @Override
     public int gerarProximoIdRegistroPontuacao() {
-        throw new UnsupportedOperationException("Geração de ID de registro de pontuação não implementada neste módulo");
+        throw new UnsupportedOperationException("Geracao de ID de registro de pontuacao nao implementada neste modulo");
     }
 
     @Override
     public int gerarProximoIdEvento() {
-        throw new UnsupportedOperationException("Geração de ID de evento não implementada neste módulo");
+        throw new UnsupportedOperationException("Geracao de ID de evento nao implementada neste modulo");
     }
 
     @Override
     public int gerarProximoIdNoticia() {
-        throw new UnsupportedOperationException("Geração de ID de notícia não implementada neste módulo");
+        throw new UnsupportedOperationException("Geracao de ID de noticia nao implementada neste modulo");
     }
 
     @Override
     public int gerarProximoIdConexao() {
-        throw new UnsupportedOperationException("Geração de ID de conexão não implementada neste módulo");
+        throw new UnsupportedOperationException("Geracao de ID de conexao nao implementada neste modulo");
     }
 
     @Override
     public int gerarProximoIdComunidade() {
-        throw new UnsupportedOperationException("Geração de ID de comunidade não implementada neste módulo");
+        throw new UnsupportedOperationException("Geracao de ID de comunidade nao implementada neste modulo");
     }
 
     @Override
     public int gerarProximoIdMensagem() {
-        throw new UnsupportedOperationException("Geração de ID de mensagem não implementada neste módulo");
+        throw new UnsupportedOperationException("Geracao de ID de mensagem nao implementada neste modulo");
     }
 
     @Override
     public int gerarProximoIdDenuncia() {
-        throw new UnsupportedOperationException("Geração de ID de denúncia não implementada neste módulo");
+        throw new UnsupportedOperationException("Geracao de ID de denuncia nao implementada neste modulo");
     }
 
     @Override
     public int gerarProximoIdQuiz() {
-        throw new UnsupportedOperationException("Geração de ID de quiz não implementada neste módulo");
+        throw new UnsupportedOperationException("Geracao de ID de quiz nao implementada neste modulo");
     }
 }
