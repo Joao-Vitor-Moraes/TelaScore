@@ -53,7 +53,7 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdFilme() {
-        throw new UnsupportedOperationException("Geracao de ID de filme nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(CAST(id AS UNSIGNED)) FROM filme");
     }
 
     @Override

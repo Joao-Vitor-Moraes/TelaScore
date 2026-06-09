@@ -13,6 +13,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.Rec
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoServico;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.EnviarRecomendacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.ResponderRecomendacaoCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 
@@ -37,6 +38,11 @@ public class AnaliseConfig {
     @Bean
     public EstenderPrazoMetaCasoDeUso estenderPrazoMetaCasoDeUso(MetaRepositorio metaRepositorio) {
         return new EstenderPrazoMetaCasoDeUso(metaRepositorio);
+    }
+
+    @Bean
+    public RecomendacaoServico recomendacaoServico(RecomendacaoRepositorio recomendacaoRepositorio) {
+        return new RecomendacaoServico(recomendacaoRepositorio);
     }
 
     @Bean
