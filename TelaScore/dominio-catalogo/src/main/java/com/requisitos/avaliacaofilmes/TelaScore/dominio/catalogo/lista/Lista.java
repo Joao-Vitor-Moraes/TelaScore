@@ -16,7 +16,7 @@ public class Lista implements Iterable<ItemLista> {
 
     private String titulo;
     private String descricao;
-    private final boolean ranqueada;
+    private boolean ranqueada;
 
     private Visibilidade visibilidade;
     private TipoLista tipo;
@@ -79,6 +79,16 @@ public class Lista implements Iterable<ItemLista> {
 
     public List<UsuarioId> getColaboradores() {
         return Collections.unmodifiableList(colaboradores);
+    }
+
+    public void editarDados(String novoTitulo, String novaDescricao, Visibilidade novaVisibilidade, boolean novaRanqueada, UsuarioId usuarioId) {
+        if (!this.donoId.equals(usuarioId)) {
+            throw new IllegalStateException("Apenas o dono da lista pode editar seus dados");
+        }
+        setTitulo(novoTitulo);
+        setDescricao(novaDescricao);
+        this.visibilidade = novaVisibilidade;
+        this.ranqueada = novaRanqueada;
     }
 
     public void tornarColaborativa() {

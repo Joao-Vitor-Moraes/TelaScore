@@ -16,6 +16,7 @@ public class Filme {
 	private String titulo;
 	private String sinopse;
 	private Integer anoLancamento;
+	private String imagemUrl;
 
 	private final List<DiretorId> diretores = new ArrayList<>();
 
@@ -45,6 +46,9 @@ public class Filme {
 		this.sinopse = sinopse;
 	}
 	public String getSinopse() { return sinopse; }
+
+	public void setImagemUrl(String imagemUrl) { this.imagemUrl = imagemUrl; }
+	public String getImagemUrl() { return imagemUrl; }
 
 	public void setAnoLancamento(Integer anoLancamento) {
 		notNull(anoLancamento, "O ano de lançamento não pode ser nulo");

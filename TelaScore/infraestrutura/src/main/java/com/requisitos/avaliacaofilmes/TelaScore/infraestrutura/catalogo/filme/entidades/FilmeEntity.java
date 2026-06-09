@@ -26,6 +26,9 @@ public class FilmeEntity {
     @Column(name = "ano_lancamento", nullable = false)
     private Integer anoLancamento;
 
+    @Column(name = "imagem_url")
+    private String imagemUrl;
+
     // Diretores são IDs simples — armazenados em tabela auxiliar
     @ElementCollection
     @CollectionTable(name = "filme_diretor", joinColumns = @JoinColumn(name = "filme_id"))
@@ -48,4 +51,7 @@ public class FilmeEntity {
 
     public List<Integer> getDiretores() { return diretores; }
     public void setDiretores(List<Integer> diretores) { this.diretores = diretores; }
+
+    public String getImagemUrl() { return imagemUrl; }
+    public void setImagemUrl(String imagemUrl) { this.imagemUrl = imagemUrl; }
 }

@@ -1,5 +1,7 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo;
 
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.Filme;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.IteradorDeItens;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.Lista;
@@ -12,9 +14,11 @@ import java.util.List;
 public class ConsultarItensListaCasoDeUso {
 
     private final ListaRepositorio listaRepositorio;
+    private final FilmeRepositorio filmeRepositorio;
 
-    public ConsultarItensListaCasoDeUso(ListaRepositorio listaRepositorio) {
+    public ConsultarItensListaCasoDeUso(ListaRepositorio listaRepositorio, FilmeRepositorio filmeRepositorio) {
         this.listaRepositorio = listaRepositorio;
+        this.filmeRepositorio = filmeRepositorio;
     }
 
     public List<ItemListaDetalhe> executar(int listaId) {
@@ -27,8 +31,14 @@ public class ConsultarItensListaCasoDeUso {
         IteradorDeItens iterador = lista.criarIterador();
         while (iterador.temProximo()) {
             ItemLista item = iterador.proximo();
+            int filmeIdInt = Integer.parseInt(item.getFilmeId().getCodigo());
+            Filme filme = filmeRepositorio.obter(item.getFilmeId());
+            String titulo = filme != null ? filme.getTitulo() : "";
+            String imagemUrl = filme != null ? filme.getImagemUrl() : null;
             resultado.add(new ItemListaDetalhe(
-                    item.getFilmeId().getCodigo(),
+                    filmeIdInt,
+                    titulo,
+                    imagemUrl,
                     item.getPosicao(),
                     item.getDataAdicao()
             ));

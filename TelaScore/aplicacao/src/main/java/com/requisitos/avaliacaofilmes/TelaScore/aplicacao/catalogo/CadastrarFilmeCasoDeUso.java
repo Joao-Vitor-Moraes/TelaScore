@@ -34,7 +34,8 @@ public class CadastrarFilmeCasoDeUso {
 		listaDiretores.add(diretorId);
 		
 		Filme filme = new Filme(novoFilmeId, comando.titulo(), comando.sinopse(), comando.anoLancamento(), listaDiretores);
-		
+		filme.setImagemUrl(comando.imagemUrl());
+
 		filmeRepositorio.salvar(filme);
 	}
 }

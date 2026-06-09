@@ -31,6 +31,7 @@ public class FilmeRepositorioImpl implements FilmeRepositorio {
             entity.setTitulo(filme.getTitulo());
             entity.setSinopse(filme.getSinopse());
             entity.setAnoLancamento(filme.getAnoLancamento());
+            entity.setImagemUrl(filme.getImagemUrl());
 
             // Converte lista de DiretorId para lista de Integer
             List<Integer> diretoresIds = filme.getDiretores().stream()
@@ -98,8 +99,24 @@ public class FilmeRepositorioImpl implements FilmeRepositorio {
                 .map(DiretorId::new)
                 .collect(Collectors.toList());
 
-        return new Filme(filmeId, entity.getTitulo(), entity.getSinopse(),
+        Filme filme = new Filme(filmeId, entity.getTitulo(), entity.getSinopse(),
                 entity.getAnoLancamento(), diretores);
+        filme.setImagemUrl(entity.getImagemUrl());
+        return filme;
+    }
+
+    @Override
+    public List<Filme> listarTodos() {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            return em.createQuery("SELECT f FROM FilmeEntity f ORDER BY f.titulo", FilmeEntity.class)
+                    .getResultList()
+                    .stream()
+                    .map(this::mapearParaDominio)
+                    .collect(Collectors.toList());
+        } finally {
+            em.close();
+        }
     }
 
     @Override

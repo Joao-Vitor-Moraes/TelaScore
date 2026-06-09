@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.EditarListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.EditarListaComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RegistrarFilmeAssistidoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RegistrarFilmeAssistidoComando;
@@ -40,6 +43,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.TornarListaCo
 @RequestMapping("/api/listas")
 public class ListaController {
 
+    private final EditarListaCasoDeUso editarLista;
     private final CriarListaCasoDeUso criarLista;
     private final ObterListaCasoDeUso obterLista;
     private final ListarListasPorUsuarioCasoDeUso listarPorUsuario;
@@ -52,7 +56,8 @@ public class ListaController {
     private final AdicionarColaboradorListaCasoDeUso adicionarColaborador;
     private final RegistrarFilmeAssistidoCasoDeUso registrarAssistido;
 
-    public ListaController(CriarListaCasoDeUso criarLista,
+    public ListaController(EditarListaCasoDeUso editarLista,
+            CriarListaCasoDeUso criarLista,
             ObterListaCasoDeUso obterLista,
             ListarListasPorUsuarioCasoDeUso listarPorUsuario,
             RemoverListaCasoDeUso removerLista,
@@ -63,6 +68,7 @@ public class ListaController {
             TornarListaColaborativaCasoDeUso tornarColaborativa,
             AdicionarColaboradorListaCasoDeUso adicionarColaborador,
             RegistrarFilmeAssistidoCasoDeUso registrarAssistido) {
+        this.editarLista = editarLista;
         this.criarLista = criarLista;
         this.obterLista = obterLista;
         this.listarPorUsuario = listarPorUsuario;
@@ -74,6 +80,12 @@ public class ListaController {
         this.tornarColaborativa = tornarColaborativa;
         this.adicionarColaborador = adicionarColaborador;
         this.registrarAssistido = registrarAssistido;
+    }
+
+    @PutMapping("/{listaId}")
+    public ResponseEntity<Void> editarLista(@PathVariable int listaId, @RequestBody EditarListaRequest body) {
+        editarLista.executar(new EditarListaComando(listaId, body.usuarioId(), body.nome(), body.descricao(), body.visibilidade(), body.rankeada()));
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping
@@ -149,6 +161,7 @@ public class ListaController {
         return ResponseEntity.noContent().build();
     }
 
+    public static record EditarListaRequest(int usuarioId, String nome, String descricao, String visibilidade, boolean rankeada) {}
     public static record AdicionarFilmeRequest(int usuarioId, int filmeId, boolean filmeJaFoiAssistido) {}
     public static record ReordenarRequest(int usuarioId, int novaPosicao) {}
     public static record TornarColaborativaRequest(int usuarioId) {}

@@ -1,10 +1,13 @@
 package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.catalogo;
 
+import java.util.List;
+
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AtualizarFilmeComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AtualizarFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CadastrarFilmeComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CadastrarFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.FilmeResumo;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarFilmesCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverFilmeCasoDeUso;
 
@@ -23,18 +26,27 @@ import org.springframework.web.bind.annotation.RestController;
 public class FilmeController {
 
     private final CadastrarFilmeCasoDeUso cadastrarFilme;
+    private final ListarFilmesCasoDeUso listarFilmes;
     private final ObterFilmeCasoDeUso obterFilme;
     private final AtualizarFilmeCasoDeUso atualizarFilme;
     private final RemoverFilmeCasoDeUso removerFilme;
 
     public FilmeController(CadastrarFilmeCasoDeUso cadastrarFilme,
+                           ListarFilmesCasoDeUso listarFilmes,
                            ObterFilmeCasoDeUso obterFilme,
                            AtualizarFilmeCasoDeUso atualizarFilme,
                            RemoverFilmeCasoDeUso removerFilme) {
         this.cadastrarFilme = cadastrarFilme;
+        this.listarFilmes = listarFilmes;
         this.obterFilme = obterFilme;
         this.atualizarFilme = atualizarFilme;
         this.removerFilme = removerFilme;
+    }
+
+    // GET /filmes
+    @GetMapping
+    public List<FilmeResumo> listar() {
+        return listarFilmes.executar();
     }
 
     // POST /filmes

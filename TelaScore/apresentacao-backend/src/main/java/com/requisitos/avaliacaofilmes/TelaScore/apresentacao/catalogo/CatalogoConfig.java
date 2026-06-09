@@ -16,9 +16,11 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AtualizarAval
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AtualizarFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CadastrarFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarFilmesCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CancelarSolicitacaoFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ConsultarItensListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CriarListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.EditarListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarAvaliacoesPorFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterAvaliacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterFilmeCasoDeUso;
@@ -49,8 +51,8 @@ public class CatalogoConfig {
     }
 
     @Bean
-    public ConsultarItensListaCasoDeUso consultarItensListaCasoDeUso(ListaRepositorio listaRepositorio) {
-        return new ConsultarItensListaCasoDeUso(listaRepositorio);
+    public ConsultarItensListaCasoDeUso consultarItensListaCasoDeUso(ListaRepositorio listaRepositorio, FilmeRepositorio filmeRepositorio) {
+        return new ConsultarItensListaCasoDeUso(listaRepositorio, filmeRepositorio);
     }
 
     @Bean
@@ -98,6 +100,11 @@ public class CatalogoConfig {
     public CancelarSolicitacaoFilmeCasoDeUso cancelarSolicitacaoFilmeCasoDeUso(
             SolicitacaoRepositorio solicitacaoRepositorio, SolicitacaoServico solicitacaoServico) {
         return new CancelarSolicitacaoFilmeCasoDeUso(solicitacaoRepositorio, solicitacaoServico);
+    }
+
+    @Bean
+    public EditarListaCasoDeUso editarListaCasoDeUso(ListaRepositorio listaRepositorio, ListaServico listaServico) {
+        return new EditarListaCasoDeUso(listaRepositorio, listaServico);
     }
 
     @Bean
@@ -149,6 +156,11 @@ public class CatalogoConfig {
     }
 
     // ─── Filmes ───────────────────────────────────────────────────────────────────
+
+    @Bean
+    public ListarFilmesCasoDeUso listarFilmesCasoDeUso(FilmeRepositorio filmeRepositorio) {
+        return new ListarFilmesCasoDeUso(filmeRepositorio);
+    }
 
     @Bean
     public CadastrarFilmeCasoDeUso cadastrarFilmeCasoDeUso(FilmeRepositorio filmeRepositorio,

@@ -48,6 +48,7 @@ public class ListaRepositorioImpl implements ListaRepositorio {
                     .map(UsuarioId::getId).collect(Collectors.toList()));
             
             entity.getItens().clear();
+            em.flush();
             int posicaoAtual = 1;
             for (ItemLista item : lista.getItens()) {
                 ItemListaEntity itemEntity = new ItemListaEntity();

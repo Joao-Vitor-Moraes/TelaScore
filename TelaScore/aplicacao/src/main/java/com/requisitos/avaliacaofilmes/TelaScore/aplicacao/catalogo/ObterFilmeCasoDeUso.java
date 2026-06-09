@@ -43,6 +43,6 @@ public class ObterFilmeCasoDeUso {
 
         int idNumerico = Integer.parseInt(filme.getId().getCodigo()); 
 
-        return new FilmeResumo(idNumerico, filme.getTitulo(), filme.getAnoLancamento(), nomeDiretor, media);
+        return new FilmeResumo(idNumerico, filme.getTitulo(), filme.getAnoLancamento(), nomeDiretor, media, filme.getImagemUrl());
     }
 }
