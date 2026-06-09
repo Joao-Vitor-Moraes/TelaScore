@@ -17,17 +17,23 @@ public class SolicitacaoController {
     private final CancelarSolicitacaoFilmeCasoDeUso cancelarSolicitacao;
     private final ListarSolicitacoesPorSolicitanteCasoDeUso listarPorSolicitante;
     private final ListarSolicitacoesPorStatusCasoDeUso listarPorStatus;
+    private final AvaliarSolicitacaoFilmeCasoDeUso avaliarSolicitacao;
+    private final SolicitarAjustesFilmeCasoDeUso solicitarAjustes;
 
     public SolicitacaoController(SolicitarFilmeCasoDeUso solicitarFilme,
             ObterSolicitacaoCasoDeUso obterSolicitacao,
             CancelarSolicitacaoFilmeCasoDeUso cancelarSolicitacao,
             ListarSolicitacoesPorSolicitanteCasoDeUso listarPorSolicitante,
-            ListarSolicitacoesPorStatusCasoDeUso listarPorStatus) {
+            ListarSolicitacoesPorStatusCasoDeUso listarPorStatus,
+            AvaliarSolicitacaoFilmeCasoDeUso avaliarSolicitacao,
+            SolicitarAjustesFilmeCasoDeUso solicitarAjustes) {
         this.solicitarFilme = solicitarFilme;
         this.obterSolicitacao = obterSolicitacao;
         this.cancelarSolicitacao = cancelarSolicitacao;
         this.listarPorSolicitante = listarPorSolicitante;
         this.listarPorStatus = listarPorStatus;
+        this.avaliarSolicitacao = avaliarSolicitacao;
+        this.solicitarAjustes = solicitarAjustes;
     }
 
     @GetMapping("/{solicitacaoId}")
@@ -45,6 +51,20 @@ public class SolicitacaoController {
     public ResponseEntity<Void> cancelar(@PathVariable int solicitacaoId,
             @RequestParam int usuarioId) {
         cancelarSolicitacao.executar(new CancelarSolicitacaoFilmeComando(solicitacaoId, usuarioId));
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{solicitacaoId}/avaliar")
+    public ResponseEntity<Void> avaliar(@PathVariable int solicitacaoId,
+            @RequestBody AvaliarSolicitacaoFilmeComando corpo) {
+        avaliarSolicitacao.executar(new AvaliarSolicitacaoFilmeComando(solicitacaoId, corpo.avaliadorId(), corpo.aprovar()));
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{solicitacaoId}/ajustes")
+    public ResponseEntity<Void> solicitarAjustes(@PathVariable int solicitacaoId,
+            @RequestBody SolicitarAjustesFilmeComando corpo) {
+        solicitarAjustes.executar(new SolicitarAjustesFilmeComando(solicitacaoId, corpo.avaliadorId(), corpo.feedback()));
         return ResponseEntity.noContent().build();
     }
 

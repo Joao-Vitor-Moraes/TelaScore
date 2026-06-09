@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarSolicitacaoFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.SolicitarAjustesFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarListasPorUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarSolicitacoesPorSolicitanteCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarSolicitacoesPorStatusCasoDeUso;
@@ -36,6 +38,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaRepo
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.solicitacao.SolicitacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.solicitacao.SolicitacaoServico;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
 
 @Configuration
 public class CatalogoConfig {
@@ -110,6 +113,22 @@ public class CatalogoConfig {
     @Bean
     public RemoverListaCasoDeUso removerListaCasoDeUso(ListaRepositorio listaRepositorio) {
         return new RemoverListaCasoDeUso(listaRepositorio);
+    }
+
+    @Bean
+    public AvaliarSolicitacaoFilmeCasoDeUso avaliarSolicitacaoFilmeCasoDeUso(
+            SolicitacaoRepositorio solicitacaoRepositorio,
+            UsuarioRepositorio usuarioRepositorio,
+            SolicitacaoServico solicitacaoServico) {
+        return new AvaliarSolicitacaoFilmeCasoDeUso(solicitacaoRepositorio, usuarioRepositorio, solicitacaoServico);
+    }
+
+    @Bean
+    public SolicitarAjustesFilmeCasoDeUso solicitarAjustesFilmeCasoDeUso(
+            SolicitacaoRepositorio solicitacaoRepositorio,
+            UsuarioRepositorio usuarioRepositorio,
+            SolicitacaoServico solicitacaoServico) {
+        return new SolicitarAjustesFilmeCasoDeUso(solicitacaoRepositorio, usuarioRepositorio, solicitacaoServico);
     }
 
     @Bean
