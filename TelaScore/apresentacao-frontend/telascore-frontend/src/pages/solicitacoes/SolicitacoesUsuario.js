@@ -5,6 +5,12 @@ import { solicitacaoService } from '../../services/api';
 import { FiUser, FiFilter, FiCheck, FiX, FiClock } from 'react-icons/fi';
 
 const USUARIO_ID = 3;
+const OCULTOS_KEY = `solicitacoes_ocultas_${USUARIO_ID}`;
+
+function getOcultos() {
+  try { return JSON.parse(localStorage.getItem(OCULTOS_KEY) || '[]'); }
+  catch { return []; }
+}
 
 const STATUS_CONFIG = {
   PENDENTE:           { icone: FiClock, cor: '#f59e0b', label: 'Pendente' },
@@ -18,6 +24,7 @@ const FILTROS = ['PENDENTE', 'APROVADA', 'REJEITADA'];
 
 export default function SolicitacoesUsuario() {
   const [solicitacoes, setSolicitacoes] = useState([]);
+  const [ocultos, setOcultos] = useState(() => getOcultos());
   const [carregando, setCarregando] = useState(true);
   const [filtro, setFiltro] = useState(null);
   const [filtroAberto, setFiltroAberto] = useState(false);
@@ -30,9 +37,11 @@ export default function SolicitacoesUsuario() {
       .finally(() => setCarregando(false));
   }, []);
 
+  const visiveis = solicitacoes.filter(s => !ocultos.includes(s.id));
+
   const listagem = filtro === null
-    ? solicitacoes
-    : solicitacoes.filter(s => {
+    ? visiveis
+    : visiveis.filter(s => {
         if (filtro === 'PENDENTE') return s.status === 'PENDENTE' || s.status === 'AGUARDANDO_AJUSTES';
         return s.status === filtro;
       });
@@ -87,10 +96,17 @@ export default function SolicitacoesUsuario() {
 
         <div style={styles.secaoRow}>
           <p style={styles.secao}>SUAS SOLICITAÇÕES</p>
-          {solicitacoes.some(s => ['APROVADA', 'REJEITADA', 'CANCELADA'].includes(s.status)) && (
+          {visiveis.some(s => ['APROVADA', 'REJEITADA', 'CANCELADA'].includes(s.status)) && (
             <button
               style={styles.btnLimparHistorico}
-              onClick={() => setSolicitacoes(prev => prev.filter(s => !['APROVADA', 'REJEITADA', 'CANCELADA'].includes(s.status)))}
+              onClick={() => {
+                const ids = visiveis
+                  .filter(s => ['APROVADA', 'REJEITADA', 'CANCELADA'].includes(s.status))
+                  .map(s => s.id);
+                const novos = [...new Set([...ocultos, ...ids])];
+                localStorage.setItem(OCULTOS_KEY, JSON.stringify(novos));
+                setOcultos(novos);
+              }}
             >
               Limpar histórico
             </button>
