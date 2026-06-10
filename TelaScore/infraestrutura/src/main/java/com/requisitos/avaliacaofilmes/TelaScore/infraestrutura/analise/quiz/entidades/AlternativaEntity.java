@@ -18,4 +18,30 @@ public class AlternativaEntity {
     public AlternativaEntity() {}
 
     // Getters e Setters...
+    // O banco gera o ID, mas o mapeador lê se necessário
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    // Usado no 'obter' para ler o texto e no 'salvar' para preencher o banco
+    public String getTexto() {
+        return texto;
+    }
+
+    public void setTexto(String texto) {
+        this.texto = texto;
+    }
+
+    // ATENÇÃO: Para atributos booleans em Java, o padrão do getter começa com 'is' em vez de 'get'
+    public boolean isCorreta() {
+        return correta;
+    }
+
+    public void setCorreta(boolean correta) {
+        this.correta = correta;
+    }
 }
