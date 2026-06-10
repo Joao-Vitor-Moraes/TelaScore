@@ -24,6 +24,9 @@ public class QuizEntity {
 
     // Getters e Setters...
     public int getId() { return id; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
     // Getters e Setters para as Strings
     public String getTitulo() { return titulo; }
