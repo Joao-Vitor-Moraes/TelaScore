@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { solicitacaoService } from '../../services/api';
 
-const USUARIO_ID = 2;
+const USUARIO_ID = 3;
 
 const GENEROS = [
   'Ação', 'Aventura', 'Animação', 'Biografia', 'Comédia', 'Crime',

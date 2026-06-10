@@ -43,6 +43,8 @@ CREATE DATABASE telascore_db;
 
 As tabelas são criadas automaticamente pelo Hibernate na primeira execução.
 
+> **Atenção:** Nunca rode `DROP DATABASE` para reiniciar o MySQL — isso apaga todos os dados. Para reiniciar o serviço sem perder nada, use `net stop MySQL80` / `net start MySQL80` ou reinicie pelo painel de serviços do Windows (`services.msc`).
+
 ### Backend
 
 **Compilar:**
@@ -75,3 +77,21 @@ npm start
 
 Frontend sobe em `http://localhost:3000`.
 
+### IDs de usuário hardcoded no frontend
+
+O frontend não tem tela de login. Os IDs estão fixos no código:
+
+| Constante | Valor | Papel |
+|-----------|-------|-------|
+| `USUARIO_ID` | 3 | Cinéfilo (páginas de listas e solicitações) |
+| `ADM_ID` | 2 | Admin (página de avaliação de solicitações) |
+
+O admin (ID 2, `admin@admin.com` / `admin123`) é criado automaticamente pelo backend a cada startup.
+
+O cinéfilo (ID 3) precisa ser criado manualmente se o banco for resetado:
+
+```bash
+curl -X POST http://localhost:8080/api/identidade/usuario/registrar \
+  -H "Content-Type: application/json" \
+  -d '{"nome":"Usuario Teste","email":"usuario@teste.com","senha":"teste123"}'
+```

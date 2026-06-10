@@ -4,7 +4,7 @@ import Navbar from '../../components/Navbar';
 import { solicitacaoService } from '../../services/api';
 import { FiUser, FiFilter, FiCheck, FiX, FiClock } from 'react-icons/fi';
 
-const USUARIO_ID = 2;
+const USUARIO_ID = 3;
 
 const STATUS_CONFIG = {
   PENDENTE:           { icone: FiClock, cor: '#f59e0b', label: 'Pendente' },

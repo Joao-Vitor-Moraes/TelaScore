@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { listaService } from '../../services/api';
 
-const USUARIO_ID = 2;
+const USUARIO_ID = 3;
 
 export default function CriarLista() {
   const [searchParams] = useSearchParams();

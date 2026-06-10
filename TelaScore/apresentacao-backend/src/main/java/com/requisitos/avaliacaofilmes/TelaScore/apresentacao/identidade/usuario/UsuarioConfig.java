@@ -57,14 +57,13 @@ public class UsuarioConfig {
     @Bean
     public ApplicationRunner adminInicializador(
             UsuarioRepositorio usuarioRepositorio,
-            UsuarioServico usuarioServico,
-            GeradorId geradorId) {
+            UsuarioServico usuarioServico) {
         return args -> {
             Email email = new Email(ADMIN_EMAIL);
             usuarioRepositorio.removerPorEmail(email);
 
             Usuario admin = new Usuario(
-                    new UsuarioId(geradorId.gerarProximoIdUsuario()),
+                    new UsuarioId(2),
                     "Administrador",
                     email,
                     new Senha(ADMIN_SENHA),

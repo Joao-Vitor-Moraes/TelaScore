@@ -3,7 +3,7 @@ import Navbar from '../../components/Navbar';
 import { solicitacaoService } from '../../services/api';
 import { FiSearch, FiFilter } from 'react-icons/fi';
 
-const ADM_ID = 5;
+const ADM_ID = 2;
 
 export default function AdminSolicitacoes() {
   const [solicitacoes, setSolicitacoes] = useState([]);

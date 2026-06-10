@@ -4,7 +4,7 @@ import { FiArrowLeft, FiSearch, FiCheck } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
 import { listaService, filmeService } from '../../services/api';
 
-const USUARIO_ID = 2;
+const USUARIO_ID = 3;
 
 export default function AdicionarFilme() {
   const { id } = useParams();

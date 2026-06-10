@@ -4,7 +4,7 @@ import { FiArrowLeft, FiEdit2, FiShare2, FiMoreVertical, FiPlusCircle } from 're
 import Navbar from '../../components/Navbar';
 import { listaService } from '../../services/api';
 
-const USUARIO_ID = 2;
+const USUARIO_ID = 3;
 
 export default function ListaAberta() {
   const { id } = useParams();
@@ -35,6 +35,16 @@ export default function ListaAberta() {
 
   function handleDragLeave() {
     setDragSobre(null);
+  }
+
+  async function handleRemover(filmeId) {
+    if (!window.confirm('Remover este filme da lista?')) return;
+    try {
+      await listaService.removerFilme(id, filmeId, USUARIO_ID);
+      setItens(prev => prev.filter(i => i.filmeId !== filmeId));
+    } catch {
+      alert('Erro ao remover filme.');
+    }
   }
 
   async function handleDrop(e, targetIndex) {
@@ -115,6 +125,11 @@ export default function ListaAberta() {
                     ? <img src={item.imagemUrl} alt="" style={styles.posterImg} draggable={false} />
                     : <span style={styles.semImagem}>🎬</span>
                   }
+                  <button
+                    style={styles.btnRemover}
+                    onClick={e => { e.stopPropagation(); handleRemover(item.filmeId); }}
+                    title="Remover da lista"
+                  >×</button>
                 </div>
                 {item.titulo && <span style={styles.tituloCard}>{item.titulo}</span>}
                 <span style={styles.posicao}>
@@ -227,6 +242,25 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
+  },
+  btnRemover: {
+    position: 'absolute',
+    top: '6px',
+    right: '6px',
+    background: 'rgba(0,0,0,0.6)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '50%',
+    width: '22px',
+    height: '22px',
+    fontSize: '16px',
+    lineHeight: '1',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
   },
   posterImg: {
     width: '100%',
