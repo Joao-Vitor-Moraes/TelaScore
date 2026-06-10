@@ -43,19 +43,27 @@ CREATE DATABASE telascore_db;
 
 As tabelas são criadas automaticamente pelo Hibernate na primeira execução.
 
+> **Atenção (banco já existente):** Se o banco foi criado em uma versão anterior do projeto, o Hibernate pode falhar ao tentar alterar tabelas com mudanças de chave primária (ex: `membro_comunidade`). Nesse caso, drop e recrie o banco:
+> ```sql
+> DROP DATABASE telascore_db;
+> CREATE DATABASE telascore_db;
+> ```
+> Depois suba o backend normalmente — ele recria tudo.
+
 > **Atenção:** Nunca rode `DROP DATABASE` para reiniciar o MySQL — isso apaga todos os dados. Para reiniciar o serviço sem perder nada, use `net stop MySQL80` / `net start MySQL80` ou reinicie pelo painel de serviços do Windows (`services.msc`).
 
 ### Backend
 
-**Compilar:**
+**Compilar** (rodar dentro da pasta `TelaScore/TelaScore`):
 
 ```powershell
+cd "C:\Users\Joao Vitor\Downloads\TelaScore\TelaScore"
 mvn install "-Dmaven.test.skip=true"
 ```
 
 > Use `-Dmaven.test.skip=true` entre aspas no PowerShell. Não use `-DskipTests` — há um erro de compilação pré-existente em testes de integração.
 
-**Subir:**
+**Subir** (em um terminal separado do frontend — os dois ficam rodando ao mesmo tempo):
 
 ```powershell
 $env:DB_USER = "root"
@@ -69,6 +77,8 @@ Backend sobe em `http://localhost:8080`.
 
 ### Frontend
 
+Abra um **novo terminal** (o terminal do backend precisa continuar aberto):
+
 ```powershell
 cd TelaScore\apresentacao-frontend\telascore-frontend
 npm install   # apenas na primeira vez
@@ -76,6 +86,12 @@ npm start
 ```
 
 Frontend sobe em `http://localhost:3000`.
+
+### Parar o projeto
+
+- **Backend:** `Ctrl + C` no terminal onde o `mvn spring-boot:run` está rodando
+- **Frontend:** `Ctrl + C` no terminal onde o `npm start` está rodando
+- **MySQL:** não precisa parar — fica rodando em segundo plano como serviço do Windows
 
 ### IDs de usuário hardcoded no frontend
 
