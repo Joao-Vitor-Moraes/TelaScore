@@ -13,6 +13,10 @@ public class SolicitacaoFilme {
     
     private String tituloSugerido;
     private String justificativa;
+    private String pais;
+    private Integer ano;
+    private String genero;
+    private String fotoUrl;
     private StatusSolicitacao status;
     private final LocalDateTime dataCriacao;
     private String feedbackAdmin;
@@ -44,11 +48,20 @@ public class SolicitacaoFilme {
 
     public String getTituloSugerido() { return tituloSugerido; }
 
-    public void setJustificativa(String justificativa) {
-        this.justificativa = justificativa;
-    }
-
+    public void setJustificativa(String justificativa) { this.justificativa = justificativa; }
     public String getJustificativa() { return justificativa; }
+
+    public void setPais(String pais) { this.pais = pais; }
+    public String getPais() { return pais; }
+
+    public void setAno(Integer ano) { this.ano = ano; }
+    public Integer getAno() { return ano; }
+
+    public void setGenero(String genero) { this.genero = genero; }
+    public String getGenero() { return genero; }
+
+    public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
+    public String getFotoUrl() { return fotoUrl; }
 
     public void aprovar() {
         this.status = StatusSolicitacao.APROVADA;
@@ -68,6 +81,21 @@ public class SolicitacaoFilme {
         this.status = StatusSolicitacao.CANCELADA;
     }
 
+    public void editar(String novoTitulo, String novaJustificativa, String novoPais, Integer novoAno, String novoGenero, String novaFotoUrl) {
+        if (this.status != StatusSolicitacao.AGUARDANDO_AJUSTES) {
+            throw new IllegalStateException("Apenas solicitações aguardando ajustes podem ser editadas.");
+        }
+        notBlank(novoTitulo, "O título não pode estar em branco");
+        this.tituloSugerido = novoTitulo;
+        this.justificativa = novaJustificativa;
+        this.pais = novoPais;
+        this.ano = novoAno;
+        this.genero = novoGenero;
+        this.fotoUrl = novaFotoUrl;
+        this.feedbackAdmin = null;
+        this.status = StatusSolicitacao.PENDENTE;
+    }
+
     public void solicitarAjustes(String feedback) {
         if (this.status != StatusSolicitacao.PENDENTE) {
             throw new IllegalStateException("Apenas solicitações pendentes podem receber pedido de ajustes");
@@ -77,18 +105,26 @@ public class SolicitacaoFilme {
         this.status = StatusSolicitacao.AGUARDANDO_AJUSTES;
     }
 
-    private SolicitacaoFilme(SolicitacaoId id, UsuarioId solicitanteId, String tituloSugerido, String justificativa, StatusSolicitacao status, LocalDateTime dataCriacao, String feedbackAdmin) {
+    private SolicitacaoFilme(SolicitacaoId id, UsuarioId solicitanteId, String tituloSugerido, String justificativa,
+            String pais, Integer ano, String genero, String fotoUrl,
+            StatusSolicitacao status, LocalDateTime dataCriacao, String feedbackAdmin) {
         this.id = id;
         this.solicitanteId = solicitanteId;
         this.tituloSugerido = tituloSugerido;
         this.justificativa = justificativa;
+        this.pais = pais;
+        this.ano = ano;
+        this.genero = genero;
+        this.fotoUrl = fotoUrl;
         this.status = status;
         this.dataCriacao = dataCriacao;
         this.feedbackAdmin = feedbackAdmin;
     }
 
-    public static SolicitacaoFilme restaurar(SolicitacaoId id, UsuarioId solicitanteId, String tituloSugerido, String justificativa, StatusSolicitacao status, LocalDateTime dataCriacao, String feedbackAdmin) {
-        return new SolicitacaoFilme(id, solicitanteId, tituloSugerido, justificativa, status, dataCriacao, feedbackAdmin);
+    public static SolicitacaoFilme restaurar(SolicitacaoId id, UsuarioId solicitanteId, String tituloSugerido, String justificativa,
+            String pais, Integer ano, String genero, String fotoUrl,
+            StatusSolicitacao status, LocalDateTime dataCriacao, String feedbackAdmin) {
+        return new SolicitacaoFilme(id, solicitanteId, tituloSugerido, justificativa, pais, ano, genero, fotoUrl, status, dataCriacao, feedbackAdmin);
     }
 
 }

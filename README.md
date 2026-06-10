@@ -24,3 +24,54 @@ Além disso, muitos amantes de cinema demonstram interesse em testar e expandir 
 ## 🎨 Protótipos
 [Link dos Protótipos digitalizados](https://drive.google.com/drive/folders/1E7BqRoQI8SytqiydP5ptddj06PrGCgtM?usp=sharing)
 
+## ▶️ Como Rodar
+
+### Pré-requisitos
+
+- Java 17
+- Maven 3.8+
+- Node.js 18+
+- MySQL 8+ rodando em `localhost:3306`
+
+### Banco de dados
+
+Crie o banco antes de subir o backend:
+
+```sql
+CREATE DATABASE telascore_db;
+```
+
+As tabelas são criadas automaticamente pelo Hibernate na primeira execução.
+
+### Backend
+
+**Compilar:**
+
+```powershell
+mvn install "-Dmaven.test.skip=true"
+```
+
+> Use `-Dmaven.test.skip=true` entre aspas no PowerShell. Não use `-DskipTests` — há um erro de compilação pré-existente em testes de integração.
+
+**Subir:**
+
+```powershell
+$env:DB_USER = "root"
+$env:DB_PASSWORD = "sua_senha"
+$env:DB_URL = "jdbc:mysql://localhost:3306/telascore_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+
+mvn spring-boot:run -pl apresentacao-backend "-Dspring-devtools.restart.enabled=false" "-Dmaven.test.skip=true"
+```
+
+Backend sobe em `http://localhost:8080`.
+
+### Frontend
+
+```powershell
+cd TelaScore\apresentacao-frontend\telascore-frontend
+npm install   # apenas na primeira vez
+npm start
+```
+
+Frontend sobe em `http://localhost:3000`.
+

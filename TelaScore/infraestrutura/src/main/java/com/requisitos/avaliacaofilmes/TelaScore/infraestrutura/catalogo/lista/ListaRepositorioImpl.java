@@ -1,6 +1,7 @@
 package com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.lista;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -141,6 +142,7 @@ public class ListaRepositorioImpl implements ListaRepositorio {
                 
         List<ItemLista> itens = entity.getItens().stream()
                 .map(i -> ItemLista.restaurar(new FilmeId(i.getFilmeId()), i.getPosicao(), i.getDataAdicao()))
+                .sorted(Comparator.comparingInt(i -> i.getPosicao() != null ? i.getPosicao() : Integer.MAX_VALUE))
                 .collect(Collectors.toList());
 
         return Lista.restaurar(listaId, donoId, entity.getTitulo(), entity.getDescricao(), 

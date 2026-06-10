@@ -21,6 +21,15 @@ public class SolicitacaoFilmeEntity {
 
     private String justificativa;
 
+    private String pais;
+
+    private Integer ano;
+
+    private String genero;
+
+    @Column(name = "foto_url")
+    private String fotoUrl;
+
     @Column(nullable = false)
     private String status;
 
@@ -84,7 +93,17 @@ public class SolicitacaoFilmeEntity {
         return dataCriacao;
     }
 
-    public void setDataCriacao(LocalDateTime dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
+    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
+
+    public String getPais() { return pais; }
+    public void setPais(String pais) { this.pais = pais; }
+
+    public Integer getAno() { return ano; }
+    public void setAno(Integer ano) { this.ano = ano; }
+
+    public String getGenero() { return genero; }
+    public void setGenero(String genero) { this.genero = genero; }
+
+    public String getFotoUrl() { return fotoUrl; }
+    public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
 }

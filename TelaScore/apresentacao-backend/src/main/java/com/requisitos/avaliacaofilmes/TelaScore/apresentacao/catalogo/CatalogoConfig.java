@@ -21,6 +21,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CancelarSolic
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ConsultarItensListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CriarListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.EditarListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.EditarSolicitacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarAvaliacoesPorFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterAvaliacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterFilmeCasoDeUso;
@@ -92,6 +93,11 @@ public class CatalogoConfig {
     }
 
     @Bean
+    public EditarSolicitacaoCasoDeUso editarSolicitacaoCasoDeUso(SolicitacaoRepositorio solicitacaoRepositorio) {
+        return new EditarSolicitacaoCasoDeUso(solicitacaoRepositorio);
+    }
+
+    @Bean
     public SolicitarFilmeCasoDeUso solicitarFilmeCasoDeUso(SolicitacaoServico solicitacaoServico, GeradorId geradorId) {
         return new SolicitarFilmeCasoDeUso(solicitacaoServico, geradorId);
     }
@@ -126,8 +132,10 @@ public class CatalogoConfig {
     public AvaliarSolicitacaoFilmeCasoDeUso avaliarSolicitacaoFilmeCasoDeUso(
             SolicitacaoRepositorio solicitacaoRepositorio,
             UsuarioRepositorio usuarioRepositorio,
-            SolicitacaoServico solicitacaoServico) {
-        return new AvaliarSolicitacaoFilmeCasoDeUso(solicitacaoRepositorio, usuarioRepositorio, solicitacaoServico);
+            SolicitacaoServico solicitacaoServico,
+            FilmeRepositorio filmeRepositorio,
+            GeradorId geradorId) {
+        return new AvaliarSolicitacaoFilmeCasoDeUso(solicitacaoRepositorio, usuarioRepositorio, solicitacaoServico, filmeRepositorio, geradorId);
     }
 
     @Bean

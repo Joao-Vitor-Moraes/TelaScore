@@ -29,11 +29,15 @@ public class SolicitacaoRepositorioImpl implements SolicitacaoRepositorio {
                 entity = new SolicitacaoFilmeEntity();
                 entity.setId(solicitacao.getId().getId());
                 entity.setSolicitanteId(solicitacao.getSolicitanteId().getId());
-                entity.setTituloSugerido(solicitacao.getTituloSugerido());
-                entity.setJustificativa(solicitacao.getJustificativa());
                 entity.setDataCriacao(solicitacao.getDataCriacao());
             }
-            
+
+            entity.setTituloSugerido(solicitacao.getTituloSugerido());
+            entity.setJustificativa(solicitacao.getJustificativa());
+            entity.setPais(solicitacao.getPais());
+            entity.setAno(solicitacao.getAno());
+            entity.setGenero(solicitacao.getGenero());
+            entity.setFotoUrl(solicitacao.getFotoUrl());
             entity.setStatus(solicitacao.getStatus().name());
             entity.setFeedbackAdmin(solicitacao.getFeedbackAdmin());
             
@@ -105,7 +109,8 @@ public class SolicitacaoRepositorioImpl implements SolicitacaoRepositorio {
         UsuarioId solicitanteId = new UsuarioId(entity.getSolicitanteId());
         StatusSolicitacao status = StatusSolicitacao.valueOf(entity.getStatus());
         
-        return SolicitacaoFilme.restaurar(id, solicitanteId, entity.getTituloSugerido(), 
-                entity.getJustificativa(), status, entity.getDataCriacao(), entity.getFeedbackAdmin());
+        return SolicitacaoFilme.restaurar(id, solicitanteId, entity.getTituloSugerido(),
+                entity.getJustificativa(), entity.getPais(), entity.getAno(), entity.getGenero(), entity.getFotoUrl(),
+                status, entity.getDataCriacao(), entity.getFeedbackAdmin());
     }
 }

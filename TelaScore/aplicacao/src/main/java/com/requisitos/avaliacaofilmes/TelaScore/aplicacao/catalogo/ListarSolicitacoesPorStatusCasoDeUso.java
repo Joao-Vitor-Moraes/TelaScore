@@ -30,6 +30,10 @@ public class ListarSolicitacoesPorStatusCasoDeUso {
                         s.getSolicitanteId().getId(),
                         s.getTituloSugerido(),
                         s.getJustificativa(),
+                        s.getPais(),
+                        s.getAno(),
+                        s.getGenero(),
+                        s.getFotoUrl(),
                         s.getStatus().name(),
                         s.getDataCriacao(),
                         s.getFeedbackAdmin()))

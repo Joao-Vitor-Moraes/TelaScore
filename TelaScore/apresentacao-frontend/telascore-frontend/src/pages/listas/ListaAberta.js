@@ -41,7 +41,7 @@ export default function ListaAberta() {
     e.preventDefault();
     setDragSobre(null);
     const origemId = dragId.current;
-    if (!origemId || origemId === itens[targetIndex]?.filmeId) return;
+    if (origemId == null || origemId === itens[targetIndex]?.filmeId) return;
 
     const novaPosicao = targetIndex + 1;
     try {
@@ -112,7 +112,7 @@ export default function ListaAberta() {
               >
                 <div style={styles.capaFilme}>
                   {item.imagemUrl
-                    ? <img src={item.imagemUrl} alt="" style={styles.posterImg} />
+                    ? <img src={item.imagemUrl} alt="" style={styles.posterImg} draggable={false} />
                     : <span style={styles.semImagem}>🎬</span>
                   }
                 </div>

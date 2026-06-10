@@ -24,6 +24,10 @@ public class SolicitarFilmeCasoDeUso {
 		if (comando.justificativa() != null && !comando.justificativa().isBlank()) {
 			solicitacao.setJustificativa(comando.justificativa());
 		}
+		solicitacao.setPais(comando.pais());
+		solicitacao.setAno(comando.ano());
+		solicitacao.setGenero(comando.genero());
+		solicitacao.setFotoUrl(comando.fotoUrl());
 
 		solicitacaoServico.enviarSolicitacao(solicitacao);
 
@@ -32,6 +36,10 @@ public class SolicitarFilmeCasoDeUso {
 				solicitacao.getSolicitanteId().getId(),
 				solicitacao.getTituloSugerido(),
 				solicitacao.getJustificativa(),
+				solicitacao.getPais(),
+				solicitacao.getAno(),
+				solicitacao.getGenero(),
+				solicitacao.getFotoUrl(),
 				solicitacao.getStatus().name(),
 				solicitacao.getDataCriacao(),
 				solicitacao.getFeedbackAdmin()

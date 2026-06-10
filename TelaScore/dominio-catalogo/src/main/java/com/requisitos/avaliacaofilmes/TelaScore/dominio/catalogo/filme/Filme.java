@@ -58,8 +58,6 @@ public class Filme {
 
 	private void setDiretores(Collection<DiretorId> diretores) {
 		notNull(diretores, "A lista de diretores não pode ser nula");
-		notEmpty(diretores, "O filme deve ter pelo menos um diretor");
-
 		for (var diretor : diretores) {
 			adicionarDiretor(diretor);
 		}

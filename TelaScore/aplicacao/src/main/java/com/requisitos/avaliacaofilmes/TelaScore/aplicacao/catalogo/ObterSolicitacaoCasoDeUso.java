@@ -22,6 +22,10 @@ public class ObterSolicitacaoCasoDeUso {
                 solicitacao.getSolicitanteId().getId(),
                 solicitacao.getTituloSugerido(),
                 solicitacao.getJustificativa(),
+                solicitacao.getPais(),
+                solicitacao.getAno(),
+                solicitacao.getGenero(),
+                solicitacao.getFotoUrl(),
                 solicitacao.getStatus().name(),
                 solicitacao.getDataCriacao(),
                 solicitacao.getFeedbackAdmin()
