@@ -19,6 +19,8 @@ import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.solicita
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.perfil.PerfilRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuario.UsuarioRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.NoticiaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.calendario.CalendarioRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.evento.EventoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.ComunidadeRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.mensagem.MensagemRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.MetaRepositorioImpl;
@@ -30,6 +32,8 @@ import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.filme.Fi
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.lista.ListaRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.solicitacao.SolicitacaoRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.noticia.NoticiaRepositorioImpl;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.calendario.CalendarioRepositorioImpl;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.evento.EventoRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.ComunidadeRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.mensagem.MensagemRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.mensagem.MensagemRepositorioLoggingDecorator;
@@ -101,6 +105,16 @@ public class InfraestruturaConfig {
     @Bean
     public NoticiaRepositorio noticiaRepositorio() {
         return new NoticiaRepositorioImpl();
+    }
+
+    @Bean
+    public EventoRepositorio eventoRepositorio() {
+        return new EventoRepositorioImpl();
+    }
+
+    @Bean
+    public CalendarioRepositorio calendarioRepositorio() {
+        return new CalendarioRepositorioImpl();
     }
 
     // social

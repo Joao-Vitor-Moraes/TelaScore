@@ -19,12 +19,24 @@ public class Evento {
 	public Evento(EventoId id, UsuarioId criadorId, String titulo, LocalDateTime dataHora) {
 		notNull(id, "O id do evento não pode ser nulo");
 		notNull(criadorId, "O id do criador não pode ser nulo");
-		
+
 		this.id = id;
 		this.criadorId = criadorId;
-	
+
 		setTitulo(titulo);
 		setDataHora(dataHora);
+	}
+
+	private Evento(EventoId id, UsuarioId criadorId, String titulo, String descricao, LocalDateTime dataHora) {
+		this.id = id;
+		this.criadorId = criadorId;
+		this.titulo = titulo;
+		this.descricao = descricao;
+		this.dataHora = dataHora;
+	}
+
+	public static Evento restaurar(EventoId id, UsuarioId criadorId, String titulo, String descricao, LocalDateTime dataHora) {
+		return new Evento(id, criadorId, titulo, descricao, dataHora);
 	}
 
 	public EventoId getId() { return id; }

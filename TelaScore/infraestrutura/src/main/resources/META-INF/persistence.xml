@@ -36,6 +36,9 @@
 
         <!-- informacao -->
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.noticia.entidades.NoticiaEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.evento.entidades.EventoEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.calendario.entidades.CalendarioEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.calendario.entidades.EntradaCalendarioEntity</class>
 
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />

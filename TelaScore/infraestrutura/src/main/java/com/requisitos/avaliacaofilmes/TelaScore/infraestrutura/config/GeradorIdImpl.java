@@ -68,7 +68,7 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdEvento() {
-        throw new UnsupportedOperationException("Geracao de ID de evento nao implementada neste modulo");
+        return proximoId("SELECT MAX(e.id) FROM EventoEntity e");
     }
 
     @Override

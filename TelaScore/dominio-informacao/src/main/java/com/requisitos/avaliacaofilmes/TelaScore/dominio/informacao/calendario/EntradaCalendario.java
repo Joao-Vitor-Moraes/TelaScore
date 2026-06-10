@@ -18,6 +18,14 @@ public class EntradaCalendario {
 		this.lembreteAtivo = true;
 	}
 
+	public static EntradaCalendario restaurar(FilmeId filmeId, LocalDate dataEstreiaPrevista, boolean lembreteAtivo) {
+		EntradaCalendario entrada = new EntradaCalendario(filmeId, dataEstreiaPrevista);
+		if (!lembreteAtivo) {
+			entrada.alternarLembrete();
+		}
+		return entrada;
+	}
+
 	public FilmeId getFilmeId() { return filmeId; }
 	public LocalDate getDataEstreiaPrevista() { return dataEstreiaPrevista; }
 	public boolean isLembreteAtivo() { return lembreteAtivo; }
