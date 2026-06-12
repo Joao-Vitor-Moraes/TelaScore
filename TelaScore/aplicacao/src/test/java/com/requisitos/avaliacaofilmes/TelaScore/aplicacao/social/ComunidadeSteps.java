@@ -13,10 +13,9 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.Entr
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.*;
 
-import io.cucumber.java.en.Then;
 import io.cucumber.java.pt.Dado;
-import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
+import io.cucumber.java.pt.Então;
 
 public class ComunidadeSteps {
 
@@ -30,14 +29,23 @@ public class ComunidadeSteps {
     private final ComunidadeRepositorio repositorio = new ComunidadeRepositorio() {
         @Override public void salvarComunidade(Comunidade c) { bancoComunidades.add(c); }
         @Override public void salvarMembro(MembroComunidade m) { bancoMembros.add(m); }
+        @Override public List<Comunidade> listarTodas() { return bancoComunidades; }
         @Override public Comunidade obterComunidade(ComunidadeId id) {
             return bancoComunidades.stream().filter(c -> c.getId().equals(id)).findFirst().orElse(null);
         }
         @Override public void removerMembro(ComunidadeId cid, UsuarioId uid) {
             bancoMembros.removeIf(m -> m.getComunidadeId().equals(cid) && m.getUsuarioId().equals(uid));
         }
-        @Override public List<Comunidade> buscarComunidadesDoUsuario(UsuarioId uid) { return null; }
+        @Override public List<ComunidadeUsuarioResumo> buscarComunidadesDoUsuario(UsuarioId uid) { return new ArrayList<>(); }
         @Override public List<MembroComunidade> buscarMembrosDaComunidade(ComunidadeId cid) { return bancoMembros; }
+        @Override public void atualizarPapelMembro(ComunidadeId cid, UsuarioId uid, PapelComunidade novoPapel) {}
+        @Override public boolean verificarSeEhCriador(ComunidadeId cid, UsuarioId uid) { return false; }
+        @Override public boolean existeMembro(ComunidadeId cid, UsuarioId uid) { return false; }
+        @Override public void excluirComunidade(ComunidadeId cid) {}
+        @Override public void salvarMensagem(MensagemComunidade mensagem) {}
+        @Override public List<MensagemComunidade> buscarMensagensDaComunidade(ComunidadeId cid) { return new ArrayList<>(); }
+        @Override public MensagemComunidade obterMensagemPorId(int mensagemId) { return null; }
+        @Override public void excluirMensagem(int mensagemId) {}
     };
 
     private void inicializarComponentes() {
@@ -120,6 +128,6 @@ public class ComunidadeSteps {
     public void o_sistema_deve_barrar_a_entrada_informando_uma_violacao_de_seguranca() {
         assertNotNull(excecaoCapturada);
         assertTrue(excecaoCapturada instanceof SecurityException);
-        assertEquals("Acesso negado: Usuário temporariamente bloqueado nesta comunidade por moderação.", excecaoCapturada.getMessage());
+        assertEquals("Acesso negado: Limite de requisicoes atingido. Aguarde um minuto para entrar in novas comunidades.", excecaoCapturada.getMessage());
     }
 }
