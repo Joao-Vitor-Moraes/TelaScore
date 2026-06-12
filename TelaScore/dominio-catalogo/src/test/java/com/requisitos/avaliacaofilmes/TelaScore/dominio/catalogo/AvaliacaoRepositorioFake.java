@@ -43,4 +43,10 @@ public class AvaliacaoRepositorioFake implements AvaliacaoRepositorio {
                 .filter(a -> a.getUsuarioId().equals(usuarioId))
                 .collect(Collectors.toList());
     }
+    @Override
+    public List<Avaliacao> pesquisarPublicasPorFilme(FilmeId filmeId) {
+        return armazenamento.values().stream()
+                .filter(a -> a.getFilmeId().equals(filmeId) && "PUBLICA".equals(a.getVisibilidade()))
+                .collect(Collectors.toList());
+    }
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -57,10 +58,20 @@ public class AvaliacaoController {
         return ResponseEntity.ok(resumo);
     }
 
-    // GET /avaliacoes/filme/{filmeId}
+    // GET /avaliacoes/filme/{filmeId}?usuarioId=1
     @GetMapping("/filme/{filmeId}")
-    public ResponseEntity<List<AvaliacaoResumo>> listarPorFilme(@PathVariable String filmeId) {
-        List<AvaliacaoResumo> avaliacoes = listarPorFilme.executar(filmeId);
+    public ResponseEntity<List<AvaliacaoResumo>> listarPorFilme(
+            @PathVariable String filmeId,
+            @RequestParam(required = false) Integer usuarioId) {
+
+        List<AvaliacaoResumo> avaliacoes;
+
+        if (usuarioId != null) {
+            avaliacoes = listarPorFilme.executarParaUsuario(filmeId, usuarioId);
+        } else {
+            avaliacoes = listarPorFilme.executar(filmeId);
+        }
+
         return ResponseEntity.ok(avaliacoes);
     }
 

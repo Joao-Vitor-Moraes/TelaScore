@@ -50,4 +50,10 @@ public class AvaliacaoEntity {
 
     public LocalDate getDataAvaliacao() { return dataAvaliacao; }
     public void setDataAvaliacao(LocalDate dataAvaliacao) { this.dataAvaliacao = dataAvaliacao; }
+
+    @Column(nullable = false)
+    private String visibilidade = "PUBLICA";
+
+    public String getVisibilidade() { return visibilidade; }
+    public void setVisibilidade(String visibilidade) { this.visibilidade = visibilidade; }
 }

@@ -118,11 +118,11 @@ public class FilmeSteps {
 
         Avaliacao av1 = new Avaliacao(
             new AvaliacaoId(1), filmeCriado.getId(),
-            new UsuarioId(10), new Nota(4), "Ótimo filme!"
+            new UsuarioId(10), new Nota(4), "Ótimo filme!", "PUBLICA"
         );
         Avaliacao av2 = new Avaliacao(
             new AvaliacaoId(2), filmeCriado.getId(),
-            new UsuarioId(20), new Nota(5), "Obra prima!"
+            new UsuarioId(20), new Nota(5), "Obra prima!", "PUBLICA"
         );
 
         avaliacaoRepositorioFake.salvar(av1);

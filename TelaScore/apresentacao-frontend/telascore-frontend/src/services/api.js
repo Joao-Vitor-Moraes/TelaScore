@@ -29,11 +29,6 @@ export const listaService = {
   registrarAssistido: (listaId, filmeId, usuarioId) => request('PATCH', `/api/listas/${listaId}/filmes/${filmeId}/assistido`, { usuarioId }),
 };
 
-// Filmes
-export const filmeService = {
-  listar: () => request('GET', '/filmes'),
-};
-
 // Solicitações
 export const solicitacaoService = {
   criar: (comando) => request('POST', '/api/solicitacoes', comando),
@@ -45,3 +40,25 @@ export const solicitacaoService = {
   listarPorSolicitante: (solicitanteId) => request('GET', `/api/solicitacoes?solicitanteId=${solicitanteId}`),
   listarPorStatus: (status) => request('GET', `/api/solicitacoes?status=${status}`),
 };
+
+// Filmes — substitua o filmeService existente por este:
+export const filmeService = {
+  listar: () => request('GET', '/filmes'),
+  obter: (id) => request('GET', `/filmes/${id}`),
+  cadastrar: (dados) => request('POST', '/filmes', dados),
+  atualizar: (id, dados) => request('PUT', `/filmes/${id}`, dados),
+  remover: (id) => request('DELETE', `/filmes/${id}`),
+};
+
+// Avaliações — adicione depois do filmeService:
+export const avaliacaoService = {
+  listarPorFilme: (filmeId, usuarioId) => {
+    const query = usuarioId ? `?usuarioId=${usuarioId}` : '';
+    return request('GET', `/avaliacoes/filme/${filmeId}${query}`);
+  },
+  avaliar: (dados) => request('POST', '/avaliacoes', dados),
+  atualizar: (id, dados) => request('PUT', `/avaliacoes/${id}`, dados),
+  remover: (id) => request('DELETE', `/avaliacoes/${id}`),
+};
+
+

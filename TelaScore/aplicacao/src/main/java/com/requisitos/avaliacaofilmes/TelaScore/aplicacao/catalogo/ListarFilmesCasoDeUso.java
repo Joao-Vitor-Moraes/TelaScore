@@ -16,12 +16,13 @@ public class ListarFilmesCasoDeUso {
     public List<FilmeResumo> executar() {
         return filmeRepositorio.listarTodos().stream()
                 .map(f -> new FilmeResumo(
-                        Integer.parseInt(f.getId().getCodigo()),
-                        f.getTitulo(),
-                        f.getAnoLancamento(),
-                        "",
-                        0.0,
-                        f.getImagemUrl()
+                Integer.parseInt(f.getId().getCodigo()),
+                f.getTitulo(),
+                f.getSinopse(),
+                f.getAnoLancamento(),
+                "",
+                0.0,
+                f.getImagemUrl()
                 ))
                 .collect(Collectors.toList());
     }

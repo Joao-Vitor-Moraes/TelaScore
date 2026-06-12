@@ -33,7 +33,7 @@ public class AvaliarFilmeCasoDeUso {
 		
 		AvaliacaoId avaliacaoId = new AvaliacaoId(geradorId.gerarProximoIdAvaliacao());
 		
-		Avaliacao avaliacao = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, comando.comentario());
+		Avaliacao avaliacao = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, comando.comentario(), comando.visibilidade());
 		
 		avaliacaoRepositorio.salvar(avaliacao);
 

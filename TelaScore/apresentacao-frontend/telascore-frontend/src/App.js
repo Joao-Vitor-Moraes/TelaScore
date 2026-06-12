@@ -9,11 +9,21 @@ import SolicitacoesUsuario from './pages/solicitacoes/SolicitacoesUsuario';
 import SolicitarFilme from './pages/solicitacoes/SolicitarFilme';
 import EditarSolicitacao from './pages/solicitacoes/EditarSolicitacao';
 import AdminSolicitacoes from './pages/solicitacoes/AdminSolicitacoes';
+import Filmes from './pages/filmes/Filmes';
+import CadastrarFilme from './pages/filmes/CadastrarFilme';
+import FilmeDetalhe from './pages/filmes/FilmeDetalhe';
+import EditarFilme from './pages/filmes/EditarFilme';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Filmes */}
+        <Route path="/filmes" element={<Filmes />} />
+        <Route path="/filmes/novo" element={<CadastrarFilme />} />
+        <Route path="/filmes/:id" element={<FilmeDetalhe />} />
+        <Route path="/filmes/:id/editar" element={<EditarFilme />} />
+
         {/* Listas */}
         <Route path="/listas" element={<MinhasListas />} />
         <Route path="/listas/nova" element={<CriarLista />} />
@@ -31,7 +41,7 @@ function App() {
         <Route path="/watchlist" element={<Watchlist />} />
 
         {/* Raiz */}
-        <Route path="/" element={<div>Home</div>} />
+        <Route path="/" element={<Filmes />} />
       </Routes>
     </BrowserRouter>
   );

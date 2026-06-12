@@ -7,5 +7,6 @@ public record AvaliacaoResumo(
     int usuarioId,
     int valorNota,
     String resenha,
-    LocalDate dataAvaliacao
+    LocalDate dataAvaliacao,
+    String visibilidade
 ) {}

@@ -38,6 +38,7 @@ public class AvaliacaoRepositorioImpl implements AvaliacaoRepositorio {
             // Campos mutáveis — atualizados sempre
             entity.setNota(avaliacao.getNota().getValor());
             entity.setResenha(avaliacao.getResenha());
+            entity.setVisibilidade(avaliacao.getVisibilidade());
 
             if (!em.contains(entity)) {
                 em.merge(entity);
@@ -132,12 +133,32 @@ public class AvaliacaoRepositorioImpl implements AvaliacaoRepositorio {
         }
     }
 
+    @Override
+    public List<Avaliacao> pesquisarPublicasPorFilme(FilmeId filmeId) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            List<AvaliacaoEntity> entities = em
+                    .createQuery("SELECT a FROM AvaliacaoEntity a WHERE a.filmeId = :filmeId AND a.visibilidade = 'PUBLICA'",
+                            AvaliacaoEntity.class)
+                    .setParameter("filmeId", filmeId.getCodigo())
+                    .getResultList();
+
+            List<Avaliacao> avaliacoes = new ArrayList<>();
+            for (AvaliacaoEntity entity : entities) {
+                avaliacoes.add(mapearParaDominio(entity));
+            }
+            return avaliacoes;
+        } finally {
+            em.close();
+        }
+    }
+
     private Avaliacao mapearParaDominio(AvaliacaoEntity entity) {
         AvaliacaoId avaliacaoId = new AvaliacaoId(entity.getId());
         FilmeId filmeId = new FilmeId(entity.getFilmeId());
         UsuarioId usuarioId = new UsuarioId(entity.getUsuarioId());
         Nota nota = new Nota(entity.getNota());
 
-        return new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, entity.getResenha());
+        return new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, entity.getResenha(), entity.getVisibilidade());
     }
 }
