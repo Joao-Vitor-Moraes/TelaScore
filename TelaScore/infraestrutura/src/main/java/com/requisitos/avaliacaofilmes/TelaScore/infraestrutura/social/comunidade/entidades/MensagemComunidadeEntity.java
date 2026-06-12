@@ -9,13 +9,13 @@ public class MensagemComunidadeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "comunidade_id", nullable = false)
-    private int comunidadeId;
+    private Integer comunidadeId;
 
     @Column(name = "usuario_id", nullable = false)
-    private int usuarioId;
+    private Integer usuarioId;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String conteudo;
@@ -23,12 +23,12 @@ public class MensagemComunidadeEntity {
     @Column(name = "enviado_em", nullable = false)
     private LocalDateTime enviadoEm;
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-    public int getComunidadeId() { return comunidadeId; }
-    public void setComunidadeId(int comunidadeId) { this.comunidadeId = comunidadeId; }
-    public int getUsuarioId() { return usuarioId; }
-    public void setUsuarioId(int usuarioId) { this.usuarioId = usuarioId; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
+    public Integer getComunidadeId() { return comunidadeId; }
+    public void setComunidadeId(Integer comunidadeId) { this.comunidadeId = comunidadeId; }
+    public Integer getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(Integer usuarioId) { this.usuarioId = usuarioId; }
     public String getConteudo() { return conteudo; }
     public void setConteudo(String conteudo) { this.conteudo = conteudo; }
     public LocalDateTime getEnviadoEm() { return enviadoEm; }

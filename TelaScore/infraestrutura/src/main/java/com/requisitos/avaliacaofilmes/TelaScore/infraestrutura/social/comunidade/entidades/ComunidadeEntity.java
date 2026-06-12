@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class ComunidadeEntity {
 
     @Id
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private String nome;
@@ -15,8 +15,8 @@ public class ComunidadeEntity {
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
     public String getDescricao() { return descricao; }

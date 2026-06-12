@@ -7,7 +7,6 @@
     <persistence-unit name="telascorePU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <!-- catalogo -->
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.lista.entidades.ListaEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.lista.entidades.ItemListaEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.solicitacao.entidades.SolicitacaoFilmeEntity</class>
@@ -15,7 +14,6 @@
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.diretor.entidades.DiretorEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.avaliacao.entidades.AvaliacaoEntity</class>
 
-        <!-- analise -->
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.entidades.MetaEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recomendacao.entidades.RecomendacaoEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.QuizEntity</class>
@@ -23,18 +21,15 @@
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.AlternativaEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.TentativaQuizEntity</class>
 
-        <!-- identidade -->
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuario.entidades.UsuarioEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.perfil.entidades.PerfilEntity</class>
 
-        <!-- social -->
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.ComunidadeEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.MembroComunidadeEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.MensagemComunidadeEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.mensagem.entidades.MensagemEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.mensagem.entidades.FigurinhaEntity</class>
 
-        <!-- informacao -->
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.noticia.entidades.NoticiaEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.evento.entidades.EventoEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.calendario.entidades.CalendarioEntity</class>
