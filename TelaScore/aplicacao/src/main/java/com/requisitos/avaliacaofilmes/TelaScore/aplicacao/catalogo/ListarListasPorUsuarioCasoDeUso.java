@@ -2,6 +2,7 @@ package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.Lista;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.Visibilidade;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
 import java.util.List;
@@ -15,9 +16,11 @@ public class ListarListasPorUsuarioCasoDeUso {
         this.listaRepositorio = listaRepositorio;
     }
 
-    public List<ListaResumo> executar(int usuarioId) {
+    public List<ListaResumo> executar(int usuarioId, Integer quemPedeId) {
+        boolean isProprioUsuario = quemPedeId != null && quemPedeId.equals(usuarioId);
         List<Lista> listas = listaRepositorio.pesquisarPorDono(new UsuarioId(usuarioId));
         return listas.stream()
+                .filter(l -> isProprioUsuario || l.getVisibilidade() != Visibilidade.PRIVADA)
                 .map(l -> new ListaResumo(
                         l.getId().getId(),
                         l.getDonoId().getId(),

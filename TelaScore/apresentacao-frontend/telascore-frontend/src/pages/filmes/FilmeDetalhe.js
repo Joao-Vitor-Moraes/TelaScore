@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Navbar from '../../components/Navbar';
 import { filmeService, avaliacaoService } from '../../services/api';
+import { FiStar, FiClock, FiUser, FiFilm } from 'react-icons/fi';
 
-const USUARIO_ID = 1;
+const USUARIO_ID = 3;
 
 export default function FilmeDetalhe() {
   const { id } = useParams();

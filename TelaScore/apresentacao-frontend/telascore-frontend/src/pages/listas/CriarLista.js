@@ -41,6 +41,7 @@ export default function CriarLista() {
         tipo: tipo,
         visibilidade: form.visibilidade,
         rankeada: form.rankeada,
+        colaborativa: form.colaborativa,
       });
       navigate(tipo === 'WATCHLIST' ? '/watchlist' : '/listas');
     } catch {

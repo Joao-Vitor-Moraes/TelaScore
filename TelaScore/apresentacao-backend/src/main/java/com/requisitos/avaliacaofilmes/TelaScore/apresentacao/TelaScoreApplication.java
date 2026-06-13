@@ -9,6 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 })
 public class TelaScoreApplication {
     public static void main(String[] args) {
-        SpringApplication.run(TelaScoreApplication.class, args);
+        org.springframework.boot.SpringApplication.run(TelaScoreApplication.class, args);
     }
 }

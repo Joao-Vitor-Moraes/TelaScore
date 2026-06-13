@@ -12,12 +12,15 @@ export default function ListaAberta() {
   const [itens, setItens] = useState([]);
   const [erro, setErro] = useState(null);
   const [dragSobre, setDragSobre] = useState(null);
+  const [menuAberto, setMenuAberto] = useState(false);
+  const [modalColaborador, setModalColaborador] = useState(false);
+  const [colaboradorId, setColaboradorId] = useState('');
   const dragId = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     Promise.all([
-      listaService.obter(id),
+      listaService.obter(id, USUARIO_ID),
       listaService.consultarItens(id),
     ])
       .then(([l, i]) => { setLista(l); setItens(i); })
@@ -47,6 +50,28 @@ export default function ListaAberta() {
     }
   }
 
+  async function handleTornarColaborativa() {
+    setMenuAberto(false);
+    try {
+      await listaService.tornarColaborativa(id, USUARIO_ID);
+      setLista(prev => ({ ...prev, colaborativa: true }));
+    } catch {
+      alert('Erro ao tornar lista colaborativa.');
+    }
+  }
+
+  async function handleAdicionarColaborador(e) {
+    e.preventDefault();
+    try {
+      await listaService.adicionarColaborador(id, { donoId: USUARIO_ID, novoColaboradorId: parseInt(colaboradorId) });
+      setModalColaborador(false);
+      setColaboradorId('');
+      alert('Colaborador adicionado com sucesso!');
+    } catch {
+      alert('Erro ao adicionar colaborador. Verifique o ID informado.');
+    }
+  }
+
   async function handleDrop(e, targetIndex) {
     e.preventDefault();
     setDragSobre(null);
@@ -69,6 +94,7 @@ export default function ListaAberta() {
   const voltarRota = lista.tipo === 'WATCHLIST' ? '/watchlist' : '/listas';
 
   return (
+    <>
     <div style={styles.pagina}>
       <Navbar />
       <div style={styles.conteudo}>
@@ -88,9 +114,33 @@ export default function ListaAberta() {
             <button style={styles.btnIcone}>
               <FiShare2 size={18} />
             </button>
-            <button style={styles.btnIcone}>
-              <FiMoreVertical size={18} />
-            </button>
+            <div style={{ position: 'relative' }}>
+              <button style={styles.btnIcone} onClick={() => setMenuAberto(prev => !prev)}>
+                <FiMoreVertical size={18} />
+              </button>
+              {menuAberto && (
+                <>
+                  <div style={styles.overlayTransparente} onClick={() => setMenuAberto(false)} />
+                  <div style={styles.dropdown}>
+                    {lista.donoId === USUARIO_ID && !lista.colaborativa && (
+                      <button style={styles.dropdownItem} onClick={handleTornarColaborativa}>
+                        Tornar colaborativa
+                      </button>
+                    )}
+                    {lista.donoId === USUARIO_ID && (
+                      <button style={styles.dropdownItem} onClick={() => { setMenuAberto(false); setModalColaborador(true); }}>
+                        Adicionar colaborador
+                      </button>
+                    )}
+                    {lista.donoId !== USUARIO_ID && (
+                      <span style={{ ...styles.dropdownItem, color: '#aaa', cursor: 'default' }}>
+                        Sem ações disponíveis
+                      </span>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
             <button style={styles.btnAdicionar} onClick={() => navigate(`/listas/${id}/adicionar`)}>
               <FiPlusCircle size={16} />
               Adicionar
@@ -141,6 +191,33 @@ export default function ListaAberta() {
         )}
       </div>
     </div>
+
+    {modalColaborador && (
+      <div style={styles.overlayModal}>
+        <div style={styles.modal}>
+          <h3 style={styles.modalTitulo}>Adicionar Colaborador</h3>
+          <form onSubmit={handleAdicionarColaborador}>
+            <input
+              style={styles.modalInput}
+              type="number"
+              placeholder="ID do usuário"
+              value={colaboradorId}
+              onChange={e => setColaboradorId(e.target.value)}
+              required
+            />
+            <div style={styles.modalBotoes}>
+              <button type="button" style={styles.btnCancelarModal} onClick={() => { setModalColaborador(false); setColaboradorId(''); }}>
+                Cancelar
+              </button>
+              <button type="submit" style={styles.btnConfirmarModal}>
+                Adicionar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 
@@ -298,5 +375,87 @@ const styles = {
     color: '#e94560',
     textAlign: 'center',
     marginTop: '60px',
+  },
+  overlayTransparente: {
+    position: 'fixed',
+    inset: 0,
+    zIndex: 10,
+  },
+  dropdown: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    backgroundColor: '#16213e',
+    border: '1px solid #2a2a4a',
+    borderRadius: '8px',
+    minWidth: '180px',
+    zIndex: 11,
+    overflow: 'hidden',
+  },
+  dropdownItem: {
+    display: 'block',
+    width: '100%',
+    padding: '10px 16px',
+    background: 'none',
+    border: 'none',
+    color: 'white',
+    fontSize: '14px',
+    textAlign: 'left',
+    cursor: 'pointer',
+  },
+  overlayModal: {
+    position: 'fixed',
+    inset: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 20,
+  },
+  modal: {
+    backgroundColor: '#16213e',
+    borderRadius: '12px',
+    padding: '28px',
+    width: '320px',
+  },
+  modalTitulo: {
+    margin: '0 0 20px 0',
+    fontSize: '16px',
+  },
+  modalInput: {
+    width: '100%',
+    padding: '10px 14px',
+    borderRadius: '8px',
+    border: '1px solid #2a2a4a',
+    backgroundColor: '#0f3460',
+    color: 'white',
+    fontSize: '14px',
+    outline: 'none',
+    boxSizing: 'border-box',
+  },
+  modalBotoes: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '10px',
+    marginTop: '16px',
+  },
+  btnCancelarModal: {
+    padding: '8px 18px',
+    borderRadius: '8px',
+    border: '1px solid #aaa',
+    backgroundColor: 'transparent',
+    color: 'white',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  btnConfirmarModal: {
+    padding: '8px 18px',
+    borderRadius: '8px',
+    border: 'none',
+    backgroundColor: '#e94560',
+    color: 'white',
+    cursor: 'pointer',
+    fontSize: '14px',
+    fontWeight: 'bold',
   },
 };

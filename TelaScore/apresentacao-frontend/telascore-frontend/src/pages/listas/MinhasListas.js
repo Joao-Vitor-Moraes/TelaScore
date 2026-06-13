@@ -11,7 +11,7 @@ export default function MinhasListas() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    listaService.listarPorUsuario(USUARIO_ID)
+    listaService.listarPorUsuario(USUARIO_ID, USUARIO_ID)
       .then(setListas)
       .catch(() => setErro('Erro ao carregar listas.'));
   }, []);

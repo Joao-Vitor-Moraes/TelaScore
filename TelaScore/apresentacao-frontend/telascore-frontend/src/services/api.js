@@ -15,8 +15,8 @@ async function request(method, path, body) {
 
 // Listas
 export const listaService = {
-  listarPorUsuario: (usuarioId) => request('GET', `/api/listas?usuarioId=${usuarioId}`),
-  obter: (listaId) => request('GET', `/api/listas/${listaId}`),
+  listarPorUsuario: (usuarioId, quemPedeId) => request('GET', `/api/listas?usuarioId=${usuarioId}${quemPedeId != null ? `&quemPedeId=${quemPedeId}` : ''}`),
+  obter: (listaId, quemPedeId) => request('GET', `/api/listas/${listaId}${quemPedeId != null ? `?quemPedeId=${quemPedeId}` : ''}`),
   criar: (comando) => request('POST', '/api/listas', comando),
   editar: (listaId, body) => request('PUT', `/api/listas/${listaId}`, body),
   remover: (listaId, usuarioId) => request('DELETE', `/api/listas/${listaId}?usuarioId=${usuarioId}`),
