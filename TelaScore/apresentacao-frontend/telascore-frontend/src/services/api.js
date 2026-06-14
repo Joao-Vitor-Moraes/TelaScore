@@ -1,9 +1,22 @@
 const BASE_URL = 'http://localhost:8080';
 
+function getToken() {
+  try {
+    const raw = localStorage.getItem('telascore_sessao');
+    return raw ? JSON.parse(raw).token : null;
+  } catch {
+    return null;
+  }
+}
+
 async function request(method, path, body) {
+  const token = getToken();
   const options = {
     method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   };
   if (body) options.body = JSON.stringify(body);
   const res = await fetch(`${BASE_URL}${path}`, options);
@@ -48,6 +61,12 @@ export const filmeService = {
   cadastrar: (dados) => request('POST', '/filmes', dados),
   atualizar: (id, dados) => request('PUT', `/filmes/${id}`, dados),
   remover: (id) => request('DELETE', `/filmes/${id}`),
+};
+
+// Auth
+export const authService = {
+  login: (email, senha) => request('POST', '/api/identidade/usuario/login', { email, senha }),
+  registrar: (nome, email, senha) => request('POST', '/api/identidade/usuario/registrar', { nome, email, senha }),
 };
 
 // Avaliações — adicione depois do filmeService:

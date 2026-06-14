@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { listaService } from '../../services/api';
-
-const USUARIO_ID = 3;
+import { useAuth } from '../../context/AuthContext';
 
 export default function MinhasListas() {
+  const { sessao } = useAuth();
+  const USUARIO_ID = sessao.id;
   const [listas, setListas] = useState([]);
   const [erro, setErro] = useState(null);
   const navigate = useNavigate();

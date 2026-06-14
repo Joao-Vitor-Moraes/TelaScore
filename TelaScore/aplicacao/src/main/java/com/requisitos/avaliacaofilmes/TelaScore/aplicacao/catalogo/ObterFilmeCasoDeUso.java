@@ -33,9 +33,12 @@ public class ObterFilmeCasoDeUso {
             throw new IllegalArgumentException("Filme não encontrado: " + filmeIdCodigo);
         }
 
-        DiretorId primeiroDiretorId = filme.getDiretores().iterator().next();
-        Diretor diretor = diretorRepositorio.obter(primeiroDiretorId);
-        String nomeDiretor = diretor != null ? diretor.getNome() : "Desconhecido";
+        String nomeDiretor = "Desconhecido";
+        if (!filme.getDiretores().isEmpty()) {
+            DiretorId primeiroDiretorId = filme.getDiretores().iterator().next();
+            Diretor diretor = diretorRepositorio.obter(primeiroDiretorId);
+            if (diretor != null) nomeDiretor = diretor.getNome();
+        }
 
 
         List<Avaliacao> avaliacoes = avaliacaoRepositorio.pesquisarPorFilme(filmeId);

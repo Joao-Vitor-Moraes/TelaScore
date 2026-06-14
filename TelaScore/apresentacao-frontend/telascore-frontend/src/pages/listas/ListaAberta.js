@@ -3,10 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { FiArrowLeft, FiEdit2, FiShare2, FiMoreVertical, FiPlusCircle } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
 import { listaService } from '../../services/api';
-
-const USUARIO_ID = 3;
+import { useAuth } from '../../context/AuthContext';
 
 export default function ListaAberta() {
+  const { sessao } = useAuth();
+  const USUARIO_ID = sessao.id;
   const { id } = useParams();
   const [lista, setLista] = useState(null);
   const [itens, setItens] = useState([]);

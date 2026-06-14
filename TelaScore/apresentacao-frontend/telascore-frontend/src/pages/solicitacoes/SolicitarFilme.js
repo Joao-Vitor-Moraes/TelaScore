@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { solicitacaoService } from '../../services/api';
-
-const USUARIO_ID = 3;
+import { useAuth } from '../../context/AuthContext';
 
 const GENEROS = [
   'Ação', 'Aventura', 'Animação', 'Biografia', 'Comédia', 'Crime',
@@ -12,6 +11,8 @@ const GENEROS = [
 ];
 
 export default function SolicitarFilme() {
+  const { sessao } = useAuth();
+  const USUARIO_ID = sessao.id;
   const [form, setForm] = useState({
     nome: '', pais: '', ano: '', genero: '', fotoUrl: '', descricao: '',
   });

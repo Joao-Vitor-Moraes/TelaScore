@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiMenu, FiSearch, FiHome, FiBell } from 'react-icons/fi';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const [menuAberto, setMenuAberto] = useState(false);
   const navigate = useNavigate();
+  const { sessao, logout } = useAuth();
+
+  function handleLogout() {
+    logout();
+    navigate('/login');
+  }
 
   return (
     <nav style={styles.nav}>
@@ -16,8 +23,20 @@ export default function Navbar() {
             <button style={styles.menuItem} onClick={() => { navigate('/perfil'); setMenuAberto(false); }}>Meu Perfil</button>
             <button style={styles.menuItem} onClick={() => { navigate('/listas'); setMenuAberto(false); }}>Minhas Listas</button>
             <button style={styles.menuItem} onClick={() => { navigate('/watchlist'); setMenuAberto(false); }}>Watchlist</button>
+            <button style={styles.menuItem} onClick={() => { navigate('/solicitacoes'); setMenuAberto(false); }}>Solicitações</button>
+            {sessao?.papel === 'ADMIN' && (
+              <button style={{ ...styles.menuItem, color: '#f97316' }} onClick={() => { navigate('/admin/solicitacoes'); setMenuAberto(false); }}>
+                Painel Admin
+              </button>
+            )}
             <button style={styles.menuItem} onClick={() => { navigate('/configuracoes'); setMenuAberto(false); }}>Configurações</button>
-            <button style={styles.menuItem}>Sair</button>
+            {sessao && (
+              <div style={styles.usuarioInfo}>
+                <span style={styles.usuarioPapel}>{sessao.papel}</span>
+                <span style={styles.usuarioId}>ID: {sessao.id}</span>
+              </div>
+            )}
+            <button style={{ ...styles.menuItem, color: '#e94560' }} onClick={handleLogout}>Sair</button>
           </div>
         )}
       </div>
@@ -110,5 +129,23 @@ const styles = {
     fontSize: '20px',
     cursor: 'pointer',
     color: 'white',
+  },
+  usuarioInfo: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '8px 16px',
+    borderTop: '1px solid #2a2a4a',
+    borderBottom: '1px solid #2a2a4a',
+    gap: '2px',
+  },
+  usuarioPapel: {
+    fontSize: '11px',
+    color: '#e94560',
+    fontWeight: 'bold',
+    letterSpacing: '1px',
+  },
+  usuarioId: {
+    fontSize: '11px',
+    color: '#aaa',
   },
 };

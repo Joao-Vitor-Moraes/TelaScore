@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { solicitacaoService } from '../../services/api';
-
-const USUARIO_ID = 3;
+import { useAuth } from '../../context/AuthContext';
 
 const GENEROS = [
   'Ação', 'Aventura', 'Animação', 'Biografia', 'Comédia', 'Crime',
@@ -12,6 +11,8 @@ const GENEROS = [
 ];
 
 export default function EditarSolicitacao() {
+  const { sessao } = useAuth();
+  const USUARIO_ID = sessao.id;
   const { id } = useParams();
   const [form, setForm] = useState(null);
   const [feedbackAdmin, setFeedbackAdmin] = useState('');
