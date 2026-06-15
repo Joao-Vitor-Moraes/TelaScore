@@ -22,7 +22,7 @@ export default function Login() {
         ? await authService.login(email, senha)
         : await authService.registrar(nome, email, senha);
       login(dados);
-      navigate(dados.papel === 'ADMIN' ? '/admin/solicitacoes' : '/');
+      navigate(dados.papel === 'ADMIN' ? '/filmes' : '/');
     } catch {
       setErro(modo === 'login' ? 'Email ou senha inválidos.' : 'Erro ao criar conta. Tente novamente.');
     } finally {
