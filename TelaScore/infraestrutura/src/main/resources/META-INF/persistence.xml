@@ -25,7 +25,6 @@
 
         <!-- identidade -->
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuario.entidades.UsuarioEntity</class>
-        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.perfil.entidades.PerfilEntity</class>
 
         <!-- social -->
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.ComunidadeEntity</class>

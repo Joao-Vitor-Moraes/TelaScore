@@ -4,8 +4,6 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.CadastrarUs
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.LoginUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.SessaoUsuario;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilRepositorio;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Email;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Senha;
@@ -31,11 +29,6 @@ public class UsuarioConfig {
     }
 
     @Bean
-    public PerfilServico perfilServico(PerfilRepositorio perfilRepositorio) {
-        return new PerfilServico(perfilRepositorio);
-    }
-
-    @Bean
     @SessionScope
     public SessaoUsuario sessaoUsuario() {
         return new SessaoUsuario();
@@ -49,9 +42,8 @@ public class UsuarioConfig {
     @Bean
     public CadastrarUsuarioCasoDeUso cadastrarUsuarioCasoDeUso(
             UsuarioServico usuarioServico,
-            PerfilServico perfilServico,
             GeradorId geradorId) {
-        return new CadastrarUsuarioCasoDeUso(usuarioServico, perfilServico, geradorId);
+        return new CadastrarUsuarioCasoDeUso(usuarioServico, geradorId);
     }
 
     @Bean

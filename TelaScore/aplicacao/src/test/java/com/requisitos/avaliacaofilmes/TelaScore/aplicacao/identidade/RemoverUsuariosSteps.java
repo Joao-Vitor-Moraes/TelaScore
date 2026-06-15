@@ -9,8 +9,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilRepositorio;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Email;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Senha;
@@ -29,8 +27,6 @@ public class RemoverUsuariosSteps {
 
     private UsuarioRepositorio usuarioRepositorio;
     private UsuarioServico usuarioServico;
-    private PerfilRepositorio perfilRepositorio;
-    private PerfilServico perfilServico;
     private SessaoUsuario sessaoUsuario;
     private RemoverUsuarioCasoDeUso removerUsuarioCasoDeUso;
 
@@ -40,10 +36,8 @@ public class RemoverUsuariosSteps {
     private void prepararCasoDeUso() {
         usuarioRepositorio = mock(UsuarioRepositorio.class);
         usuarioServico = new UsuarioServico(usuarioRepositorio);
-        perfilRepositorio = mock(PerfilRepositorio.class);
-        perfilServico = new PerfilServico(perfilRepositorio);
         sessaoUsuario = new SessaoUsuario();
-        removerUsuarioCasoDeUso = new RemoverUsuarioCasoDeUso(usuarioServico, perfilServico, sessaoUsuario);
+        removerUsuarioCasoDeUso = new RemoverUsuarioCasoDeUso(usuarioServico, sessaoUsuario);
         usuarioIdSolicitado = null;
         excecaoCapturada = null;
     }
@@ -104,14 +98,13 @@ public class RemoverUsuariosSteps {
 
     @E("o perfil do usuário removido também deve ser removido")
     public void o_perfil_do_usuario_removido_tambem_deve_ser_removido() {
-        verify(perfilRepositorio, times(1)).removerPorUsuario(usuarioIdSolicitado);
+        verify(usuarioRepositorio, times(1)).remover(usuarioIdSolicitado);
     }
 
     @Então("a remoção deve ser rejeitada")
     public void a_remocao_deve_ser_rejeitada() {
         assertNotNull(excecaoCapturada);
         verify(usuarioRepositorio, never()).remover(usuarioIdSolicitado);
-        verify(perfilRepositorio, never()).removerPorUsuario(usuarioIdSolicitado);
     }
 
     @E("deve retornar o erro da remoção {string}")

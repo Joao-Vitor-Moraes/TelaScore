@@ -44,7 +44,13 @@ public class UsuarioController {
         }
 
         try {
-            cadastrarUsuario.executar(new CadastrarUsuarioComando(request.nome(), request.email(), request.senha()));
+            cadastrarUsuario.executar(new CadastrarUsuarioComando(
+                    request.nome(),
+                    request.email(),
+                    request.senha(),
+                    request.apelido(),
+                    request.biografia(),
+                    request.avatarUrl()));
             UsuarioLogado usuarioLogado = loginUsuario.executar(new LoginUsuarioComando(request.email(), request.senha()));
             TokenGerado token = tokenServico.gerar(usuarioLogado);
             return ResponseEntity.status(HttpStatus.CREATED).body(LoginResponse.de(usuarioLogado, token));
@@ -87,7 +93,13 @@ public class UsuarioController {
     public static record LoginRequest(String email, String senha) {
     }
 
-    public static record RegistrarRequest(String nome, String email, String senha) {
+    public static record RegistrarRequest(
+            String nome,
+            String email,
+            String senha,
+            String apelido,
+            String biografia,
+            String avatarUrl) {
     }
 
     public static record LoginResponse(

@@ -2,7 +2,6 @@ package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade;
 
 public interface GeradorId {
 	int gerarProximoIdUsuario();
-	int gerarProximoIdPerfil();
 
 	int gerarProximoIdFilme();
 	int gerarProximoIdAvaliacao();

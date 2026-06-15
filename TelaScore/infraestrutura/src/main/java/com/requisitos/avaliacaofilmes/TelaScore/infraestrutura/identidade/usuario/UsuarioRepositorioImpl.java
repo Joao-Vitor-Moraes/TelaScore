@@ -1,5 +1,6 @@
 package com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuario;
 
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Apelido;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Email;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Senha;
@@ -24,18 +25,32 @@ public class UsuarioRepositorioImpl implements UsuarioRepositorio {
             tx.begin();
 
             em.createNativeQuery("""
-                    INSERT INTO usuario (id, email, senha, papel_usuario, data_cadastro)
-                    VALUES (:id, :email, :senha, :papel, :dataCadastro)
+                    INSERT INTO usuario (
+                        id, nome, email, senha, papel_usuario, data_cadastro,
+                        apelido, biografia, avatar_url
+                    )
+                    VALUES (
+                        :id, :nome, :email, :senha, :papel, :dataCadastro,
+                        :apelido, :biografia, :avatarUrl
+                    )
                     ON DUPLICATE KEY UPDATE
+                        nome = VALUES(nome),
                         email = VALUES(email),
                         senha = VALUES(senha),
-                        papel_usuario = VALUES(papel_usuario)
+                        papel_usuario = VALUES(papel_usuario),
+                        apelido = VALUES(apelido),
+                        biografia = VALUES(biografia),
+                        avatar_url = VALUES(avatar_url)
                     """)
                     .setParameter("id", usuario.getId().getId())
+                    .setParameter("nome", usuario.getNome())
                     .setParameter("email", usuario.getEmail().getEndereco())
                     .setParameter("senha", usuario.getSenha().getValor())
                     .setParameter("papel", usuario.getPapel().name())
                     .setParameter("dataCadastro", LocalDateTime.now())
+                    .setParameter("apelido", usuario.getApelido().getValor())
+                    .setParameter("biografia", usuario.getBiografia())
+                    .setParameter("avatarUrl", usuario.getAvatarUrl())
                     .executeUpdate();
 
             tx.commit();
@@ -54,7 +69,7 @@ public class UsuarioRepositorioImpl implements UsuarioRepositorio {
         EntityManager em = ConexaoBanco.obterEntityManager();
         try {
             List<?> resultados = em.createNativeQuery("""
-                    SELECT id, email, senha, papel_usuario
+                    SELECT id, nome, email, senha, papel_usuario, apelido, biografia, avatar_url
                     FROM usuario
                     WHERE id = :id
                     """)
@@ -72,7 +87,7 @@ public class UsuarioRepositorioImpl implements UsuarioRepositorio {
         EntityManager em = ConexaoBanco.obterEntityManager();
         try {
             List<?> resultados = em.createNativeQuery("""
-                    SELECT id, email, senha, papel_usuario
+                    SELECT id, nome, email, senha, papel_usuario, apelido, biografia, avatar_url
                     FROM usuario
                     WHERE LOWER(email) = LOWER(:email)
                     LIMIT 1
@@ -133,7 +148,7 @@ public class UsuarioRepositorioImpl implements UsuarioRepositorio {
         EntityManager em = ConexaoBanco.obterEntityManager();
         try {
             List<?> resultados = em.createNativeQuery("""
-                    SELECT id, email, senha, papel_usuario
+                    SELECT id, nome, email, senha, papel_usuario, apelido, biografia, avatar_url
                     FROM usuario
                     ORDER BY id
                     """)
@@ -149,14 +164,59 @@ public class UsuarioRepositorioImpl implements UsuarioRepositorio {
 
     private Usuario mapearLinhaParaDominio(Object[] linha) {
         Integer id = ((Number) linha[0]).intValue();
-        String enderecoEmail = (String) linha[1];
-        String valorSenha = (String) linha[2];
-        String papelUsuario = (String) linha[3];
+        String nome = (String) linha[1];
+        String enderecoEmail = (String) linha[2];
+        String valorSenha = (String) linha[3];
+        String papelUsuario = (String) linha[4];
+        String apelido = (String) linha[5];
+        String biografia = (String) linha[6];
+        String avatarUrl = (String) linha[7];
 
         Email email = new Email(enderecoEmail);
         Senha senha = new Senha(valorSenha);
         PapelUsuario papel = PapelUsuario.valueOf(papelUsuario);
 
-        return new Usuario(new UsuarioId(id), enderecoEmail, email, senha, papel);
+        String nomeDominio = valorOuPadrao(nome, enderecoEmail);
+        Apelido apelidoDominio = new Apelido(apelidoOuPadrao(apelido, nomeDominio, enderecoEmail));
+
+        return new Usuario(
+                new UsuarioId(id),
+                nomeDominio,
+                email,
+                senha,
+                papel,
+                apelidoDominio,
+                biografia,
+                avatarUrl);
     }
+
+    private String valorOuPadrao(String valor, String padrao) {
+        return valor == null || valor.isBlank() ? padrao : valor;
+    }
+
+    private String apelidoOuPadrao(String apelido, String nome, String email) {
+        if (apelido != null && !apelido.isBlank()) {
+            return limitarApelido(apelido);
+        }
+
+        String base = valorOuPadrao(nome, email);
+        int arroba = base.indexOf('@');
+        if (arroba > 0) {
+            base = base.substring(0, arroba);
+        }
+
+        return limitarApelido(base);
+    }
+
+    private String limitarApelido(String valor) {
+        String apelido = valor == null ? "usuario" : valor.trim();
+        if (apelido.isBlank()) {
+            apelido = "usuario";
+        }
+        if (apelido.length() < 3) {
+            apelido = (apelido + "usr").substring(0, 3);
+        }
+        return apelido.length() > 20 ? apelido.substring(0, 20) : apelido;
+    }
+
 }
