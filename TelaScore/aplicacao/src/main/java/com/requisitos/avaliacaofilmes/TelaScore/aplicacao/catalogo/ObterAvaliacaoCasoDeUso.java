@@ -32,7 +32,8 @@ public class ObterAvaliacaoCasoDeUso {
                 avaliacao.getUsuarioId().getId(),
                 avaliacao.getNota().getValor(),
                 avaliacao.getResenha(),
-                avaliacao.getDataAvaliacao()
+                avaliacao.getDataAvaliacao(),
+                avaliacao.getVisibilidade()
         );
     }
 }

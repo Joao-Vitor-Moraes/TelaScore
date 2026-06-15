@@ -3,12 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { solicitacaoService } from '../../services/api';
 import { FiUser, FiFilter, FiCheck, FiX, FiClock } from 'react-icons/fi';
+import { useAuth } from '../../context/AuthContext';
 
-const USUARIO_ID = 3;
-const OCULTOS_KEY = `solicitacoes_ocultas_${USUARIO_ID}`;
-
-function getOcultos() {
-  try { return JSON.parse(localStorage.getItem(OCULTOS_KEY) || '[]'); }
+function getOcultos(key) {
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); }
   catch { return []; }
 }
 
@@ -23,8 +21,11 @@ const STATUS_CONFIG = {
 const FILTROS = ['PENDENTE', 'APROVADA', 'REJEITADA'];
 
 export default function SolicitacoesUsuario() {
+  const { sessao } = useAuth();
+  const USUARIO_ID = sessao.id;
+  const OCULTOS_KEY = `solicitacoes_ocultas_${USUARIO_ID}`;
   const [solicitacoes, setSolicitacoes] = useState([]);
-  const [ocultos, setOcultos] = useState(() => getOcultos());
+  const [ocultos, setOcultos] = useState(() => getOcultos(OCULTOS_KEY));
   const [carregando, setCarregando] = useState(true);
   const [filtro, setFiltro] = useState(null);
   const [filtroAberto, setFiltroAberto] = useState(false);

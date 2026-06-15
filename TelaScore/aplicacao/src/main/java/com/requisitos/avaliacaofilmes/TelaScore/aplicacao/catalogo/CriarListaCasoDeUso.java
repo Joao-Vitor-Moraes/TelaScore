@@ -32,6 +32,9 @@ public class CriarListaCasoDeUso {
 				TipoLista.valueOf(comando.tipo().toUpperCase())
 		);
 		
+		if (comando.colaborativa()) {
+			lista.tornarColaborativa();
+		}
 		listaServico.salvar(lista);
 	}
 }

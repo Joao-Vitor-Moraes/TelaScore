@@ -31,4 +31,9 @@ public class FilmeRepositorioFake implements FilmeRepositorio {
         return armazenamento.values().stream()
                 .anyMatch(f -> f.getTitulo().equalsIgnoreCase(titulo));
     }
+
+    @Override
+    public java.util.List<Filme> listarTodos() {
+        return new java.util.ArrayList<>(armazenamento.values());
+}
 }

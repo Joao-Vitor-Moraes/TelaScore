@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { listaService } from '../../services/api';
-
-const USUARIO_ID = 3;
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditarLista() {
+  const { sessao } = useAuth();
+  const USUARIO_ID = sessao.id;
   const { id } = useParams();
   const [form, setForm] = useState(null);
   const [erro, setErro] = useState(null);

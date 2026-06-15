@@ -5,6 +5,7 @@ public record CriarListaComando(
 		String nome,
 		String descricao,
 		boolean rankeada,
+		boolean colaborativa,
 		String visibilidade,
 		String tipo
 ) {}

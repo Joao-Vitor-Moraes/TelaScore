@@ -3,10 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { FiArrowLeft, FiSearch, FiCheck } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
 import { listaService, filmeService } from '../../services/api';
-
-const USUARIO_ID = 3;
+import { useAuth } from '../../context/AuthContext';
 
 export default function AdicionarFilme() {
+  const { sessao } = useAuth();
+  const USUARIO_ID = sessao.id;
   const { id } = useParams();
   const navigate = useNavigate();
 

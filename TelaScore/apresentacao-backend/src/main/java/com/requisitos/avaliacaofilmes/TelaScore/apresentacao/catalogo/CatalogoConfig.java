@@ -166,8 +166,9 @@ public class CatalogoConfig {
     // ─── Filmes ───────────────────────────────────────────────────────────────────
 
     @Bean
-    public ListarFilmesCasoDeUso listarFilmesCasoDeUso(FilmeRepositorio filmeRepositorio) {
-        return new ListarFilmesCasoDeUso(filmeRepositorio);
+    public ListarFilmesCasoDeUso listarFilmesCasoDeUso(FilmeRepositorio filmeRepositorio,
+            AvaliacaoRepositorio avaliacaoRepositorio, DiretorRepositorio diretorRepositorio) {
+        return new ListarFilmesCasoDeUso(filmeRepositorio, avaliacaoRepositorio, diretorRepositorio);
     }
 
     @Bean

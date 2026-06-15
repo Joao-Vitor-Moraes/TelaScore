@@ -1,4 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import RotaProtegida from './components/RotaProtegida';
+import Login from './pages/auth/Login';
 import MinhasListas from './pages/listas/MinhasListas';
 import CriarLista from './pages/listas/CriarLista';
 import ListaAberta from './pages/listas/ListaAberta';
@@ -9,31 +12,45 @@ import SolicitacoesUsuario from './pages/solicitacoes/SolicitacoesUsuario';
 import SolicitarFilme from './pages/solicitacoes/SolicitarFilme';
 import EditarSolicitacao from './pages/solicitacoes/EditarSolicitacao';
 import AdminSolicitacoes from './pages/solicitacoes/AdminSolicitacoes';
+import Filmes from './pages/filmes/Filmes';
+import CadastrarFilme from './pages/filmes/CadastrarFilme';
+import FilmeDetalhe from './pages/filmes/FilmeDetalhe';
+import EditarFilme from './pages/filmes/EditarFilme';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Listas */}
-        <Route path="/listas" element={<MinhasListas />} />
-        <Route path="/listas/nova" element={<CriarLista />} />
-        <Route path="/listas/:id" element={<ListaAberta />} />
-        <Route path="/listas/:id/editar" element={<EditarLista />} />
-        <Route path="/listas/:id/adicionar" element={<AdicionarFilme />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
 
-        {/* Solicitações */}
-        <Route path="/solicitacoes" element={<SolicitacoesUsuario />} />
-        <Route path="/solicitacoes/nova" element={<SolicitarFilme />} />
-        <Route path="/solicitacoes/:id/editar" element={<EditarSolicitacao />} />
-        <Route path="/admin/solicitacoes" element={<AdminSolicitacoes />} />
+          {/* Filmes */}
+          <Route path="/filmes" element={<RotaProtegida><Filmes /></RotaProtegida>} />
+          <Route path="/filmes/novo" element={<RotaProtegida><CadastrarFilme /></RotaProtegida>} />
+          <Route path="/filmes/:id" element={<RotaProtegida><FilmeDetalhe /></RotaProtegida>} />
+          <Route path="/filmes/:id/editar" element={<RotaProtegida><EditarFilme /></RotaProtegida>} />
 
-        {/* Watchlist */}
-        <Route path="/watchlist" element={<Watchlist />} />
+          {/* Listas */}
+          <Route path="/listas" element={<RotaProtegida><MinhasListas /></RotaProtegida>} />
+          <Route path="/listas/nova" element={<RotaProtegida><CriarLista /></RotaProtegida>} />
+          <Route path="/listas/:id" element={<RotaProtegida><ListaAberta /></RotaProtegida>} />
+          <Route path="/listas/:id/editar" element={<RotaProtegida><EditarLista /></RotaProtegida>} />
+          <Route path="/listas/:id/adicionar" element={<RotaProtegida><AdicionarFilme /></RotaProtegida>} />
 
-        {/* Raiz */}
-        <Route path="/" element={<div>Home</div>} />
-      </Routes>
-    </BrowserRouter>
+          {/* Solicitações */}
+          <Route path="/solicitacoes" element={<RotaProtegida><SolicitacoesUsuario /></RotaProtegida>} />
+          <Route path="/solicitacoes/nova" element={<RotaProtegida><SolicitarFilme /></RotaProtegida>} />
+          <Route path="/solicitacoes/:id/editar" element={<RotaProtegida><EditarSolicitacao /></RotaProtegida>} />
+          <Route path="/admin/solicitacoes" element={<RotaProtegida><AdminSolicitacoes /></RotaProtegida>} />
+
+          {/* Watchlist */}
+          <Route path="/watchlist" element={<RotaProtegida><Watchlist /></RotaProtegida>} />
+
+          {/* Raiz */}
+          <Route path="/" element={<RotaProtegida><Filmes /></RotaProtegida>} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

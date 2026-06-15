@@ -95,13 +95,15 @@ public class ListaController {
     }
 
     @GetMapping("/{listaId}")
-    public ListaResumo obterLista(@PathVariable int listaId) {
-        return obterLista.executar(listaId);
+    public ListaResumo obterLista(@PathVariable int listaId,
+            @RequestParam(required = false) Integer quemPedeId) {
+        return obterLista.executar(listaId, quemPedeId);
     }
 
     @GetMapping
-    public List<ListaResumo> listarPorUsuario(@RequestParam int usuarioId) {
-        return listarPorUsuario.executar(usuarioId);
+    public List<ListaResumo> listarPorUsuario(@RequestParam int usuarioId,
+            @RequestParam(required = false) Integer quemPedeId) {
+        return listarPorUsuario.executar(usuarioId, quemPedeId);
     }
 
     @DeleteMapping("/{listaId}")

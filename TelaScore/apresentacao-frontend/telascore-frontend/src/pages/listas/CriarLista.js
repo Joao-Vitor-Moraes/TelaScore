@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { listaService } from '../../services/api';
-
-const USUARIO_ID = 3;
+import { useAuth } from '../../context/AuthContext';
 
 export default function CriarLista() {
+  const { sessao } = useAuth();
+  const USUARIO_ID = sessao.id;
   const [searchParams] = useSearchParams();
   const tipo = searchParams.get('tipo') || 'NORMAL';
 
@@ -41,6 +42,7 @@ export default function CriarLista() {
         tipo: tipo,
         visibilidade: form.visibilidade,
         rankeada: form.rankeada,
+        colaborativa: form.colaborativa,
       });
       navigate(tipo === 'WATCHLIST' ? '/watchlist' : '/listas');
     } catch {

@@ -54,7 +54,7 @@ public class AvaliacaoSteps {
     public void eu_tento_criar_uma_avaliacao_com_nota_e_resenha(Integer valorNota, String resenha) {
         try {
             Nota nota = new Nota(valorNota);
-            avaliacaoCriada = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, resenha);
+            avaliacaoCriada = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, resenha, "PUBLICA");
         } catch (Exception e) {
             excecaoCapturada = e;
         }
@@ -64,7 +64,7 @@ public class AvaliacaoSteps {
     public void eu_tento_criar_uma_avaliacao_sem_resenha(Integer valorNota) {
         try {
             Nota nota = new Nota(valorNota);
-            avaliacaoCriada = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, null);
+            avaliacaoCriada = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, null, "PUBLICA");
         } catch (Exception e) {
             excecaoCapturada = e;
         }
@@ -81,7 +81,7 @@ public class AvaliacaoSteps {
         excecaoCapturada = null;
 
         Nota nota = new Nota(valorNota);
-        avaliacaoCriada = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, resenha);
+        avaliacaoCriada = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, resenha, "PUBLICA");
     }
 
     @Quando("eu atualizo a nota para {int}")
@@ -116,7 +116,7 @@ public class AvaliacaoSteps {
                     avaliacoesNotificadas.add(avaliacao));
 
             Nota nota = new Nota(valorNota);
-            avaliacaoCriada = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, "Resenha de teste.");
+            avaliacaoCriada = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, "Resenha de teste.", "PUBLICA");
 
             servico.registrarAvaliacao(avaliacaoCriada);
         } catch (Exception e) {

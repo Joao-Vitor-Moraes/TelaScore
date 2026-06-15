@@ -1,0 +1,2 @@
+Message: Erro ao salvar a avaliação no banco de dados.
+Cause: Error while committing the transaction [could not execute statement [Cannot add or update a child row: a foreign key constraint fails (`telascore_db`.`avaliacao`, CONSTRAINT `avaliacao_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE)] [insert into avaliacao (data_avaliacao,filme_id,nota,resenha,usuario_id,visibilidade,id) values (?,?,?,?,?,?,?)]]

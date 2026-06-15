@@ -1,3 +1,6 @@
+# === Claude Code ===
+CLAUDE.md
+
 # === Build (Maven) ===
 target/
 src-gen

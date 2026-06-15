@@ -93,21 +93,20 @@ Frontend sobe em `http://localhost:3000`.
 - **Frontend:** `Ctrl + C` no terminal onde o `npm start` está rodando
 - **MySQL:** não precisa parar — fica rodando em segundo plano como serviço do Windows
 
-### IDs de usuário hardcoded no frontend
+### Autenticação
 
-O frontend não tem tela de login. Os IDs estão fixos no código:
-
-| Constante | Valor | Papel |
-|-----------|-------|-------|
-| `USUARIO_ID` | 3 | Cinéfilo (páginas de listas e solicitações) |
-| `ADM_ID` | 2 | Admin (página de avaliação de solicitações) |
-
-O admin (ID 2, `admin@admin.com` / `admin123`) é criado automaticamente pelo backend a cada startup.
-
-O cinéfilo (ID 3) precisa ser criado manualmente se o banco for resetado:
+O frontend tem tela de login em `http://localhost:3000/login`. É possível se registrar diretamente pela tela ou via API:
 
 ```bash
 curl -X POST http://localhost:8080/api/identidade/usuario/registrar \
   -H "Content-Type: application/json" \
   -d '{"nome":"Usuario Teste","email":"usuario@teste.com","senha":"teste123"}'
 ```
+
+Os papéis possíveis são `CINEFILO` (padrão para novos registros) e `ADMIN`. O papel é armazenado no banco e retornado no token JWT após o login. Para promover um usuário a admin:
+
+```sql
+UPDATE usuario SET papel = 'ADMIN' WHERE email = 'seu@email.com';
+```
+
+O admin criado automaticamente pelo backend a cada startup (`admin@admin.com` / `admin123`) já tem `papel = 'ADMIN'` e é redirecionado direto para o painel de solicitações ao fazer login.

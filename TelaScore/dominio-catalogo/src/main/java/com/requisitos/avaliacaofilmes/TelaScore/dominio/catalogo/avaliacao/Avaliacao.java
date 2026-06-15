@@ -13,23 +13,27 @@ public class Avaliacao {
 	private final UsuarioId usuarioId;
 	
 	private Nota nota;
-	private String resenha; 
+	private String resenha;
+	private String visibilidade;
 	private final LocalDate dataAvaliacao;
 
-	public Avaliacao(AvaliacaoId id, FilmeId filmeId, UsuarioId usuarioId, Nota nota, String resenha) {
+	public Avaliacao(AvaliacaoId id, FilmeId filmeId, UsuarioId usuarioId, Nota nota, String resenha, String visibilidade) {
 		notNull(id, "O id da avaliação não pode ser nulo");
 		notNull(filmeId, "O id do filme não pode ser nulo");
 		notNull(usuarioId, "O id do usuário não pode ser nulo");
 		notNull(nota, "A nota não pode ser nula");
-		
+
 		this.id = id;
 		this.filmeId = filmeId;
 		this.usuarioId = usuarioId;
-		this.dataAvaliacao = LocalDate.now(); 
-
+		this.dataAvaliacao = LocalDate.now();
 		this.nota = nota;
 		this.resenha = resenha;
-	}
+		this.visibilidade = visibilidade != null ? visibilidade : "PUBLICA";
+}
+
+	public String getVisibilidade() { return visibilidade; }
+	public void setVisibilidade(String visibilidade) { this.visibilidade = visibilidade; }
 
 	public AvaliacaoId getId() { return id; }
 	public FilmeId getFilmeId() { return filmeId; }

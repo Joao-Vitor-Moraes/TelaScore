@@ -1,9 +1,22 @@
 const BASE_URL = 'http://localhost:8080';
 
+function getToken() {
+  try {
+    const raw = localStorage.getItem('telascore_sessao');
+    return raw ? JSON.parse(raw).token : null;
+  } catch {
+    return null;
+  }
+}
+
 async function request(method, path, body) {
+  const token = getToken();
   const options = {
     method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   };
   if (body) options.body = JSON.stringify(body);
   const res = await fetch(`${BASE_URL}${path}`, options);
@@ -15,8 +28,8 @@ async function request(method, path, body) {
 
 // Listas
 export const listaService = {
-  listarPorUsuario: (usuarioId) => request('GET', `/api/listas?usuarioId=${usuarioId}`),
-  obter: (listaId) => request('GET', `/api/listas/${listaId}`),
+  listarPorUsuario: (usuarioId, quemPedeId) => request('GET', `/api/listas?usuarioId=${usuarioId}${quemPedeId != null ? `&quemPedeId=${quemPedeId}` : ''}`),
+  obter: (listaId, quemPedeId) => request('GET', `/api/listas/${listaId}${quemPedeId != null ? `?quemPedeId=${quemPedeId}` : ''}`),
   criar: (comando) => request('POST', '/api/listas', comando),
   editar: (listaId, body) => request('PUT', `/api/listas/${listaId}`, body),
   remover: (listaId, usuarioId) => request('DELETE', `/api/listas/${listaId}?usuarioId=${usuarioId}`),
@@ -27,11 +40,6 @@ export const listaService = {
   tornarColaborativa: (listaId, usuarioId) => request('PATCH', `/api/listas/${listaId}/colaborativa`, { usuarioId }),
   adicionarColaborador: (listaId, body) => request('POST', `/api/listas/${listaId}/colaboradores`, body),
   registrarAssistido: (listaId, filmeId, usuarioId) => request('PATCH', `/api/listas/${listaId}/filmes/${filmeId}/assistido`, { usuarioId }),
-};
-
-// Filmes
-export const filmeService = {
-  listar: () => request('GET', '/filmes'),
 };
 
 // Solicitações
@@ -45,3 +53,31 @@ export const solicitacaoService = {
   listarPorSolicitante: (solicitanteId) => request('GET', `/api/solicitacoes?solicitanteId=${solicitanteId}`),
   listarPorStatus: (status) => request('GET', `/api/solicitacoes?status=${status}`),
 };
+
+// Filmes — substitua o filmeService existente por este:
+export const filmeService = {
+  listar: () => request('GET', '/filmes'),
+  obter: (id) => request('GET', `/filmes/${id}`),
+  cadastrar: (dados) => request('POST', '/filmes', dados),
+  atualizar: (id, dados) => request('PUT', `/filmes/${id}`, dados),
+  remover: (id) => request('DELETE', `/filmes/${id}`),
+};
+
+// Auth
+export const authService = {
+  login: (email, senha) => request('POST', '/api/identidade/usuario/login', { email, senha }),
+  registrar: (nome, email, senha) => request('POST', '/api/identidade/usuario/registrar', { nome, email, senha }),
+};
+
+// Avaliações — adicione depois do filmeService:
+export const avaliacaoService = {
+  listarPorFilme: (filmeId, usuarioId) => {
+    const query = usuarioId ? `?usuarioId=${usuarioId}` : '';
+    return request('GET', `/avaliacoes/filme/${filmeId}${query}`);
+  },
+  avaliar: (dados) => request('POST', '/avaliacoes', dados),
+  atualizar: (id, dados) => request('PUT', `/avaliacoes/${id}`, dados),
+  remover: (id) => request('DELETE', `/avaliacoes/${id}`),
+};
+
+

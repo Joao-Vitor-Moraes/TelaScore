@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import { solicitacaoService } from '../../services/api';
 import { FiSearch, FiFilter } from 'react-icons/fi';
-
-const ADM_ID = 2;
+import { useAuth } from '../../context/AuthContext';
 
 export default function AdminSolicitacoes() {
+  const { sessao } = useAuth();
+  const ADM_ID = sessao.id;
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState('');
