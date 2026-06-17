@@ -131,6 +131,24 @@ public class ListaRepositorioImpl implements ListaRepositorio {
         }
     }
 
+    @Override
+    public List<Lista> pesquisarPorColaborador(UsuarioId colaboradorId) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            List<ListaEntity> entities = em.createQuery(
+                    "SELECT l FROM ListaEntity l JOIN l.colaboradores c WHERE c = :colaboradorId", ListaEntity.class)
+                    .setParameter("colaboradorId", colaboradorId.getId())
+                    .getResultList();
+            List<Lista> listas = new ArrayList<>();
+            for (ListaEntity entity : entities) {
+                listas.add(mapearParaDominio(entity));
+            }
+            return listas;
+        } finally {
+            em.close();
+        }
+    }
+
     private Lista mapearParaDominio(ListaEntity entity) {
         ListaId listaId = new ListaId(entity.getId());
         UsuarioId donoId = new UsuarioId(entity.getDonoId());

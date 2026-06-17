@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverColaboradorListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarSolicitacaoFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.SolicitarAjustesFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarListasPorUsuarioCasoDeUso;
@@ -84,6 +85,12 @@ public class CatalogoConfig {
     public AdicionarColaboradorListaCasoDeUso adicionarColaboradorListaCasoDeUso(ListaRepositorio listaRepositorio,
             ListaServico listaServico) {
         return new AdicionarColaboradorListaCasoDeUso(listaRepositorio, listaServico);
+    }
+
+    @Bean
+    public RemoverColaboradorListaCasoDeUso removerColaboradorListaCasoDeUso(ListaRepositorio listaRepositorio,
+            ListaServico listaServico) {
+        return new RemoverColaboradorListaCasoDeUso(listaRepositorio, listaServico);
     }
 
     @Bean

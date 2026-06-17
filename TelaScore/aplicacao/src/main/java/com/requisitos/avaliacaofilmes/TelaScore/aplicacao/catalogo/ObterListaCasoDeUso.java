@@ -1,5 +1,7 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo;
 
+import java.util.List;
+
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.Lista;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaRepositorio;
@@ -23,6 +25,8 @@ public class ObterListaCasoDeUso {
         if (isPrivada && !isDono) {
             throw new IllegalArgumentException("Lista não encontrada.");
         }
+        List<Integer> colaboradores = lista.getColaboradores().stream()
+                .map(c -> c.getId()).collect(java.util.stream.Collectors.toList());
         return new ListaResumo(
                 lista.getId().getId(),
                 lista.getDonoId().getId(),
@@ -32,7 +36,8 @@ public class ObterListaCasoDeUso {
                 lista.getTipo().name(),
                 lista.getVisibilidade().name(),
                 lista.isColaborativa(),
-                lista.getItens().size()
+                lista.getItens().size(),
+                colaboradores
         );
     }
 }

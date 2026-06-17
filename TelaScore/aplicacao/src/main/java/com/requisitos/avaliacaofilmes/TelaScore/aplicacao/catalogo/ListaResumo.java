@@ -1,5 +1,7 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo;
 
+import java.util.List;
+
 public record ListaResumo(
 		int id,
 		int donoId,
@@ -9,5 +11,6 @@ public record ListaResumo(
 		String tipo,
 		String visibilidade,
 		boolean colaborativa,
-		int quantidadeTotalDeFilmes
+		int quantidadeTotalDeFilmes,
+		List<Integer> colaboradores
 ) {}

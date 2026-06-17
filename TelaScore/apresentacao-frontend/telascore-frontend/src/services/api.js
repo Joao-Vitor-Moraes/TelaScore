@@ -39,6 +39,7 @@ export const listaService = {
   reordenarFilme: (listaId, filmeId, body) => request('PATCH', `/api/listas/${listaId}/filmes/${filmeId}/posicao`, body),
   tornarColaborativa: (listaId, usuarioId) => request('PATCH', `/api/listas/${listaId}/colaborativa`, { usuarioId }),
   adicionarColaborador: (listaId, body) => request('POST', `/api/listas/${listaId}/colaboradores`, body),
+  removerColaborador: (listaId, colaboradorId, donoId) => request('DELETE', `/api/listas/${listaId}/colaboradores/${colaboradorId}?donoId=${donoId}`),
   registrarAssistido: (listaId, filmeId, usuarioId) => request('PATCH', `/api/listas/${listaId}/filmes/${filmeId}/assistido`, { usuarioId }),
 };
 
