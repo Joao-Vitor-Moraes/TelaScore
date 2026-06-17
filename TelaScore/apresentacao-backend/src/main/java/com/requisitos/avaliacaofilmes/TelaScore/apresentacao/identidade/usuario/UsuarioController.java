@@ -2,12 +2,15 @@ package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.identidade.usuario
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.CadastrarUsuarioComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.CadastrarUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.EditarMeuUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.EditarMeuUsuarioComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.EditarUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.EditarUsuarioComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.ListarUsuariosCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.ListarUsuariosComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.LoginUsuarioComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.LoginUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.ObterMeuUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.RemoverUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.RemoverUsuarioComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.SessaoUsuario;
@@ -36,6 +39,8 @@ public class UsuarioController {
     private final CadastrarUsuarioCasoDeUso cadastrarUsuario;
     private final LoginUsuarioCasoDeUso loginUsuario;
     private final ListarUsuariosCasoDeUso listarUsuarios;
+    private final ObterMeuUsuarioCasoDeUso obterMeuUsuario;
+    private final EditarMeuUsuarioCasoDeUso editarMeuUsuario;
     private final EditarUsuarioCasoDeUso editarUsuario;
     private final RemoverUsuarioCasoDeUso removerUsuario;
     private final SessaoUsuario sessaoUsuario;
@@ -45,6 +50,8 @@ public class UsuarioController {
             CadastrarUsuarioCasoDeUso cadastrarUsuario,
             LoginUsuarioCasoDeUso loginUsuario,
             ListarUsuariosCasoDeUso listarUsuarios,
+            ObterMeuUsuarioCasoDeUso obterMeuUsuario,
+            EditarMeuUsuarioCasoDeUso editarMeuUsuario,
             EditarUsuarioCasoDeUso editarUsuario,
             RemoverUsuarioCasoDeUso removerUsuario,
             SessaoUsuario sessaoUsuario,
@@ -52,6 +59,8 @@ public class UsuarioController {
         this.cadastrarUsuario = cadastrarUsuario;
         this.loginUsuario = loginUsuario;
         this.listarUsuarios = listarUsuarios;
+        this.obterMeuUsuario = obterMeuUsuario;
+        this.editarMeuUsuario = editarMeuUsuario;
         this.editarUsuario = editarUsuario;
         this.removerUsuario = removerUsuario;
         this.sessaoUsuario = sessaoUsuario;
@@ -103,6 +112,38 @@ public class UsuarioController {
         }
 
         return ResponseEntity.ok(UsuarioAutenticadoResponse.de(usuarioLogado));
+    }
+
+    @GetMapping("/meu-usuario")
+    public ResponseEntity<?> obterMeuUsuario() {
+        try {
+            return ResponseEntity.ok(UsuarioResponse.de(obterMeuUsuario.executar()));
+        } catch (IllegalStateException e) {
+            return tratarErroDePermissao(e);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErroLoginResponse(e.getMessage()));
+        }
+    }
+
+    @PutMapping("/meu-usuario")
+    public ResponseEntity<?> editarMeuUsuario(@RequestBody EditarMeuUsuarioRequest request) {
+        if (request == null) {
+            return ResponseEntity.badRequest().body(new ErroLoginResponse("Dados de usuario invalidos"));
+        }
+
+        try {
+            Usuario usuario = editarMeuUsuario.executar(new EditarMeuUsuarioComando(
+                    request.nome(),
+                    request.apelido(),
+                    request.biografia(),
+                    request.avatarUrl()));
+
+            return ResponseEntity.ok(UsuarioResponse.de(usuario));
+        } catch (IllegalStateException e) {
+            return tratarErroDePermissao(e);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErroLoginResponse(e.getMessage()));
+        }
     }
 
     @GetMapping
@@ -179,6 +220,13 @@ public class UsuarioController {
             String nome,
             String email,
             String papel,
+            String apelido,
+            String biografia,
+            String avatarUrl) {
+    }
+
+    public static record EditarMeuUsuarioRequest(
+            String nome,
             String apelido,
             String biografia,
             String avatarUrl) {

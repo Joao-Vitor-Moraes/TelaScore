@@ -20,7 +20,7 @@ export default function Navbar() {
         <span style={styles.logo}>TelaScore</span>
         {menuAberto && (
           <div style={styles.menu}>
-            <button style={styles.menuItem} onClick={() => { navigate('/perfil'); setMenuAberto(false); }}>Meu Perfil</button>
+            <button style={styles.menuItem} onClick={() => { navigate('/meuusuario'); setMenuAberto(false); }}>Meu Usuario</button>
             <button style={styles.menuItem} onClick={() => { navigate('/listas'); setMenuAberto(false); }}>Minhas Listas</button>
             <button style={styles.menuItem} onClick={() => { navigate('/watchlist'); setMenuAberto(false); }}>Watchlist</button>
             <button style={styles.menuItem} onClick={() => { navigate('/solicitacoes'); setMenuAberto(false); }}>Solicitações</button>

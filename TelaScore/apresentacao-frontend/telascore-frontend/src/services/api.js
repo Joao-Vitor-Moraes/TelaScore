@@ -81,6 +81,8 @@ export const avaliacaoService = {
 };
 
 export const usuarioService = {
+  meuUsuario: () => request('GET', '/api/identidade/usuario/meu-usuario'),
+  editarMeuUsuario: (dados) => request('PUT', '/api/identidade/usuario/meu-usuario', dados),
   listar: () => request('GET', '/api/identidade/usuario'),
   editar: (id, dados) => request('PUT', `/api/identidade/usuario/${id}`, dados),
   remover: (id) => request('DELETE', `/api/identidade/usuario/${id}`),
