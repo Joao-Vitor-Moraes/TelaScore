@@ -20,7 +20,12 @@ async function request(method, path, body) {
   };
   if (body) options.body = JSON.stringify(body);
   const res = await fetch(`${BASE_URL}${path}`, options);
-  if (!res.ok) throw new Error(`Erro ${res.status}: ${res.statusText}`);
+  if (!res.ok) {
+    const text = await res.text();
+    let msg = `Erro ${res.status}`;
+    try { const json = JSON.parse(text); if (json.mensagem) msg = json.mensagem; } catch {}
+    throw new Error(msg);
+  }
   if (res.status === 204 || (res.status === 201 && res.headers.get('content-length') === '0')) return null;
   const text = await res.text();
   return text ? JSON.parse(text) : null;

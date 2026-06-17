@@ -126,7 +126,7 @@ public class ListaController {
     @PostMapping("/{listaId}/filmes")
     public ResponseEntity<Void> adicionarFilme(@PathVariable int listaId,
             @RequestBody AdicionarFilmeRequest body) {
-        adicionarFilme.executar(new AdicionarFilmeNaListaComando(listaId, body.usuarioId(), body.filmeId(), body.filmeJaFoiAssistido()));
+        adicionarFilme.executar(new AdicionarFilmeNaListaComando(listaId, body.usuarioId(), body.filmeId()));
         return ResponseEntity.noContent().build();
     }
 
@@ -177,7 +177,7 @@ public class ListaController {
     }
 
     public static record EditarListaRequest(int usuarioId, String nome, String descricao, String visibilidade, boolean rankeada) {}
-    public static record AdicionarFilmeRequest(int usuarioId, int filmeId, boolean filmeJaFoiAssistido) {}
+    public static record AdicionarFilmeRequest(int usuarioId, int filmeId) {}
     public static record ReordenarRequest(int usuarioId, int novaPosicao) {}
     public static record TornarColaborativaRequest(int usuarioId) {}
     public static record AdicionarColaboradorRequest(int donoId, int novoColaboradorId) {}

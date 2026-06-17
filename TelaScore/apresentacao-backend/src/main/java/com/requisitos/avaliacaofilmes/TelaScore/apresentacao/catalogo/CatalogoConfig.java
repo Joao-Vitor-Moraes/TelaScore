@@ -59,8 +59,8 @@ public class CatalogoConfig {
 
     @Bean
     public AdicionarFilmeNaListaCasoDeUso adicionarFilmeNaListaCasoDeUso(ListaRepositorio listaRepositorio,
-            FilmeRepositorio filmeRepositorio, ListaServico listaServico) {
-        return new AdicionarFilmeNaListaCasoDeUso(listaRepositorio, filmeRepositorio, listaServico);
+            FilmeRepositorio filmeRepositorio, ListaServico listaServico, AvaliacaoRepositorio avaliacaoRepositorio) {
+        return new AdicionarFilmeNaListaCasoDeUso(listaRepositorio, filmeRepositorio, listaServico, avaliacaoRepositorio);
     }
 
     @Bean
@@ -205,8 +205,9 @@ public class CatalogoConfig {
 
     @Bean
     public AvaliarFilmeCasoDeUso avaliarFilmeCasoDeUso(AvaliacaoRepositorio avaliacaoRepositorio,
-            FilmeRepositorio filmeRepositorio, GeradorId geradorId) {
-        return new AvaliarFilmeCasoDeUso(avaliacaoRepositorio, filmeRepositorio, geradorId);
+            FilmeRepositorio filmeRepositorio, GeradorId geradorId,
+            ListaRepositorio listaRepositorio, ListaServico listaServico) {
+        return new AvaliarFilmeCasoDeUso(avaliacaoRepositorio, filmeRepositorio, geradorId, listaRepositorio, listaServico);
     }
 
     @Bean
