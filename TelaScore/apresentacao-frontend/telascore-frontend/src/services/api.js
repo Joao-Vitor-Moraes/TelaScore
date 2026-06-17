@@ -21,7 +21,7 @@ async function request(method, path, body) {
   if (body) options.body = JSON.stringify(body);
   const res = await fetch(`${BASE_URL}${path}`, options);
   if (!res.ok) throw new Error(`Erro ${res.status}: ${res.statusText}`);
-  if (res.status === 204 || res.status === 201 && res.headers.get('content-length') === '0') return null;
+  if (res.status === 204 || (res.status === 201 && res.headers.get('content-length') === '0')) return null;
   const text = await res.text();
   return text ? JSON.parse(text) : null;
 }
@@ -80,4 +80,8 @@ export const avaliacaoService = {
   remover: (id) => request('DELETE', `/avaliacoes/${id}`),
 };
 
-
+export const usuarioService = {
+  listar: () => request('GET', '/api/identidade/usuario'),
+  editar: (id, dados) => request('PUT', `/api/identidade/usuario/${id}`, dados),
+  remover: (id) => request('DELETE', `/api/identidade/usuario/${id}`),
+};

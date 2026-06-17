@@ -3,6 +3,7 @@ import Navbar from '../../components/Navbar';
 import { solicitacaoService } from '../../services/api';
 import { FiSearch, FiFilter } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
+import NavbarAdmin from '../../components/NavbarAdmin';
 
 export default function AdminSolicitacoes() {
   const { sessao } = useAuth();
@@ -68,6 +69,7 @@ export default function AdminSolicitacoes() {
   return (
     <div style={styles.pagina}>
       <Navbar />
+      <NavbarAdmin />
       <div style={styles.conteudo}>
 
         <div style={styles.cabecalho}>

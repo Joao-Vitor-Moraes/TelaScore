@@ -1,8 +1,11 @@
 package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.identidade.usuario;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.CadastrarUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.EditarUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.ListarUsuariosCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.LoginUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.RemoverUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.SessaoUsuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Email;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
@@ -44,6 +47,27 @@ public class UsuarioConfig {
             UsuarioServico usuarioServico,
             GeradorId geradorId) {
         return new CadastrarUsuarioCasoDeUso(usuarioServico, geradorId);
+    }
+
+    @Bean
+    public ListarUsuariosCasoDeUso listarUsuariosCasoDeUso(
+            UsuarioServico usuarioServico,
+            SessaoUsuario sessaoUsuario) {
+        return new ListarUsuariosCasoDeUso(usuarioServico, sessaoUsuario);
+    }
+
+    @Bean
+    public EditarUsuarioCasoDeUso editarUsuarioCasoDeUso(
+            UsuarioServico usuarioServico,
+            SessaoUsuario sessaoUsuario) {
+        return new EditarUsuarioCasoDeUso(usuarioServico, sessaoUsuario);
+    }
+
+    @Bean
+    public RemoverUsuarioCasoDeUso removerUsuarioCasoDeUso(
+            UsuarioServico usuarioServico,
+            SessaoUsuario sessaoUsuario) {
+        return new RemoverUsuarioCasoDeUso(usuarioServico, sessaoUsuario);
     }
 
     @Bean
