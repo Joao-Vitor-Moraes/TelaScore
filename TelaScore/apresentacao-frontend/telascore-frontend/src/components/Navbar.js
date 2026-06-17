@@ -17,7 +17,9 @@ export default function Navbar() {
     <nav style={styles.nav}>
       <div style={styles.esquerda}>
         <button style={styles.hamburguer} onClick={() => setMenuAberto(!menuAberto)}><FiMenu size={20} /></button>
-        <span style={styles.logo}>TelaScore</span>
+        <span style={styles.logo} onClick={() => navigate('/')}>
+          TelaScore
+        </span>
         {menuAberto && (
           <div style={styles.menu}>
             <button style={styles.menuItem} onClick={() => { navigate('/meuusuario'); setMenuAberto(false); }}>Meu Usuario</button>
@@ -73,6 +75,7 @@ const styles = {
     fontWeight: 'bold',
     fontSize: '20px',
     color: '#e94560',
+    cursor: 'pointer',
   },
   hamburguer: {
     background: 'none',

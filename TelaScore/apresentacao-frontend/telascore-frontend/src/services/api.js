@@ -66,7 +66,7 @@ export const filmeService = {
 // Auth
 export const authService = {
   login: (email, senha) => request('POST', '/api/identidade/usuario/login', { email, senha }),
-  registrar: (nome, email, senha) => request('POST', '/api/identidade/usuario/registrar', { nome, email, senha }),
+  registrar: (dados) => request('POST', '/api/identidade/usuario/registrar', dados),
 };
 
 // Avaliações — adicione depois do filmeService:

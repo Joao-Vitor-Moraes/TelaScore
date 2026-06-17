@@ -1,15 +1,15 @@
 # language: pt
-Funcionalidade: Remover usuário
-    Como administrador da plataforma
-    Quero remover um usuário
-    Para manter apenas contas válidas no sistema
+Funcionalidade: Remover usuario
+    Como sistema
+    Quero remover um usuario
+    Para manter apenas contas validas no repositorio
 
-    Cenário: Remover usuário existente
-        Dado que existe um usuário cadastrado com ID 1
-        Quando solicito a remoção do usuário com ID 1
-        Então o usuário deve ser removido com sucesso
+    Cenario: Remover usuario existente
+        Dado que existe um usuario cadastrado com ID 1
+        Quando solicito a remocao do usuario com ID 1 no dominio
+        Entao o usuario deve ser removido com sucesso
 
-    Cenário: Não deve remover usuário inexistente
-        Dado que não existe usuário cadastrado com ID 99
-        Quando solicito a remoção do usuário com ID 99
-        Então o sistema deve bloquear a remoção informando que o usuário não existe
+    Cenario: Nao deve remover usuario inexistente
+        Dado que nao existe usuario cadastrado com ID 99
+        Quando solicito a remocao do usuario com ID 99 no dominio
+        Entao o sistema deve bloquear a remocao com erro "O usuario informado nao existe"
