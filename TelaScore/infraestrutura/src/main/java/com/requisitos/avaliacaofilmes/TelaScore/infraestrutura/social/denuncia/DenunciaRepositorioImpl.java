@@ -102,6 +102,25 @@ public class DenunciaRepositorioImpl implements DenunciaRepositorio {
 	}
 
 	@Override
+	public List<Denuncia> listarTodas() {
+		EntityManager em = ConexaoBanco.obterEntityManager();
+		try {
+			return em.createNativeQuery("""
+					SELECT id, denunciante_id, alvo_id, tipo_alvo, motivo,
+					       descricao, link_ocorrencia, data_criacao, status
+					FROM denuncia
+					ORDER BY data_criacao DESC
+					""")
+				.getResultList()
+				.stream()
+				.map(resultado -> mapearLinhaParaDominio((Object[]) resultado))
+				.toList();
+		} finally {
+			em.close();
+		}
+	}
+
+	@Override
 	public List<Denuncia> listarPorStatus(StatusDenuncia status) {
 		EntityManager em = ConexaoBanco.obterEntityManager();
 		try {

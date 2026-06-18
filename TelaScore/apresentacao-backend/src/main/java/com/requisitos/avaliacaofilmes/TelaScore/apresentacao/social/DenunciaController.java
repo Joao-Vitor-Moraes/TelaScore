@@ -10,6 +10,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.Denunc
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.ListarDenunciasPendentesCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.ListarDenunciasPorStatusCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.ListarDenunciasPorUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.ListarTodasDenunciasCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.RegistrarDenunciaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.RegistrarDenunciaComando;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioLogado;
@@ -32,6 +33,7 @@ public class DenunciaController {
 	private final RegistrarDenunciaCasoDeUso registrarDenuncia;
 	private final ListarDenunciasPorUsuarioCasoDeUso listarPorUsuario;
 	private final ListarDenunciasPendentesCasoDeUso listarPendentes;
+	private final ListarTodasDenunciasCasoDeUso listarTodas;
 	private final ListarDenunciasPorStatusCasoDeUso listarPorStatus;
 	private final AvaliarDenunciaCasoDeUso avaliarDenuncia;
 	private final SessaoUsuario sessaoUsuario;
@@ -40,12 +42,14 @@ public class DenunciaController {
 			RegistrarDenunciaCasoDeUso registrarDenuncia,
 			ListarDenunciasPorUsuarioCasoDeUso listarPorUsuario,
 			ListarDenunciasPendentesCasoDeUso listarPendentes,
+			ListarTodasDenunciasCasoDeUso listarTodas,
 			ListarDenunciasPorStatusCasoDeUso listarPorStatus,
 			AvaliarDenunciaCasoDeUso avaliarDenuncia,
 			SessaoUsuario sessaoUsuario) {
 		this.registrarDenuncia = registrarDenuncia;
 		this.listarPorUsuario = listarPorUsuario;
 		this.listarPendentes = listarPendentes;
+		this.listarTodas = listarTodas;
 		this.listarPorStatus = listarPorStatus;
 		this.avaliarDenuncia = avaliarDenuncia;
 		this.sessaoUsuario = sessaoUsuario;
@@ -94,7 +98,8 @@ public class DenunciaController {
 			return listarPorStatus.executar(status);
 		}
 
-		throw new EntradaInvalidaException("Informe denuncianteId ou status");
+		exigirAdmin();
+		return listarTodas.executar();
 	}
 
 	@PatchMapping("/{denunciaId}/avaliar")

@@ -16,7 +16,7 @@ const STATUS = [
 
 export default function AdminDenuncias() {
     const { sessao } = useAuth();
-    const [status, setStatus] = useState('PENDENTE');
+    const [status, setStatus] = useState('');
     const [denuncias, setDenuncias] = useState([]);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(null);
@@ -27,7 +27,9 @@ export default function AdminDenuncias() {
         setCarregando(true);
         setErro(null);
         try {
-            const dados = await denunciaService.listarPorStatus(statusSelecionado);
+            const dados = statusSelecionado
+                ? await denunciaService.listarPorStatus(statusSelecionado)
+                : await denunciaService.listarTodas();
             setDenuncias(Array.isArray(dados) ? dados : []);
         } catch {
             setDenuncias([]);
@@ -92,7 +94,9 @@ export default function AdminDenuncias() {
                     <div>
                         <p className="page-eyebrow">Administração</p>
                         <h2 className="page-title">Denúncias</h2>
-                        <p className="page-description">{listagem.length} de {denuncias.length} denúncias neste status</p>
+                        <p className="page-description">
+                            {listagem.length} de {denuncias.length} denúncias {status ? 'neste status' : 'cadastradas'}
+                        </p>
                     </div>
 
                     <div className="catalog-toolbar__actions">

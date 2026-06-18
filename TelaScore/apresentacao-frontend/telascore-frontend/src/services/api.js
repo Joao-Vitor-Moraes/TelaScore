@@ -102,6 +102,7 @@ export const usuarioService = {
 export const denunciaService = {
   registrar: (dados) => request('POST', '/api/denuncias', dados),
   listarMinhas: () => request('GET', '/api/denuncias/minhas'),
+  listarTodas: () => request('GET', '/api/denuncias'),
   listarPorStatus: (status) => request('GET', `/api/denuncias?status=${encodeURIComponent(status)}`),
   listarPendentes: () => request('GET', '/api/denuncias/pendentes'),
   avaliar: (id, decisao) => request('PATCH', `/api/denuncias/${id}/avaliar`, { decisao }),

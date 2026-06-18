@@ -95,6 +95,11 @@ public class SocialConfig {
     }
 
     @Bean
+    public ListarTodasDenunciasCasoDeUso listarTodasDenunciasCasoDeUso(DenunciaRepositorio denunciaRepositorio) {
+        return new ListarTodasDenunciasCasoDeUso(denunciaRepositorio);
+    }
+
+    @Bean
     public ListarDenunciasPorStatusCasoDeUso listarDenunciasPorStatusCasoDeUso(DenunciaRepositorio denunciaRepositorio) {
         return new ListarDenunciasPorStatusCasoDeUso(denunciaRepositorio);
     }

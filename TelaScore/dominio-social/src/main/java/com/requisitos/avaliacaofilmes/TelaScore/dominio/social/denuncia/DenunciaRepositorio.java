@@ -7,6 +7,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuar
 public interface DenunciaRepositorio {
 	void salvar(Denuncia denuncia);
 	Denuncia obter(DenunciaId id);
+	List<Denuncia> listarTodas();
 	List<Denuncia> listarPorStatus(StatusDenuncia status);
 	List<Denuncia> listarPorUsuario(UsuarioId denuncianteId);
 	boolean existeDenunciaDoUsuarioParaAlvo(UsuarioId denuncianteId, TipoAlvoDenuncia tipoAlvo, int alvoId);
