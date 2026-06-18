@@ -11,7 +11,8 @@ public record MetaResumo(
         int quantidadeAlvo,
         int quantidadeAtual,
         LocalDate dataPrazo,
-        String status) {
+        String status,
+        String statusDescricao) {
 
     public static MetaResumo de(Meta meta) {
         return new MetaResumo(
@@ -21,6 +22,17 @@ public record MetaResumo(
                 meta.getQuantidadeAlvo(),
                 meta.getQuantidadeAtual(),
                 meta.getDataPrazo(),
-                meta.getStatus().name());
+                meta.getStatus().name(),
+                formatarStatus(meta.getStatus().name()));
+    }
+
+    private static String formatarStatus(String status) {
+        return switch (status) {
+            case "EM_ANDAMENTO" -> "Em andamento";
+            case "CONCLUIDA" -> "Concluída";
+            case "FALHADA" -> "Não concluída";
+            case "CANCELADA" -> "Cancelada";
+            default -> status;
+        };
     }
 }

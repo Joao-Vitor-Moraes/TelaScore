@@ -42,8 +42,9 @@ public class AnaliseConfig {
     }
 
     @Bean
-    public ListarMetasPorUsuarioCasoDeUso listarMetasPorUsuarioCasoDeUso(MetaRepositorio metaRepositorio) {
-        return new ListarMetasPorUsuarioCasoDeUso(metaRepositorio);
+    public ListarMetasPorUsuarioCasoDeUso listarMetasPorUsuarioCasoDeUso(
+            MetaRepositorio metaRepositorio, GeradorId geradorId) {
+        return new ListarMetasPorUsuarioCasoDeUso(metaRepositorio, geradorId);
     }
 
     @Bean
