@@ -88,7 +88,7 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdDenuncia() {
-        throw new UnsupportedOperationException("Geracao de ID de denuncia nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(id) FROM denuncia");
     }
 
     @Override

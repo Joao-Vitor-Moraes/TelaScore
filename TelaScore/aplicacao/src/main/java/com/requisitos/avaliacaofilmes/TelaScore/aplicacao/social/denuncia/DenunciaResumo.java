@@ -1,5 +1,7 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia;
 
+import java.time.LocalDateTime;
+
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.denuncia.Denuncia;
 
 public record DenunciaResumo(
@@ -9,6 +11,8 @@ public record DenunciaResumo(
 	String tipoAlvo,
 	String motivo,
 	String descricao,
+	String linkOcorrencia,
+	LocalDateTime dataCriacao,
 	String status
 ) {
 	public static DenunciaResumo de(Denuncia denuncia) {
@@ -19,6 +23,8 @@ public record DenunciaResumo(
 			denuncia.getTipoAlvo().name(),
 			denuncia.getMotivo().name(),
 			denuncia.getDescricao(),
+			denuncia.getLinkOcorrencia(),
+			denuncia.getDataCriacao(),
 			denuncia.getStatus().name()
 		);
 	}

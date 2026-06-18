@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FiFileText, FiHome, FiUsers } from 'react-icons/fi';
+import { FiFileText, FiFlag, FiUsers } from 'react-icons/fi';
 
 export default function NavbarAdmin() {
   const navigate = useNavigate();
@@ -21,6 +21,10 @@ export default function NavbarAdmin() {
         <button style={estiloItem('/admin/usuarios')} onClick={() => navigate('/admin/usuarios')}>
           <FiUsers size={15} />
           Usuários
+        </button>
+        <button style={estiloItem('/admin/denuncias')} onClick={() => navigate('/admin/denuncias')}>
+          <FiFlag size={15} />
+          Denúncias
         </button>
       </div>
     </nav>

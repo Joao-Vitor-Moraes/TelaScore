@@ -1,10 +1,14 @@
 package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.social;
 
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.*;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.ComunidadeRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.denuncia.DenunciaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.denuncia.DenunciaServico;
 
 @Configuration
 public class SocialConfig {
@@ -68,5 +72,35 @@ public class SocialConfig {
     @Bean
     public ExcluirMensagemCasoDeUso excluirMensagemCasoDeUso(ComunidadeRepositorio comunidadeRepositorio) {
         return new ExcluirMensagemCasoDeUso(comunidadeRepositorio);
+    }
+
+    @Bean
+    public DenunciaServico denunciaServico(DenunciaRepositorio denunciaRepositorio) {
+        return new DenunciaServico(denunciaRepositorio);
+    }
+
+    @Bean
+    public RegistrarDenunciaCasoDeUso registrarDenunciaCasoDeUso(DenunciaServico denunciaServico, GeradorId geradorId) {
+        return new RegistrarDenunciaCasoDeUso(denunciaServico, geradorId);
+    }
+
+    @Bean
+    public ListarDenunciasPorUsuarioCasoDeUso listarDenunciasPorUsuarioCasoDeUso(DenunciaRepositorio denunciaRepositorio) {
+        return new ListarDenunciasPorUsuarioCasoDeUso(denunciaRepositorio);
+    }
+
+    @Bean
+    public ListarDenunciasPendentesCasoDeUso listarDenunciasPendentesCasoDeUso(DenunciaRepositorio denunciaRepositorio) {
+        return new ListarDenunciasPendentesCasoDeUso(denunciaRepositorio);
+    }
+
+    @Bean
+    public ListarDenunciasPorStatusCasoDeUso listarDenunciasPorStatusCasoDeUso(DenunciaRepositorio denunciaRepositorio) {
+        return new ListarDenunciasPorStatusCasoDeUso(denunciaRepositorio);
+    }
+
+    @Bean
+    public AvaliarDenunciaCasoDeUso avaliarDenunciaCasoDeUso(DenunciaRepositorio denunciaRepositorio, DenunciaServico denunciaServico) {
+        return new AvaliarDenunciaCasoDeUso(denunciaRepositorio, denunciaServico);
     }
 }

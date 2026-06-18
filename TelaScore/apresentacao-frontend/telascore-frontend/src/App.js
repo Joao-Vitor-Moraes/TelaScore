@@ -18,6 +18,8 @@ import FilmeDetalhe from './pages/filmes/FilmeDetalhe';
 import EditarFilme from './pages/filmes/EditarFilme';
 import AdminUsuarios from './pages/usuario/AdminUsuarios';
 import MeuUsuario from './pages/usuario/MeuUsuario';
+import Denuncias from './pages/denuncias/Denuncias';
+import AdminDenuncias from './pages/denuncias/AdminDenuncias';
 
 function App() {
   return (
@@ -44,6 +46,10 @@ function App() {
           <Route path="/solicitacoes/nova" element={<RotaProtegida><SolicitarFilme /></RotaProtegida>} />
           <Route path="/solicitacoes/:id/editar" element={<RotaProtegida><EditarSolicitacao /></RotaProtegida>} />
           <Route path="/admin/solicitacoes" element={<RotaProtegida><AdminSolicitacoes /></RotaProtegida>} />
+
+          {/* Denuncias */}
+          <Route path="/denuncias" element={<RotaProtegida><Denuncias /></RotaProtegida>} />
+          <Route path="/admin/denuncias" element={<RotaProtegida><AdminDenuncias /></RotaProtegida>} />
 
           {/* usuario*/}
           <Route path="/meuusuario" element={<RotaProtegida><MeuUsuario /></RotaProtegida>} />

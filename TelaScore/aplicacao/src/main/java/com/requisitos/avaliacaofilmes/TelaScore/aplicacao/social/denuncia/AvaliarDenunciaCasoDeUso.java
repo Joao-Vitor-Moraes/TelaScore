@@ -16,6 +16,9 @@ public class AvaliarDenunciaCasoDeUso {
 
 	public DenunciaResumo executar(AvaliarDenunciaComando comando) {
 		Denuncia denuncia = repositorio.obter(new DenunciaId(comando.denunciaId()));
+		if (denuncia == null) {
+			throw new IllegalArgumentException("Denuncia nao encontrada");
+		}
 
 		if ("ACEITAR".equalsIgnoreCase(comando.decisao())) {
 			servico.aceitar(denuncia);
@@ -24,7 +27,7 @@ public class AvaliarDenunciaCasoDeUso {
 		} else if ("ANALISAR".equalsIgnoreCase(comando.decisao())) {
 			servico.colocarEmAnalise(denuncia);
 		} else {
-			throw new IllegalArgumentException("Decisão de denúncia inválida");
+			throw new IllegalArgumentException("Decisao de denuncia invalida");
 		}
 
 		return DenunciaResumo.de(denuncia);

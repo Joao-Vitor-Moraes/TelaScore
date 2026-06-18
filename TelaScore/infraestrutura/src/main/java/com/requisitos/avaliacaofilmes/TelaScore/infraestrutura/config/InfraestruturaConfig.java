@@ -20,6 +20,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.Notic
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.calendario.CalendarioRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.evento.EventoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.ComunidadeRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.denuncia.DenunciaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.mensagem.MensagemRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.MetaRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.QuizRepositorioImpl;
@@ -33,6 +34,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.notici
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.calendario.CalendarioRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.evento.EventoRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.ComunidadeRepositorioImpl;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.denuncia.DenunciaRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.mensagem.MensagemRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.mensagem.MensagemRepositorioLoggingDecorator;
 
@@ -120,6 +122,11 @@ public class InfraestruturaConfig {
     public MensagemRepositorio mensagemRepositorio() {
         return new MensagemRepositorioLoggingDecorator(
                 new MensagemRepositorioImpl(ConexaoBanco.obterEntityManager()));
+    }
+
+    @Bean
+    public DenunciaRepositorio denunciaRepositorio() {
+        return new DenunciaRepositorioImpl();
     }
 
     // servicos de dominio

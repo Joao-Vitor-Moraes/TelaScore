@@ -25,11 +25,14 @@ export default function Navbar() {
             <button style={styles.menuItem} onClick={() => { navigate('/meuusuario'); setMenuAberto(false); }}>Meu Usuario</button>
             <button style={styles.menuItem} onClick={() => { navigate('/listas'); setMenuAberto(false); }}>Minhas Listas</button>
             <button style={styles.menuItem} onClick={() => { navigate('/watchlist'); setMenuAberto(false); }}>Watchlist</button>
+            <button style={styles.menuItem} onClick={() => { navigate('/denuncias'); setMenuAberto(false); }}>Denúncias</button>
             <button style={styles.menuItem} onClick={() => { navigate('/solicitacoes'); setMenuAberto(false); }}>Solicitações</button>
             {sessao?.papel === 'ADMIN' && (
-              <button style={{ ...styles.menuItem, color: '#f97316' }} onClick={() => { navigate('/admin/solicitacoes'); setMenuAberto(false); }}>
-                Painel Admin
-              </button>
+              <>
+                <button style={{ ...styles.menuItem, color: '#f97316' }} onClick={() => { navigate('/admin/solicitacoes'); setMenuAberto(false); }}>
+                  Painel Admin
+                </button>
+              </>
             )}
             <button style={styles.menuItem} onClick={() => { navigate('/configuracoes'); setMenuAberto(false); }}>Configurações</button>
             {sessao && (

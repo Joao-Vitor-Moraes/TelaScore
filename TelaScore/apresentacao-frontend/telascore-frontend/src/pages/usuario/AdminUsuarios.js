@@ -146,7 +146,7 @@ export default function AdminUsuarios() {
             <div style={styles.conteudo}>
                 <div style={styles.cabecalho}>
                     <div>
-                        <h2 style={styles.titulo}>ADM. USUARIOS</h2>
+                        <h2 style={styles.titulo}>ADM. USUÁRIOS</h2>
                         <span style={styles.total}>{listagem.length} de {usuarios.length} usuarios</span>
                     </div>
 
@@ -156,7 +156,7 @@ export default function AdminUsuarios() {
                             style={styles.inputBusca}
                             value={busca}
                             onChange={e => setBusca(e.target.value)}
-                            placeholder="Buscar usuario..."
+                            placeholder="Buscar usuário..."
                         />
                     </div>
                 </div>

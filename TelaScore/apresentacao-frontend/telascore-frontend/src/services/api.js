@@ -87,3 +87,11 @@ export const usuarioService = {
   editar: (id, dados) => request('PUT', `/api/identidade/usuario/${id}`, dados),
   remover: (id) => request('DELETE', `/api/identidade/usuario/${id}`),
 };
+
+export const denunciaService = {
+  registrar: (dados) => request('POST', '/api/denuncias', dados),
+  listarMinhas: () => request('GET', '/api/denuncias/minhas'),
+  listarPorStatus: (status) => request('GET', `/api/denuncias?status=${encodeURIComponent(status)}`),
+  listarPendentes: () => request('GET', '/api/denuncias/pendentes'),
+  avaliar: (id, decisao) => request('PATCH', `/api/denuncias/${id}/avaliar`, { decisao }),
+};
