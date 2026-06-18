@@ -8,12 +8,13 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.CriarMeta
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.AdicionarProgressoMetaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.RemoverProgressoMetaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.EstenderPrazoMetaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.ListarMetasPorUsuarioCasoDeUso;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoServico;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.EnviarRecomendacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.ResponderRecomendacaoCasoDeUso;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.ListarRecomendacoesPorUsuarioCasoDeUso;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 
@@ -41,16 +42,28 @@ public class AnaliseConfig {
     }
 
     @Bean
+    public ListarMetasPorUsuarioCasoDeUso listarMetasPorUsuarioCasoDeUso(MetaRepositorio metaRepositorio) {
+        return new ListarMetasPorUsuarioCasoDeUso(metaRepositorio);
+    }
+
+    @Bean
     public RecomendacaoServico recomendacaoServico(RecomendacaoRepositorio recomendacaoRepositorio) {
         return new RecomendacaoServico(recomendacaoRepositorio);
     }
 
     @Bean
-    public EnviarRecomendacaoCasoDeUso enviarRecomendacaoCasoDeUso(RecomendacaoServico recomendacaoServico) {
-        return new EnviarRecomendacaoCasoDeUso(recomendacaoServico);
+    public EnviarRecomendacaoCasoDeUso enviarRecomendacaoCasoDeUso(
+            RecomendacaoServico recomendacaoServico, GeradorId geradorId) {
+        return new EnviarRecomendacaoCasoDeUso(recomendacaoServico, geradorId);
     }
     @Bean
     public ResponderRecomendacaoCasoDeUso responderRecomendacaoCasoDeUso(RecomendacaoRepositorio recomendacaoRepositorio) {
         return new ResponderRecomendacaoCasoDeUso(recomendacaoRepositorio);
+    }
+
+    @Bean
+    public ListarRecomendacoesPorUsuarioCasoDeUso listarRecomendacoesPorUsuarioCasoDeUso(
+            RecomendacaoRepositorio recomendacaoRepositorio) {
+        return new ListarRecomendacoesPorUsuarioCasoDeUso(recomendacaoRepositorio);
     }
 }

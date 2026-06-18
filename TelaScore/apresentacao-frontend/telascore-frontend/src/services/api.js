@@ -1,4 +1,6 @@
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = process.env.REACT_APP_API_URL !== undefined
+  ? process.env.REACT_APP_API_URL
+  : 'http://localhost:8080';
 
 function getToken() {
   try {
@@ -23,12 +25,15 @@ async function request(method, path, body) {
   if (!res.ok) {
     const text = await res.text();
     let msg = `Erro ${res.status}`;
-    try { const json = JSON.parse(text); if (json.mensagem) msg = json.mensagem; } catch {}
+    try { const json = JSON.parse(text); if (json.mensagem) msg = json.mensagem; }
+    catch { if (text) msg = text; }
     throw new Error(msg);
   }
   if (res.status === 204 || (res.status === 201 && res.headers.get('content-length') === '0')) return null;
   const text = await res.text();
-  return text ? JSON.parse(text) : null;
+  if (!text) return null;
+  const contentType = res.headers.get('content-type') || '';
+  return contentType.includes('application/json') ? JSON.parse(text) : text;
 }
 
 // Listas
@@ -92,4 +97,18 @@ export const usuarioService = {
   listar: () => request('GET', '/api/identidade/usuario'),
   editar: (id, dados) => request('PUT', `/api/identidade/usuario/${id}`, dados),
   remover: (id) => request('DELETE', `/api/identidade/usuario/${id}`),
+};
+
+export const metaService = {
+  listar: (usuarioId) => request('GET', `/api/metas?usuarioId=${usuarioId}`),
+  criar: (dados) => request('POST', '/api/metas', dados),
+  adicionarProgresso: (id, quantidade) => request('PUT', `/api/metas/${id}/progresso?quantidade=${quantidade}`),
+  removerProgresso: (id, quantidade) => request('PUT', `/api/metas/${id}/progresso/remover?quantidade=${quantidade}`),
+  estenderPrazo: (metaId, novoPrazo) => request('PUT', '/api/metas/prazo', { metaId, novoPrazo }),
+};
+
+export const recomendacaoService = {
+  listar: (usuarioId) => request('GET', `/api/recomendacoes?usuarioId=${usuarioId}`),
+  enviar: (dados) => request('POST', '/api/recomendacoes', dados),
+  responder: (recomendacaoId, aceitar) => request('PUT', '/api/recomendacoes/reagir', { recomendacaoId, aceitar }),
 };

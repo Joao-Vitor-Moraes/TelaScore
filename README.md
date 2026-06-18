@@ -26,6 +26,41 @@ Além disso, muitos amantes de cinema demonstram interesse em testar e expandir 
 
 ## ▶️ Como Rodar
 
+### Opção recomendada: Docker
+
+Com Docker Desktop instalado, execute na pasta que contém `docker-compose.yml`:
+
+```powershell
+docker compose up --build
+```
+
+Depois acesse:
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:8080`
+- MySQL: `localhost:3306`
+
+O Compose cria o banco `telascore_db`, executa os arquivos da pasta
+`docker/mysql/init` na primeira criação do volume e inicia backend e frontend.
+As tabelas mapeadas são completadas automaticamente pelo Hibernate.
+
+Para parar:
+
+```powershell
+docker compose down
+```
+
+Para apagar também os dados e executar novamente os scripts SQL de inicialização:
+
+```powershell
+docker compose down -v
+docker compose up --build
+```
+
+> Scripts em `docker/mysql/init` só são executados quando o volume do banco é
+> criado. Para acrescentar o SQL original do projeto, salve-o nessa pasta com
+> extensão `.sql`.
+
 ### Pré-requisitos
 
 - Java 17
