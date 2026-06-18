@@ -9,7 +9,7 @@ const links = [
   { label: 'Watchlist', path: '/watchlist' },
   { label: 'Metas', path: '/metas' },
   { label: 'Recomendações', path: '/recomendacoes' },
-  { label: 'Solicitações', path: '/solicitacoes' },
+  // { label: 'Solicitações', path: '/solicitacoes' },
   { label: 'Denúncias', path: '/denuncias' },
 ];
 
