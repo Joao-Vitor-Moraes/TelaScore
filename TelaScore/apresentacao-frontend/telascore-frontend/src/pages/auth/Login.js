@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { FiFilm, FiPlayCircle, FiStar, FiUsers } from 'react-icons/fi';
+import './login.css';
 
 export default function Login() {
   const [modo, setModo] = useState('login');
@@ -65,11 +67,26 @@ export default function Login() {
   }
 
   return (
-    <div style={styles.pagina}>
-      <div style={styles.card}>
-        <h1 style={styles.logo}>TelaScore</h1>
+    <div style={styles.pagina} className="login-page">
+      <section className="login-showcase">
+        <div className="login-showcase__brand"><span><FiFilm /></span> TelaScore</div>
+        <div className="login-showcase__content">
+          <p className="page-eyebrow">Sua vida em filmes</p>
+          <h1>Histórias que ficam.<br />Opiniões que conectam.</h1>
+          <p>Descubra novos títulos, registre cada experiência e construa sua própria jornada cinematográfica.</p>
+          <div className="login-features">
+            <span><FiPlayCircle /> Catálogo pessoal</span>
+            <span><FiStar /> Avaliações</span>
+            <span><FiUsers /> Comunidade</span>
+          </div>
+        </div>
+      </section>
+      <div style={styles.card} className="login-card">
+        <div className="login-card__mobile-brand"><FiFilm /> TelaScore</div>
+        <p className="login-kicker">{modo === 'login' ? 'Bem-vindo de volta' : 'Comece sua jornada'}</p>
+        <h1 style={styles.logo}>{modo === 'login' ? 'Entre na sua conta' : 'Crie sua conta'}</h1>
         <p style={styles.subtitulo}>
-          {modo === 'login' ? 'Entre na sua conta' : etapaRegistro === 1 ? 'Dados de acesso' : 'Dados do usuario'}
+          {modo === 'login' ? 'Continue de onde parou.' : etapaRegistro === 1 ? 'Primeiro, seus dados de acesso.' : 'Agora personalize seu perfil.'}
         </p>
 
         {modo === 'registro' && (

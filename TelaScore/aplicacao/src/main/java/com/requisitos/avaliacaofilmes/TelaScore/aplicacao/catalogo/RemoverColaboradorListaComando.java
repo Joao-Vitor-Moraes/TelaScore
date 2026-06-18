@@ -1,7 +1,7 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo;
 
-public record AdicionarFilmeNaListaComando(
+public record RemoverColaboradorListaComando(
 		int listaId,
-		int usuarioId,
-		int filmeId
+		int donoId,
+		int colaboradorId
 ) {}

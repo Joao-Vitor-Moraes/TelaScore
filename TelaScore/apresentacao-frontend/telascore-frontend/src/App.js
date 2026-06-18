@@ -18,6 +18,9 @@ import FilmeDetalhe from './pages/filmes/FilmeDetalhe';
 import EditarFilme from './pages/filmes/EditarFilme';
 import AdminUsuarios from './pages/usuario/AdminUsuarios';
 import MeuUsuario from './pages/usuario/MeuUsuario';
+import Metas from './pages/analise/Metas';
+import Recomendacoes from './pages/analise/Recomendacoes';
+import './App.css';
 import Denuncias from './pages/denuncias/Denuncias';
 import AdminDenuncias from './pages/denuncias/AdminDenuncias';
 
@@ -57,6 +60,10 @@ function App() {
 
           {/* Watchlist */}
           <Route path="/watchlist" element={<RotaProtegida><Watchlist /></RotaProtegida>} />
+
+          {/* Análise */}
+          <Route path="/metas" element={<RotaProtegida><Metas /></RotaProtegida>} />
+          <Route path="/recomendacoes" element={<RotaProtegida><Recomendacoes /></RotaProtegida>} />
 
           {/* Raiz */}
           <Route path="/" element={<RotaProtegida><Filmes /></RotaProtegida>} />

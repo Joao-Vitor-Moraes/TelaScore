@@ -7,6 +7,7 @@ public interface GeradorId {
 	int gerarProximoIdAvaliacao();
 
 	int gerarProximoIdMeta();
+	int gerarProximoIdRecomendacao();
 	int gerarProximoIdRegistroPontuacao();
 
 	int gerarProximoIdEvento();

@@ -153,6 +153,21 @@ public class AvaliacaoRepositorioImpl implements AvaliacaoRepositorio {
         }
     }
 
+    @Override
+    public boolean existeAvaliacaoPorFilmeEUsuario(FilmeId filmeId, UsuarioId usuarioId) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            Long count = em
+                    .createQuery("SELECT COUNT(a) FROM AvaliacaoEntity a WHERE a.filmeId = :filmeId AND a.usuarioId = :usuarioId", Long.class)
+                    .setParameter("filmeId", filmeId.getCodigo())
+                    .setParameter("usuarioId", usuarioId.getId())
+                    .getSingleResult();
+            return count > 0;
+        } finally {
+            em.close();
+        }
+    }
+
     private Avaliacao mapearParaDominio(AvaliacaoEntity entity) {
         AvaliacaoId avaliacaoId = new AvaliacaoId(entity.getId());
         FilmeId filmeId = new FilmeId(entity.getFilmeId());

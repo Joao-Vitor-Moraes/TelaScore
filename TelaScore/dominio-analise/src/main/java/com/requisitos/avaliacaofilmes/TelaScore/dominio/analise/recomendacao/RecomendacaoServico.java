@@ -24,7 +24,9 @@ public class RecomendacaoServico {
         }
     }
 
-    public void enviarParaAmigo(UsuarioId remetenteId, UsuarioId destinatarioId, String conteudoId, TipoConteudo tipoConteudo, String mensagem) {
+    public void enviarParaAmigo(RecomendacaoId recomendacaoId, UsuarioId remetenteId, UsuarioId destinatarioId,
+            String conteudoId, TipoConteudo tipoConteudo, String mensagem) {
+        notNull(recomendacaoId, "O id da recomendação não pode ser nulo");
         notNull(remetenteId, "O remetente não pode ser nulo");
         notNull(destinatarioId, "O destinatário não pode ser nulo");
         notNull(conteudoId, "O conteúdo não pode ser nulo");
@@ -33,7 +35,7 @@ public class RecomendacaoServico {
         isTrue(!remetenteId.equals(destinatarioId), "Você não pode enviar uma recomendação para si mesmo");
         
         Recomendacao recomendacaoSocial = new Recomendacao(
-            null, 
+            recomendacaoId,
             destinatarioId,
             conteudoId,
             tipoConteudo,

@@ -14,4 +14,5 @@ public interface AvaliacaoRepositorio {
 	List<Avaliacao> pesquisarPorFilme(FilmeId filmeId);
 	List<Avaliacao> pesquisarPorUsuario(UsuarioId usuarioId);
 	List<Avaliacao> pesquisarPublicasPorFilme(FilmeId filmeId);
+	boolean existeAvaliacaoPorFilmeEUsuario(FilmeId filmeId, UsuarioId usuarioId);
 }

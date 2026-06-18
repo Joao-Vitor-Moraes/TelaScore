@@ -1,113 +1,55 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FiArrowRight, FiBookmark, FiClock, FiPlus } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
 import { listaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import './listas.css';
 
 export default function Watchlist() {
   const { sessao } = useAuth();
-  const USUARIO_ID = sessao.id;
   const [listas, setListas] = useState([]);
   const [erro, setErro] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    listaService.listarPorUsuario(USUARIO_ID)
+    listaService.listarPorUsuario(sessao.id)
       .then(todas => setListas(todas.filter(l => l.tipo === 'WATCHLIST')))
       .catch(() => setErro('Erro ao carregar watchlists.'));
-  }, []);
+  }, [sessao.id]);
 
   return (
-    <div style={styles.pagina}>
+    <div className="cinema-page">
       <Navbar />
-      <div style={styles.conteudo}>
-        <div style={styles.cabecalho}>
-          <h2 style={styles.titulo}>Minhas Watchlists</h2>
-          <button style={styles.botaoCriar} onClick={() => navigate('/listas/nova?tipo=WATCHLIST')}>+ Criar Watchlist</button>
+      <main className="cinema-container">
+        <div className="page-heading">
+          <div>
+            <p className="page-eyebrow">Próximas sessões</p>
+            <h1 className="page-title">Minha watchlist</h1>
+            <p className="page-description">Guarde os títulos que ainda estão esperando o play.</p>
+          </div>
+          <button className="btn-primary" onClick={() => navigate('/listas/nova?tipo=WATCHLIST')}><FiPlus /> Nova watchlist</button>
         </div>
 
-        {erro && <p style={styles.erro}>{erro}</p>}
-
-        {listas.length === 0 && !erro && (
-          <p style={styles.vazio}>Você ainda não tem watchlists. Crie uma!</p>
+        {erro && <div className="empty-state">{erro}</div>}
+        {!erro && listas.length === 0 && (
+          <div className="empty-state list-empty"><FiBookmark size={35} /><h3>Nada na fila por enquanto</h3><p>Crie uma watchlist e nunca mais esqueça uma indicação.</p></div>
         )}
 
-        <div style={styles.grid}>
-          {listas.map(lista => (
-            <div key={lista.id} style={styles.card} onClick={() => navigate(`/listas/${lista.id}`)}>
-              <h3 style={styles.nomeLista}>{lista.nome}</h3>
-              <span style={styles.tag}>Watchlist</span>
-              <p style={styles.filmes}>{lista.quantidadeTotalDeFilmes} filme(s) para assistir</p>
-            </div>
+        <div className="collection-grid">
+          {listas.map((lista, index) => (
+            <button key={lista.id} className={`collection-card watch-card palette-${(index + 2) % 4}`} onClick={() => navigate(`/listas/${lista.id}`)}>
+              <div className="collection-card__art"><FiClock /><span>PLAY</span></div>
+              <div className="collection-card__content">
+                <span className="collection-card__label">Para assistir</span>
+                <h3>{lista.nome}</h3>
+                <p>{lista.quantidadeTotalDeFilmes} título(s) na fila</p>
+                <span className="collection-card__open">Ver watchlist <FiArrowRight /></span>
+              </div>
+            </button>
           ))}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
-
-const styles = {
-  pagina: {
-    minHeight: '100vh',
-    backgroundColor: '#0f3460',
-    color: 'white',
-  },
-  conteudo: {
-    padding: '32px',
-  },
-  cabecalho: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '24px',
-  },
-  titulo: {
-    margin: 0,
-    fontSize: '24px',
-  },
-  botaoCriar: {
-    backgroundColor: '#0f9b8e',
-    color: 'white',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold',
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-    gap: '16px',
-  },
-  card: {
-    backgroundColor: '#16213e',
-    borderRadius: '12px',
-    padding: '20px',
-    cursor: 'pointer',
-    borderLeft: '3px solid #0f9b8e',
-  },
-  nomeLista: {
-    margin: '0 0 8px 0',
-    fontSize: '16px',
-  },
-  tag: {
-    backgroundColor: '#0f9b8e',
-    borderRadius: '4px',
-    padding: '2px 8px',
-    fontSize: '12px',
-  },
-  filmes: {
-    marginTop: '12px',
-    fontSize: '13px',
-    color: '#aaa',
-  },
-  vazio: {
-    color: '#aaa',
-    textAlign: 'center',
-    marginTop: '60px',
-  },
-  erro: {
-    color: '#e94560',
-  },
-};

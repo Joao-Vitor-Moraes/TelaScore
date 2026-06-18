@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverColaboradorListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverColaboradorListaComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.EditarListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.EditarListaComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaComando;
@@ -54,6 +56,7 @@ public class ListaController {
     private final ReordenarItemListaCasoDeUso reordenarItem;
     private final TornarListaColaborativaCasoDeUso tornarColaborativa;
     private final AdicionarColaboradorListaCasoDeUso adicionarColaborador;
+    private final RemoverColaboradorListaCasoDeUso removerColaborador;
     private final RegistrarFilmeAssistidoCasoDeUso registrarAssistido;
 
     public ListaController(EditarListaCasoDeUso editarLista,
@@ -67,6 +70,7 @@ public class ListaController {
             ReordenarItemListaCasoDeUso reordenarItem,
             TornarListaColaborativaCasoDeUso tornarColaborativa,
             AdicionarColaboradorListaCasoDeUso adicionarColaborador,
+            RemoverColaboradorListaCasoDeUso removerColaborador,
             RegistrarFilmeAssistidoCasoDeUso registrarAssistido) {
         this.editarLista = editarLista;
         this.criarLista = criarLista;
@@ -79,6 +83,7 @@ public class ListaController {
         this.reordenarItem = reordenarItem;
         this.tornarColaborativa = tornarColaborativa;
         this.adicionarColaborador = adicionarColaborador;
+        this.removerColaborador = removerColaborador;
         this.registrarAssistido = registrarAssistido;
     }
 
@@ -121,7 +126,7 @@ public class ListaController {
     @PostMapping("/{listaId}/filmes")
     public ResponseEntity<Void> adicionarFilme(@PathVariable int listaId,
             @RequestBody AdicionarFilmeRequest body) {
-        adicionarFilme.executar(new AdicionarFilmeNaListaComando(listaId, body.usuarioId(), body.filmeId(), body.filmeJaFoiAssistido()));
+        adicionarFilme.executar(new AdicionarFilmeNaListaComando(listaId, body.usuarioId(), body.filmeId()));
         return ResponseEntity.noContent().build();
     }
 
@@ -155,6 +160,14 @@ public class ListaController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{listaId}/colaboradores/{colaboradorId}")
+    public ResponseEntity<Void> removerColaborador(@PathVariable int listaId,
+            @PathVariable int colaboradorId,
+            @RequestParam int donoId) {
+        removerColaborador.executar(new RemoverColaboradorListaComando(listaId, donoId, colaboradorId));
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/{listaId}/filmes/{filmeId}/assistido")
     public ResponseEntity<Void> registrarAssistido(@PathVariable int listaId,
             @PathVariable int filmeId,
@@ -164,7 +177,7 @@ public class ListaController {
     }
 
     public static record EditarListaRequest(int usuarioId, String nome, String descricao, String visibilidade, boolean rankeada) {}
-    public static record AdicionarFilmeRequest(int usuarioId, int filmeId, boolean filmeJaFoiAssistido) {}
+    public static record AdicionarFilmeRequest(int usuarioId, int filmeId) {}
     public static record ReordenarRequest(int usuarioId, int novaPosicao) {}
     public static record TornarColaborativaRequest(int usuarioId) {}
     public static record AdicionarColaboradorRequest(int donoId, int novoColaboradorId) {}

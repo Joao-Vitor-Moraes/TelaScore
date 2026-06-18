@@ -7,6 +7,9 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.E
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.EnviarRecomendacaoComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.ResponderRecomendacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.ResponderRecomendacaoComando;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.ListarRecomendacoesPorUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.RecomendacaoResumo;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/recomendacoes")
@@ -14,11 +17,19 @@ public class RecomendacaoController {
 
     private final EnviarRecomendacaoCasoDeUso enviarRecomendacaoCasoDeUso;
     private final ResponderRecomendacaoCasoDeUso responderRecomendacaoCasoDeUso;
+    private final ListarRecomendacoesPorUsuarioCasoDeUso listarRecomendacoesCasoDeUso;
 
     public RecomendacaoController(EnviarRecomendacaoCasoDeUso enviarRecomendacaoCasoDeUso,
-                                  ResponderRecomendacaoCasoDeUso responderRecomendacaoCasoDeUso) {
+                                  ResponderRecomendacaoCasoDeUso responderRecomendacaoCasoDeUso,
+                                  ListarRecomendacoesPorUsuarioCasoDeUso listarRecomendacoesCasoDeUso) {
         this.enviarRecomendacaoCasoDeUso = enviarRecomendacaoCasoDeUso;
         this.responderRecomendacaoCasoDeUso = responderRecomendacaoCasoDeUso;
+        this.listarRecomendacoesCasoDeUso = listarRecomendacoesCasoDeUso;
+    }
+
+    @GetMapping
+    public List<RecomendacaoResumo> listar(@RequestParam int usuarioId) {
+        return listarRecomendacoesCasoDeUso.executar(usuarioId);
     }
 
     @PostMapping

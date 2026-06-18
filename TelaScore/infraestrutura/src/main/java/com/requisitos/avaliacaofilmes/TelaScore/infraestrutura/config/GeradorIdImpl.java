@@ -47,6 +47,11 @@ public class GeradorIdImpl implements GeradorId {
     }
 
     @Override
+    public int gerarProximoIdRecomendacao() {
+        return proximoId("SELECT MAX(r.id) FROM RecomendacaoEntity r");
+    }
+
+    @Override
     public int gerarProximoIdUsuario() {
         return proximoIdNativo("SELECT MAX(id) FROM usuario");
     }

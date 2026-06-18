@@ -11,6 +11,9 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.RemoverPr
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.RemoverProgressoMetaComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.EstenderPrazoMetaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.EstenderPrazoMetaComando;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.ListarMetasPorUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.MetaResumo;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/metas")
@@ -20,15 +23,23 @@ public class MetaController {
     private final AdicionarProgressoMetaCasoDeUso adicionarProgressoCasoDeUso;
     private final RemoverProgressoMetaCasoDeUso removerProgressoCasoDeUso;
     private final EstenderPrazoMetaCasoDeUso estenderPrazoCasoDeUso;
+    private final ListarMetasPorUsuarioCasoDeUso listarMetasCasoDeUso;
 
     public MetaController(CriarMetaCasoDeUso criarMetaCasoDeUso, 
                           AdicionarProgressoMetaCasoDeUso adicionarProgressoCasoDeUso,
                           RemoverProgressoMetaCasoDeUso removerProgressoCasoDeUso,
-                          EstenderPrazoMetaCasoDeUso estenderPrazoCasoDeUso) {
+                          EstenderPrazoMetaCasoDeUso estenderPrazoCasoDeUso,
+                          ListarMetasPorUsuarioCasoDeUso listarMetasCasoDeUso) {
         this.criarMetaCasoDeUso = criarMetaCasoDeUso;
         this.adicionarProgressoCasoDeUso = adicionarProgressoCasoDeUso;
         this.removerProgressoCasoDeUso = removerProgressoCasoDeUso;
         this.estenderPrazoCasoDeUso = estenderPrazoCasoDeUso;
+        this.listarMetasCasoDeUso = listarMetasCasoDeUso;
+    }
+
+    @GetMapping
+    public List<MetaResumo> listarMetas(@RequestParam int usuarioId) {
+        return listarMetasCasoDeUso.executar(usuarioId);
     }
 
     @PostMapping
