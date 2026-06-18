@@ -6,6 +6,38 @@ import { filmeService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import './filmes.css';
 
+const DIRETORES_GHIBLI = new Set([
+  'Hayao Miyazaki', 'Isao Takahata', 'Yoshifumi Kondō', 'Hiroyuki Morita',
+  'Gorō Miyazaki', 'Hiromasa Yonebayashi', 'Michaël Dudok de Wit',
+]);
+
+const TITULOS_ROMANCE = new Set([
+  'La La Land: Cantando Estações', 'Antes do Amanhecer', 'Your Name',
+]);
+
+const TITULOS_NERD = new Set([
+  'O Senhor dos Anéis: A Sociedade do Anel', 'Matrix', 'Interestelar',
+  'Duna', 'De Volta para o Futuro', 'Blade Runner 2049',
+]);
+
+const TITULOS_RECENTES = new Set([
+  'Billie Eilish - Hit Me Hard and Soft: The Tour (Live in 3D)',
+  'KPop Demon Hunters', 'Project Hail Mary', 'O Diabo Veste Prada 2',
+  'Hoppers', 'Pecadores', 'F1', 'Wicked: For Good', 'Zootopia 2',
+  'The Super Mario Galaxy Movie', 'Star Wars: The Mandalorian e Grogu',
+  'Mortal Kombat II', 'Toy Story 5',
+]);
+
+const TITULOS_FORA_DA_VITRINE = new Set([
+  'Diário de uma Paixão', 'Orgulho e Preconceito', 'Questão de Tempo',
+  'Brilho Eterno de uma Mente sem Lembranças', 'Titanic',
+  'O Senhor dos Anéis: As Duas Torres', 'O Senhor dos Anéis: O Retorno do Rei',
+  'Star Wars: Uma Nova Esperança', 'Star Wars: O Império Contra-Ataca',
+  'Harry Potter e a Pedra Filosofal', 'Homem de Ferro', 'Guardiões da Galáxia',
+  'Homem-Aranha 2', 'Homem-Aranha 3', 'O Espetacular Homem-Aranha',
+  'O Espetacular Homem-Aranha 2', 'Homem-Aranha: Longe de Casa',
+]);
+
 export default function Filmes() {
   const { sessao } = useAuth();
   const isAdmin = sessao.papel === 'ADMIN';
@@ -20,11 +52,42 @@ export default function Filmes() {
       .catch(() => setErro('Não foi possível carregar os filmes.'));
   }, []);
 
-  const destaque = filmes.find(f => f.imagemUrl) || filmes[0];
-  const filtrados = useMemo(() => filmes.filter(f =>
-    f.titulo.toLowerCase().includes(busca.trim().toLowerCase()) ||
-    String(f.anoLancamento || '').includes(busca.trim())
-  ), [filmes, busca]);
+  const destaque = filmes.find(f => f.titulo === 'O Castelo Animado')
+    || filmes.find(f => f.titulo === "Howl's Moving Castle")
+    || filmes.find(f => f.titulo === 'A Viagem de Chihiro')
+    || filmes.find(f => f.imagemUrl)
+    || filmes[0];
+  const imagemDestaque = destaque?.titulo === 'O Castelo Animado'
+    || destaque?.titulo === "Howl's Moving Castle"
+    ? '/howls-moving-castle-hero.jpg'
+    : destaque?.imagemUrl;
+  const filtrados = useMemo(() => {
+    const termo = busca.trim().toLowerCase();
+    return filmes.filter(f =>
+      (termo || !TITULOS_FORA_DA_VITRINE.has(f.titulo)) &&
+      (f.titulo.toLowerCase().includes(termo) ||
+        String(f.anoLancamento || '').includes(termo))
+    );
+  }, [filmes, busca]);
+
+  const colecoes = useMemo(() => {
+    const recentes = filtrados.filter(f => TITULOS_RECENTES.has(f.titulo));
+    const ghibli = filtrados.filter(f => DIRETORES_GHIBLI.has(f.nomeDiretor));
+    const aranha = filtrados.filter(f => f.titulo.includes('Homem-Aranha'));
+    const nerd = filtrados.filter(f => TITULOS_NERD.has(f.titulo));
+    const romance = filtrados.filter(f => TITULOS_ROMANCE.has(f.titulo));
+    const usados = new Set([...recentes, ...ghibli, ...aranha, ...nerd, ...romance].map(f => f.id));
+    const outros = filtrados.filter(f => !usados.has(f.id));
+
+    return [
+      { titulo: 'Novidades que estão dando o que falar', subtitulo: 'Música, animação e grandes lançamentos de 2025 e 2026', filmes: recentes },
+      { titulo: 'Mundos do Studio Ghibli', subtitulo: 'Fantasia, delicadeza e aventuras inesquecíveis', filmes: ghibli },
+      { titulo: 'O seu amigo da vizinhança', subtitulo: 'Todas as eras do Homem-Aranha', filmes: aranha },
+      { titulo: 'Uma dose de ficção e aventura', subtitulo: 'Só alguns favoritos para equilibrar a seleção', filmes: nerd },
+      { titulo: 'Histórias para se apaixonar', subtitulo: 'Uma seleção menor de romances marcantes', filmes: romance },
+      { titulo: 'Grandes filmes, muitas histórias', subtitulo: 'Clássicos e favoritos de diferentes estilos', filmes: outros },
+    ].filter(colecao => colecao.filmes.length > 0);
+  }, [filtrados]);
 
   async function handleRemover(id) {
     if (!window.confirm('Remover este filme?')) return;
@@ -41,7 +104,12 @@ export default function Filmes() {
       <Navbar />
 
       {destaque && (
-        <section className="catalog-hero" style={destaque.imagemUrl ? { '--hero-image': `url("${destaque.imagemUrl}")` } : {}}>
+        <section className="catalog-hero">
+          {imagemDestaque && (
+            <div className="catalog-hero__art" aria-hidden="true">
+              <img src={imagemDestaque} alt="" />
+            </div>
+          )}
           <div className="catalog-hero__content">
             <p className="page-eyebrow">Em destaque no TelaScore</p>
             <h1>{destaque.titulo}</h1>
@@ -77,30 +145,43 @@ export default function Filmes() {
         {erro && <div className="empty-state">{erro}</div>}
         {!erro && filmes.length === 0 && <div className="empty-state"><FiFilm size={32} /><p>Nenhum filme cadastrado ainda.</p></div>}
 
-        <div className="poster-grid">
-          {filtrados.map(filme => (
-            <article key={filme.id} className="poster-card">
-              <button className="poster-card__visual" onClick={() => navigate(`/filmes/${filme.id}`)}>
-                {filme.imagemUrl
-                  ? <img src={filme.imagemUrl} alt={filme.titulo} />
-                  : <span className="poster-card__placeholder"><FiFilm size={38} /></span>
-                }
-                <span className="poster-card__play"><FiPlay /></span>
-                {filme.mediaNotas > 0 && <span className="poster-card__rating"><FiStar /> {filme.mediaNotas.toFixed(1)}</span>}
-              </button>
-              <div className="poster-card__body">
+        <div className="catalog-collections">
+          {colecoes.map(colecao => (
+            <section key={colecao.titulo} className="catalog-section">
+              <div className="catalog-section__heading">
                 <div>
-                  <h3>{filme.titulo}</h3>
-                  <p>{filme.anoLancamento}{filme.nomeDiretor ? ` • ${filme.nomeDiretor}` : ''}</p>
+                  <h2>{colecao.titulo}</h2>
+                  <p>{colecao.subtitulo}</p>
                 </div>
-                {isAdmin && (
-                  <div className="poster-card__admin">
-                    <button onClick={() => navigate(`/filmes/${filme.id}/editar`)} title="Editar"><FiEdit2 /></button>
-                    <button className="danger" onClick={() => handleRemover(filme.id)} title="Remover"><FiTrash2 /></button>
-                  </div>
-                )}
+                <span>{colecao.filmes.length} títulos</span>
               </div>
-            </article>
+              <div className="poster-grid">
+                {colecao.filmes.map(filme => (
+                  <article key={filme.id} className="poster-card">
+                    <button className="poster-card__visual" onClick={() => navigate(`/filmes/${filme.id}`)}>
+                      {filme.imagemUrl
+                        ? <img src={filme.imagemUrl} alt={filme.titulo} loading="lazy" />
+                        : <span className="poster-card__placeholder"><FiFilm size={38} /></span>
+                      }
+                      <span className="poster-card__play"><FiPlay /></span>
+                      {filme.mediaNotas > 0 && <span className="poster-card__rating"><FiStar /> {filme.mediaNotas.toFixed(1)}</span>}
+                    </button>
+                    {isAdmin && (
+                      <div className="poster-card__admin">
+                        <button onClick={() => navigate(`/filmes/${filme.id}/editar`)} title="Editar"><FiEdit2 /></button>
+                        <button className="danger" onClick={() => handleRemover(filme.id)} title="Remover"><FiTrash2 /></button>
+                      </div>
+                    )}
+                    <div className="poster-card__body">
+                      <div className="poster-card__text">
+                        <h3>{filme.titulo}</h3>
+                        <p>{filme.anoLancamento}{filme.nomeDiretor ? ` • ${filme.nomeDiretor}` : ''}</p>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
           ))}
         </div>
 
