@@ -109,11 +109,14 @@ export const denunciaService = {
 };
 
 export const metaService = {
-  listar: (usuarioId) => request('GET', `/api/metas?usuarioId=${usuarioId}`),
+  listar: () => request('GET', '/api/metas'),
   criar: (dados) => request('POST', '/api/metas', dados),
   adicionarProgresso: (id, quantidade) => request('PUT', `/api/metas/${id}/progresso?quantidade=${quantidade}`),
   removerProgresso: (id, quantidade) => request('PUT', `/api/metas/${id}/progresso/remover?quantidade=${quantidade}`),
   estenderPrazo: (metaId, novoPrazo) => request('PUT', '/api/metas/prazo', { metaId, novoPrazo }),
+  pontuacao: () => request('GET', '/api/metas/pontuacao'),
+  listarSistema: () => request('GET', '/api/metas/sistema'),
+  criarSistema: (dados) => request('POST', '/api/metas/sistema', dados),
 };
 
 export const recomendacaoService = {

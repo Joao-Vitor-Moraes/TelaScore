@@ -17,6 +17,8 @@
 
         <!-- analise -->
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.entidades.MetaEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.entidades.MetaSistemaEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recompensa.entidades.RegistroPontuacaoEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recomendacao.entidades.RecomendacaoEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.QuizEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.PerguntaEntity</class>

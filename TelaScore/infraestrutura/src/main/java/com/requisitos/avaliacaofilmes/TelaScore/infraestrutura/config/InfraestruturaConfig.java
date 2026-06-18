@@ -2,6 +2,8 @@ package com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.config;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaSistemaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.RegistroPontuacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.avaliacao.AvaliacaoRepositorio;
@@ -23,6 +25,8 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.Comuni
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.denuncia.DenunciaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.mensagem.MensagemRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.MetaRepositorioImpl;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.MetaSistemaRepositorioImpl;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recompensa.RegistroPontuacaoRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.QuizRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recomendacao.RecomendacaoRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.avaliacao.AvaliacaoRepositorioImpl;
@@ -84,6 +88,16 @@ public class InfraestruturaConfig {
     @Bean
     public MetaRepositorio metaRepositorio() {
         return new MetaRepositorioImpl();
+    }
+
+    @Bean
+    public MetaSistemaRepositorio metaSistemaRepositorio() {
+        return new MetaSistemaRepositorioImpl();
+    }
+
+    @Bean
+    public RegistroPontuacaoRepositorio registroPontuacaoRepositorio() {
+        return new RegistroPontuacaoRepositorioImpl();
     }
 
     @Bean

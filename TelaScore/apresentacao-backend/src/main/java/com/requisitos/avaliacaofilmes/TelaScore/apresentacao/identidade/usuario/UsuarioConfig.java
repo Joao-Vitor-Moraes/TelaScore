@@ -20,7 +20,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuar
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.context.annotation.SessionScope;
+import org.springframework.web.context.annotation.RequestScope;
 
 @Configuration
 public class UsuarioConfig {
@@ -34,7 +34,7 @@ public class UsuarioConfig {
     }
 
     @Bean
-    @SessionScope
+    @RequestScope
     public SessaoUsuario sessaoUsuario() {
         return new SessaoUsuario();
     }

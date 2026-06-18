@@ -3,12 +3,13 @@ import Navbar from '../../components/Navbar';
 import { metaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import {
-  FiActivity, FiCalendar, FiCheckCircle, FiClock, FiMinus,
-  FiPlus, FiTarget, FiTrendingUp, FiX,
+  FiActivity, FiAward, FiCalendar, FiCheckCircle, FiClock, FiMinus,
+  FiPlus, FiTarget, FiTrendingUp, FiUsers, FiX,
 } from 'react-icons/fi';
 import './analise.css';
 
 const FORM_INICIAL = { titulo: '', quantidadeAlvo: 10, dataPrazo: '' };
+const FORM_SISTEMA_INICIAL = { titulo: '', quantidadeAlvo: 10, duracaoDias: 30 };
 
 function formatarData(data) {
   if (!data) return 'Sem prazo';
@@ -42,30 +43,46 @@ export default function Metas() {
   const { sessao } = useAuth();
   const [metas, setMetas] = useState([]);
   const [form, setForm] = useState(FORM_INICIAL);
+  const [formSistema, setFormSistema] = useState(FORM_SISTEMA_INICIAL);
   const [modalAberto, setModalAberto] = useState(false);
+  const [modalSistemaAberto, setModalSistemaAberto] = useState(false);
   const [metaPrazo, setMetaPrazo] = useState(null);
   const [novoPrazo, setNovoPrazo] = useState('');
+  const [totalPontos, setTotalPontos] = useState(0);
+  const [feedback, setFeedback] = useState('');
   const [erro, setErro] = useState('');
   const [salvando, setSalvando] = useState(false);
 
   const carregar = useCallback(() => {
     setErro('');
-    return metaService.listar(sessao.id).then(setMetas).catch(e => setErro(e.message));
-  }, [sessao.id]);
+    return Promise.all([metaService.listar(), metaService.pontuacao()])
+      .then(([metasRecebidas, pontuacao]) => {
+        setMetas(metasRecebidas);
+        setTotalPontos(pontuacao.totalPontos);
+      })
+      .catch(e => setErro(e.message));
+  }, []);
 
   useEffect(() => { carregar(); }, [carregar]);
 
   useEffect(() => {
-    if (!modalAberto && !metaPrazo) return undefined;
+    if (!modalAberto && !modalSistemaAberto && !metaPrazo) return undefined;
     const fecharComEsc = (e) => {
       if (e.key === 'Escape') {
         setModalAberto(false);
+        setModalSistemaAberto(false);
         setMetaPrazo(null);
       }
     };
     document.addEventListener('keydown', fecharComEsc);
     return () => document.removeEventListener('keydown', fecharComEsc);
-  }, [modalAberto, metaPrazo]);
+  }, [modalAberto, modalSistemaAberto, metaPrazo]);
+
+  useEffect(() => {
+    if (!feedback) return undefined;
+    const timeout = setTimeout(() => setFeedback(''), 4200);
+    return () => clearTimeout(timeout);
+  }, [feedback]);
 
   const resumo = useMemo(() => ({
     andamento: metas.filter(meta => meta.status === 'EM_ANDAMENTO').length,
@@ -82,7 +99,6 @@ export default function Metas() {
     setSalvando(true);
     try {
       await metaService.criar({
-        usuarioId: sessao.id,
         ...form,
         quantidadeAlvo: Number(form.quantidadeAlvo),
       });
@@ -99,11 +115,37 @@ export default function Metas() {
   async function alterarProgresso(meta, delta) {
     setErro('');
     try {
-      if (delta > 0) await metaService.adicionarProgresso(meta.id, delta);
-      else await metaService.removerProgresso(meta.id, Math.abs(delta));
+      if (delta > 0) {
+        const resultado = await metaService.adicionarProgresso(meta.id, delta);
+        setFeedback(resultado.mensagem);
+        setTotalPontos(resultado.totalPontos);
+      } else {
+        await metaService.removerProgresso(meta.id, Math.abs(delta));
+      }
       await carregar();
     } catch (e) {
       setErro(e.message);
+    }
+  }
+
+  async function criarMetaSistema(e) {
+    e.preventDefault();
+    setErro('');
+    setSalvando(true);
+    try {
+      await metaService.criarSistema({
+        ...formSistema,
+        quantidadeAlvo: Number(formSistema.quantidadeAlvo),
+        duracaoDias: Number(formSistema.duracaoDias),
+      });
+      setFormSistema(FORM_SISTEMA_INICIAL);
+      setModalSistemaAberto(false);
+      setFeedback('Meta do sistema criada para todos os usuários.');
+      await carregar();
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setSalvando(false);
     }
   }
 
@@ -134,6 +176,13 @@ export default function Metas() {
     }));
   }
 
+  function ajustarCampoSistema(campo, delta) {
+    setFormSistema(atual => ({
+      ...atual,
+      [campo]: Math.max(1, Number(atual[campo] || 1) + delta),
+    }));
+  }
+
   return (
     <div className="cinema-page analysis-page">
       <Navbar />
@@ -144,9 +193,16 @@ export default function Metas() {
             <h1 className="page-title">Minhas metas</h1>
             <p className="page-description">Pequenos desafios, grandes histórias. Acompanhe seu ritmo e celebre cada filme.</p>
           </div>
-          <button className="btn-primary goals-new-button" onClick={() => setModalAberto(true)}>
-            <FiPlus /> Nova meta
-          </button>
+          <div className="goals-heading__actions">
+            {sessao.papel === 'ADMIN' && (
+              <button className="btn-secondary goals-new-button" onClick={() => setModalSistemaAberto(true)}>
+                <FiUsers /> Meta do sistema
+              </button>
+            )}
+            <button className="btn-primary goals-new-button" onClick={() => setModalAberto(true)}>
+              <FiPlus /> Nova meta
+            </button>
+          </div>
         </div>
 
         <section className="goals-summary" aria-label="Resumo das metas">
@@ -162,9 +218,14 @@ export default function Metas() {
             <FiTrendingUp />
             <div><strong>{resumo.progresso}%</strong><span>Progresso médio</span></div>
           </div>
+          <div className="goals-summary__item goals-summary__item--points">
+            <FiAward />
+            <div><strong>{totalPontos}</strong><span>Pontos de gamificação</span></div>
+          </div>
         </section>
 
         {erro && <div className="analysis-error">{erro}</div>}
+        {feedback && <div className="analysis-feedback"><FiAward /> {feedback}</div>}
 
         <div className="goals-grid">
           {metas.map(meta => {
@@ -174,9 +235,12 @@ export default function Metas() {
               <article key={meta.id} className={`goal-card goal-card--${meta.status.toLowerCase()}`}>
                 <div className="goal-card__top">
                   <div className="goal-card__icon"><FiTarget /></div>
-                  <span className={`status-pill status-pill--${meta.status.toLowerCase()}`}>
-                    {meta.statusDescricao || meta.status.replaceAll('_', ' ').toLowerCase()}
-                  </span>
+                  <div className="goal-card__badges">
+                    {meta.metaDoSistema && <span className="system-goal-pill"><FiUsers /> Meta do sistema</span>}
+                    <span className={`status-pill status-pill--${meta.status.toLowerCase()}`}>
+                      {meta.statusDescricao || meta.status.replaceAll('_', ' ').toLowerCase()}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="goal-card__content">
@@ -248,6 +312,57 @@ export default function Metas() {
               <div className="analysis-modal__footer">
                 <button type="button" className="btn-secondary" onClick={() => setModalAberto(false)}>Cancelar</button>
                 <button className="btn-primary" disabled={salvando}><FiPlus /> {salvando ? 'Criando...' : 'Criar meta'}</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
+
+      {modalSistemaAberto && (
+        <div className="analysis-modal-backdrop" onMouseDown={() => setModalSistemaAberto(false)}>
+          <section className="analysis-modal" role="dialog" aria-modal="true" aria-labelledby="nova-meta-sistema-titulo" onMouseDown={e => e.stopPropagation()}>
+            <button className="analysis-modal__close" onClick={() => setModalSistemaAberto(false)} aria-label="Fechar"><FiX /></button>
+            <div className="analysis-modal__header">
+              <span><FiUsers /></span>
+              <div>
+                <p className="page-eyebrow">Administração</p>
+                <h2 id="nova-meta-sistema-titulo">Criar meta para todos</h2>
+              </div>
+            </div>
+            <p className="analysis-modal__hint">
+              Cada usuário receberá uma cópia individual desta meta. O progresso de uma pessoa não altera o de outra.
+            </p>
+            <form onSubmit={criarMetaSistema} className="analysis-modal__form">
+              <label>
+                <span>Nome da meta do sistema</span>
+                <input placeholder="Ex.: Maratona de cinema nacional" value={formSistema.titulo}
+                  onChange={e => setFormSistema({ ...formSistema, titulo: e.target.value })} required autoFocus />
+              </label>
+              <label>
+                <span>Quantidade de filmes</span>
+                <div className="number-stepper">
+                  <button type="button" onClick={() => ajustarCampoSistema('quantidadeAlvo', -1)}
+                    disabled={Number(formSistema.quantidadeAlvo) <= 1}><FiMinus /></button>
+                  <input type="number" min="1" value={formSistema.quantidadeAlvo}
+                    onChange={e => setFormSistema({ ...formSistema, quantidadeAlvo: e.target.value })} required />
+                  <button type="button" onClick={() => ajustarCampoSistema('quantidadeAlvo', 1)}><FiPlus /></button>
+                </div>
+              </label>
+              <label>
+                <span>Duração em dias</span>
+                <div className="number-stepper">
+                  <button type="button" onClick={() => ajustarCampoSistema('duracaoDias', -1)}
+                    disabled={Number(formSistema.duracaoDias) <= 1}><FiMinus /></button>
+                  <input type="number" min="1" value={formSistema.duracaoDias}
+                    onChange={e => setFormSistema({ ...formSistema, duracaoDias: e.target.value })} required />
+                  <button type="button" onClick={() => ajustarCampoSistema('duracaoDias', 1)}><FiPlus /></button>
+                </div>
+              </label>
+              <div className="analysis-modal__footer">
+                <button type="button" className="btn-secondary" onClick={() => setModalSistemaAberto(false)}>Cancelar</button>
+                <button className="btn-primary" disabled={salvando}>
+                  <FiUsers /> {salvando ? 'Criando...' : 'Criar para todos'}
+                </button>
               </div>
             </form>
           </section>

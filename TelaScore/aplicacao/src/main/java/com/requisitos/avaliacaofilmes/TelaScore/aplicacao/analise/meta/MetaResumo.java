@@ -12,7 +12,8 @@ public record MetaResumo(
         int quantidadeAtual,
         LocalDate dataPrazo,
         String status,
-        String statusDescricao) {
+        String statusDescricao,
+        boolean metaDoSistema) {
 
     public static MetaResumo de(Meta meta) {
         return new MetaResumo(
@@ -23,7 +24,8 @@ public record MetaResumo(
                 meta.getQuantidadeAtual(),
                 meta.getDataPrazo(),
                 meta.getStatus().name(),
-                formatarStatus(meta.getStatus().name()));
+                formatarStatus(meta.getStatus().name()),
+                meta.getMetaSistemaId() != null);
     }
 
     private static String formatarStatus(String status) {

@@ -39,9 +39,15 @@
   min-height: 46px;
 }
 
+.goals-heading__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .goals-summary {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin-bottom: 30px;
 }
@@ -76,6 +82,11 @@
 .goals-summary__item span {
   color: var(--muted);
   font-size: 12px;
+}
+
+.goals-summary__item--points > svg {
+  color: #f6c969;
+  background: rgba(245, 180, 60, .1);
 }
 
 .goals-grid {
@@ -143,6 +154,22 @@
   color: var(--brand-light);
   background: rgba(229, 9, 20, .11);
   font-size: 20px;
+}
+
+.goal-card__badges {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.system-goal-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #aeb8ff;
+  font-size: 10px;
+  font-weight: 800;
 }
 
 .recommendation-card__icon {
@@ -295,6 +322,19 @@
   font-size: 13px;
 }
 
+.analysis-feedback {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid rgba(245, 180, 60, .3);
+  border-radius: 10px;
+  color: #f6c969;
+  background: rgba(245, 180, 60, .08);
+  font-size: 13px;
+}
+
 .analysis-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -365,6 +405,13 @@
 .analysis-modal__form {
   display: grid;
   gap: 17px;
+}
+
+.analysis-modal__hint {
+  margin: -10px 0 20px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
 }
 
 .analysis-modal__form label {
@@ -474,6 +521,11 @@
 
 @media (max-width: 760px) {
   .goals-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .goals-heading__actions {
     align-items: stretch;
     flex-direction: column;
   }

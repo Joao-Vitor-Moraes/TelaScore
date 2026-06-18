@@ -17,6 +17,8 @@ public class Meta {
 	private int quantidadeAtual;
 	private LocalDate dataPrazo;
 	private StatusMeta status;
+	private Integer metaSistemaId;
+	private boolean pontosConcedidos;
 
 	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, LocalDate dataPrazo) {
 		notNull(id, "O id da meta não pode ser nulo");
@@ -31,6 +33,8 @@ public class Meta {
 		this.dataPrazo = dataPrazo;
 		this.quantidadeAtual = 0;
 		this.status = StatusMeta.EM_ANDAMENTO;
+		this.metaSistemaId = null;
+		this.pontosConcedidos = false;
 
 		setTitulo(titulo);
 		setQuantidadeAlvo(quantidadeAlvo);
@@ -41,6 +45,17 @@ public class Meta {
 	public int getQuantidadeAtual() { return quantidadeAtual; }
 	public LocalDate getDataPrazo() { return dataPrazo; }
 	public StatusMeta getStatus() { return status; }
+	public Integer getMetaSistemaId() { return metaSistemaId; }
+	public boolean isPontosConcedidos() { return pontosConcedidos; }
+
+	public void vincularMetaSistema(int metaSistemaId) {
+		isTrue(metaSistemaId > 0, "O id da meta de sistema deve ser positivo");
+		this.metaSistemaId = metaSistemaId;
+	}
+
+	public void marcarPontosConcedidos() {
+		this.pontosConcedidos = true;
+	}
 
 	public void setTitulo(String titulo) {
 		notNull(titulo, "O título não pode ser nulo");
@@ -119,7 +134,8 @@ public class Meta {
 		}
 		this.status = StatusMeta.FALHADA;
 	}
-	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, int quantidadeAtual, LocalDate dataPrazo, StatusMeta status) {
+	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, int quantidadeAtual,
+			LocalDate dataPrazo, StatusMeta status, Integer metaSistemaId, boolean pontosConcedidos) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.titulo = titulo;
@@ -127,5 +143,12 @@ public class Meta {
         this.quantidadeAtual = quantidadeAtual;
         this.dataPrazo = dataPrazo;
         this.status = status;
+        this.metaSistemaId = metaSistemaId;
+        this.pontosConcedidos = pontosConcedidos;
     }
+
+	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, int quantidadeAtual,
+			LocalDate dataPrazo, StatusMeta status) {
+		this(id, usuarioId, titulo, quantidadeAlvo, quantidadeAtual, dataPrazo, status, null, false);
+	}
 }
