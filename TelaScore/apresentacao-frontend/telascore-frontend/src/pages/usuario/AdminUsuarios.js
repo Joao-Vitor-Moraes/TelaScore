@@ -150,15 +150,14 @@ export default function AdminUsuarios() {
                         <span style={styles.total}>{listagem.length} de {usuarios.length} usuarios</span>
                     </div>
 
-                    <div style={styles.buscaBox}>
-                        <FiSearch size={16} color="#aaa" />
+                    <label className="template-search">
+                        <FiSearch size={16} />
                         <input
-                            style={styles.inputBusca}
                             value={busca}
                             onChange={e => setBusca(e.target.value)}
                             placeholder="Buscar usuário..."
                         />
-                    </div>
+                    </label>
                 </div>
 
                 {erroAcao && <p style={styles.msgErroAcao}>{erroAcao}</p>}
@@ -202,11 +201,11 @@ export default function AdminUsuarios() {
                                 </div>
 
                                 <div style={styles.acoes}>
-                                    <button style={styles.btnEditar} onClick={() => abrirEdicao(usuario)}>
+                                    <button className="btn-secondary" onClick={() => abrirEdicao(usuario)}>
                                         {editandoId === usuario.id ? <FiX size={14} /> : <FiEdit2 size={14} />}
                                         {editandoId === usuario.id ? 'Fechar' : 'Editar'}
                                     </button>
-                                    <button style={styles.btnRemover} onClick={() => abrirModalRemocao(usuario)}>
+                                    <button className="btn-danger" onClick={() => abrirModalRemocao(usuario)}>
                                         <FiTrash2 size={14} />
                                         Remover
                                     </button>
@@ -250,11 +249,11 @@ export default function AdminUsuarios() {
                                     </div>
 
                                     <div style={styles.formAcoes}>
-                                        <button style={styles.btnCancelar} onClick={fecharEdicao} disabled={salvando}>
+                                        <button className="btn-secondary" onClick={fecharEdicao} disabled={salvando}>
                                             <FiX size={14} />
                                             Cancelar
                                         </button>
-                                        <button style={styles.btnSalvar} onClick={() => salvarEdicao(usuario.id)} disabled={salvando}>
+                                        <button className="btn-primary" onClick={() => salvarEdicao(usuario.id)} disabled={salvando}>
                                             <FiSave size={14} />
                                             {salvando ? 'Salvando...' : 'Salvar'}
                                         </button>
@@ -274,11 +273,11 @@ export default function AdminUsuarios() {
                             Tem certeza que deseja remover {usuarioParaRemover.nome || usuarioParaRemover.email}?
                         </p>
                         <div style={styles.modalAcoes}>
-                            <button style={styles.btnCancelar} onClick={fecharModalRemocao} disabled={removendo}>
+                            <button className="btn-secondary" onClick={fecharModalRemocao} disabled={removendo}>
                                 <FiX size={14} />
                                 Cancelar
                             </button>
-                            <button style={styles.btnRemoverConfirmar} onClick={confirmarRemocao} disabled={removendo}>
+                            <button className="btn-danger" onClick={confirmarRemocao} disabled={removendo}>
                                 <FiTrash2 size={14} />
                                 {removendo ? 'Removendo...' : 'Remover'}
                             </button>

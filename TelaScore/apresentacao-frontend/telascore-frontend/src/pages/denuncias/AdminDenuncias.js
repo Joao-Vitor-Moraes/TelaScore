@@ -89,22 +89,21 @@ export default function AdminDenuncias() {
                         <span style={styles.total}>{listagem.length} de {denuncias.length} denúncias</span>
                     </div>
 
-                    <div style={styles.buscaBox}>
-                        <FiSearch size={16} color="#aaa" />
+                    <label className="template-search">
+                        <FiSearch size={16} />
                         <input
-                            style={styles.inputBusca}
                             value={busca}
                             onChange={e => setBusca(e.target.value)}
                             placeholder="Buscar denúncia..."
                         />
-                    </div>
+                    </label>
                 </div>
 
                 <div style={styles.abas}>
                     {STATUS.map(item => (
                         <button
                             key={item.valor}
-                            style={item.valor === status ? { ...styles.aba, ...styles.abaAtiva } : styles.aba}
+                            className={item.valor === status ? 'btn-primary' : 'btn-secondary'}
                             onClick={() => setStatus(item.valor)}
                         >
                             {item.rotulo}
@@ -151,7 +150,7 @@ export default function AdminDenuncias() {
 
                             <div style={styles.rodapeCard}>
                                 {denuncia.linkOcorrencia ? (
-                                    <a style={styles.link} href={denuncia.linkOcorrencia} target="_blank" rel="noreferrer">
+                                    <a className="btn-secondary" href={denuncia.linkOcorrencia} target="_blank" rel="noreferrer">
                                         <FiExternalLink size={14} />
                                         Abrir link
                                     </a>
@@ -161,7 +160,7 @@ export default function AdminDenuncias() {
 
                                 <div style={styles.acoes}>
                                     {denuncia.status === 'PENDENTE' && (
-                                        <button style={styles.btnAnalise} onClick={() => avaliar(denuncia.id, 'ANALISAR')}>
+                                        <button className="btn-secondary" onClick={() => avaliar(denuncia.id, 'ANALISAR')}>
                                             <FiEye size={14} />
                                             Analisar
                                         </button>
@@ -169,11 +168,11 @@ export default function AdminDenuncias() {
 
                                     {(denuncia.status === 'PENDENTE' || denuncia.status === 'EM_ANALISE') && (
                                         <>
-                                            <button style={styles.btnAceitar} onClick={() => avaliar(denuncia.id, 'ACEITAR')}>
+                                            <button className="btn-primary" onClick={() => avaliar(denuncia.id, 'ACEITAR')}>
                                                 <FiCheck size={14} />
                                                 Aceitar
                                             </button>
-                                            <button style={styles.btnRejeitar} onClick={() => avaliar(denuncia.id, 'REJEITAR')}>
+                                            <button className="btn-danger" onClick={() => avaliar(denuncia.id, 'REJEITAR')}>
                                                 <FiX size={14} />
                                                 Rejeitar
                                             </button>

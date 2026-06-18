@@ -80,7 +80,7 @@ export default function DenunciaFormModal({
         <form onSubmit={enviar} style={styles.form}>
           <div style={styles.grid}>
             <label style={styles.campo}>
-              <span style={styles.labelIcone}><FiTarget size={13} /> Tipo do alvo</span>
+              <span style={styles.labelIcone}><FiTarget size={13} /> Tipo da denúncia</span>
               <select
                 style={styles.input}
                 value={form.tipoAlvo}
@@ -142,11 +142,11 @@ export default function DenunciaFormModal({
           {erro && <p style={styles.erro}>{erro}</p>}
 
           <div style={styles.acoes}>
-            <button type="button" style={styles.btnCancelar} onClick={onFechar} disabled={enviando}>
+            <button type="button" className="btn-secondary" onClick={onFechar} disabled={enviando}>
               <FiX size={14} />
               Cancelar
             </button>
-            <button type="submit" style={styles.btnEnviar} disabled={enviando}>
+            <button type="submit" className="btn-primary" disabled={enviando}>
               <FiSend size={14} />
               {enviando ? 'Enviando...' : 'Enviar'}
             </button>

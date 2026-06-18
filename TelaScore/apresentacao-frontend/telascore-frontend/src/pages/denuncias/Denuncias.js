@@ -77,17 +77,16 @@ export default function Denuncias() {
           </div>
 
           <div style={styles.acoesTopo}>
-            <div style={styles.buscaBox}>
-              <FiSearch size={16} color="#aaa" />
+            <label className="template-search">
+              <FiSearch size={16} />
               <input
-                style={styles.inputBusca}
                 value={busca}
                 onChange={e => setBusca(e.target.value)}
                 placeholder="Buscar denúncia..."
               />
-            </div>
+            </label>
 
-            <button style={styles.btnNova} onClick={() => setModalAberto(true)}>
+            <button className="btn-primary" onClick={() => setModalAberto(true)}>
               <FiPlus size={15} />
               Nova denúncia
             </button>
@@ -129,7 +128,7 @@ export default function Denuncias() {
 
                 <div style={styles.acoesCard}>
                   {denuncia.linkOcorrencia ? (
-                    <a style={styles.btnLink} href={denuncia.linkOcorrencia} target="_blank" rel="noreferrer">
+                    <a className="btn-secondary" href={denuncia.linkOcorrencia} target="_blank" rel="noreferrer">
                       <FiExternalLink size={14} />
                       Abrir
                     </a>
