@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FiArrowLeft, FiSave, FiX } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
 import { filmeService } from '../../services/api';
 
@@ -41,7 +42,10 @@ export default function CadastrarFilme() {
     <div style={styles.pagina}>
       <Navbar />
       <div style={styles.conteudo}>
-        <button style={styles.btnVoltar} onClick={() => navigate('/filmes')}>← Voltar</button>
+        <button className="btn-secondary" style={styles.btnVoltar} onClick={() => navigate('/filmes')}>
+          <FiArrowLeft size={15} />
+          Voltar
+        </button>
         <h2 style={styles.titulo}>CADASTRAR FILME</h2>
 
         <form onSubmit={handleSubmit} style={styles.form}>
@@ -83,8 +87,12 @@ export default function CadastrarFilme() {
           {erro && <p style={styles.erro}>{erro}</p>}
 
           <div style={styles.rodape}>
-            <button type="button" style={styles.btnCancelar} onClick={() => navigate('/filmes')}>Cancelar</button>
-            <button type="submit" style={styles.btnSalvar} disabled={enviando}>
+            <button type="button" className="btn-secondary" onClick={() => navigate('/filmes')}>
+              <FiX size={15} />
+              Cancelar
+            </button>
+            <button type="submit" className="btn-primary" disabled={enviando}>
+              {!enviando && <FiSave size={15} />}
               {enviando ? 'Cadastrando...' : 'Cadastrar'}
             </button>
           </div>
@@ -106,14 +114,7 @@ const styles = {
     padding: '32px',
   },
   btnVoltar: {
-    background: 'none',
-    border: 'none',
-    color: '#aaa',
-    cursor: 'pointer',
-    fontSize: '14px',
-    padding: 0,
     marginBottom: '16px',
-    display: 'block',
   },
   titulo: {
     fontSize: '20px',

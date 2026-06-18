@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { FiFilm, FiPlayCircle, FiStar, FiUsers } from 'react-icons/fi';
+import { FiArrowLeft, FiArrowRight, FiFilm, FiLogIn, FiPlayCircle, FiStar, FiUserPlus, FiUsers } from 'react-icons/fi';
 import './login.css';
 
 export default function Login() {
@@ -91,9 +91,13 @@ export default function Login() {
 
         {modo === 'registro' && (
           <div style={styles.steps}>
-            <span style={{ ...styles.step, ...(etapaRegistro === 1 ? styles.stepAtivo : styles.stepFeito) }}>1</span>
+            <span style={{ ...styles.step, ...(etapaRegistro === 1 ? styles.stepAtivo : styles.stepFeito) }}>
+              <span className="register-step-number">1</span>
+            </span>
             <span style={styles.linhaStep} />
-            <span style={{ ...styles.step, ...(etapaRegistro === 2 ? styles.stepAtivo : {}) }}>2</span>
+            <span style={{ ...styles.step, ...(etapaRegistro === 2 ? styles.stepAtivo : {}) }}>
+              <span className="register-step-number">2</span>
+            </span>
           </div>
         )}
 
@@ -170,22 +174,29 @@ export default function Login() {
 
           <div style={styles.acoesForm}>
             {modo === 'registro' && etapaRegistro === 2 && (
-              <button type="button" style={styles.botaoVoltar} onClick={voltarEtapa} disabled={carregando}>
-                VOLTAR
+              <button type="button" className="btn-secondary auth-action" onClick={voltarEtapa} disabled={carregando}>
+                <FiArrowLeft size={15} />
+                Voltar
               </button>
             )}
 
-            <button type="submit" style={styles.botao} disabled={carregando}>
+            <button type="submit" className="btn-primary auth-action" disabled={carregando}>
+              {!carregando && (modo === 'login'
+                ? <FiLogIn size={15} />
+                : etapaRegistro === 1
+                  ? <FiArrowRight size={15} />
+                  : <FiUserPlus size={15} />
+              )}
               {carregando
                 ? (modo === 'login' ? 'Entrando...' : 'Criando conta...')
-                : (modo === 'login' ? 'ENTRAR' : etapaRegistro === 1 ? 'CONTINUAR' : 'CRIAR CONTA')}
+                : (modo === 'login' ? 'Entrar' : etapaRegistro === 1 ? 'Continuar' : 'Criar conta')}
             </button>
           </div>
         </form>
 
         <p style={styles.trocar}>
           {modo === 'login' ? 'Nao tem conta?' : 'Ja tem conta?'}{' '}
-          <button style={styles.linkTrocar} onClick={alternarModo}>
+          <button className="login-switch-button" onClick={alternarModo}>
             {modo === 'login' ? 'Registre-se' : 'Entre aqui'}
           </button>
         </p>
@@ -233,6 +244,8 @@ const styles = {
     marginBottom: '14px',
   },
   step: {
+    position: 'relative',
+    zIndex: 1,
     width: '28px',
     height: '28px',
     borderRadius: '50%',
@@ -242,11 +255,12 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: '12px',
-    fontWeight: 'bold',
+    fontWeight: 900,
+    lineHeight: 1,
   },
   stepAtivo: {
     borderColor: '#e94560',
-    color: 'white',
+    color: '#fff',
     backgroundColor: '#e94560',
   },
   stepFeito: {
