@@ -7,6 +7,7 @@ import { denunciaService } from '../../services/api';
 import '../admin/admin.css';
 
 const STATUS = [
+    { valor: '', rotulo: 'Todas' },
     { valor: 'PENDENTE', rotulo: 'Pendentes' },
     { valor: 'EM_ANALISE', rotulo: 'Em análise' },
     { valor: 'ACEITA', rotulo: 'Aceitas' },
