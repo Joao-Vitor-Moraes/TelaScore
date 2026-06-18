@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Navbar from '../../components/Navbar';
 import { filmeService, recomendacaoService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { FiHeart, FiSend, FiZap } from 'react-icons/fi';
+import './analise.css';
 
 export default function Recomendacoes() {
   const { sessao } = useAuth();
@@ -44,11 +46,11 @@ export default function Recomendacoes() {
   }
 
   return (
-    <div style={styles.pagina}>
+    <div style={styles.pagina} className="cinema-page">
       <Navbar />
-      <main style={styles.conteudo}>
-        <h2>Recomendações</h2>
-        <form onSubmit={enviar} style={styles.form}>
+      <main style={styles.conteudo} className="cinema-container">
+        <div className="page-heading"><div><p className="page-eyebrow">Cinema compartilhado</p><h1 className="page-title">Recomendações</h1><p className="page-description">Envie boas descobertas e veja o que seus amigos separaram para você.</p></div><FiZap className="heading-icon" /></div>
+        <form onSubmit={enviar} style={styles.form} className="glass-panel recommendation-form">
           <h3 style={{ marginTop: 0 }}>Recomendar um filme</h3>
           <input style={styles.input} type="number" min="1" placeholder="ID do usuário destinatário"
             value={form.destinatarioId} onChange={e => setForm({ ...form, destinatarioId: e.target.value })} required />
@@ -59,12 +61,13 @@ export default function Recomendacoes() {
           </select>
           <textarea style={styles.input} maxLength="255" placeholder="Por que essa pessoa deveria assistir?"
             value={form.mensagem} onChange={e => setForm({ ...form, mensagem: e.target.value })} />
-          <button style={styles.primario}>Enviar recomendação</button>
+          <button style={styles.primario} className="btn-primary"><FiSend /> Enviar recomendação</button>
         </form>
         {erro && <p style={styles.erro}>{erro}</p>}
         <div style={styles.lista}>
           {recomendacoes.map(r => (
-            <article key={r.id} style={styles.card}>
+            <article key={r.id} style={styles.card} className="recommendation-card">
+              <FiHeart className="recommendation-card__icon" />
               <div>
                 <h3 style={{ margin: '0 0 6px' }}>{nomesFilmes[r.conteudoId] || `${r.tipoConteudo} #${r.conteudoId}`}</h3>
                 <span style={styles.muted}>{r.remetenteId ? `Enviada pelo usuário #${r.remetenteId}` : 'Sugestão da plataforma'}</span>

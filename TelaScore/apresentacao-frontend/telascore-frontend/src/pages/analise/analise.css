@@ -1,0 +1,86 @@
+.heading-icon {
+  width: 54px;
+  height: 54px;
+  padding: 14px;
+  border: 1px solid rgba(229, 9, 20, .3);
+  border-radius: 16px;
+  color: var(--brand-light);
+  background: rgba(229, 9, 20, .09);
+}
+
+.goal-form, .recommendation-form {
+  padding: 22px !important;
+  margin-bottom: 28px !important;
+}
+
+.goal-form {
+  grid-template-columns: 2fr 1fr 1fr auto !important;
+}
+
+.goal-form button, .recommendation-form button {
+  min-height: 45px;
+}
+
+.goal-card, .recommendation-card {
+  position: relative;
+  overflow: hidden;
+  padding: 24px !important;
+  border: 1px solid var(--line);
+  border-radius: 18px !important;
+  background: linear-gradient(145deg, #1b1b22, #101014) !important;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, .24);
+}
+
+.goal-card::after {
+  content: '';
+  position: absolute;
+  right: -50px;
+  bottom: -70px;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: rgba(229, 9, 20, .09);
+}
+
+.goal-card__icon, .recommendation-card__icon {
+  margin-bottom: 18px;
+  color: var(--brand-light);
+  font-size: 21px;
+}
+
+.goal-card [style*="background: rgb(15, 52, 96)"] {
+  background: #2a2a31 !important;
+}
+
+.goal-card [style*="background: rgb(233, 69, 96)"] {
+  background: linear-gradient(90deg, var(--brand), var(--brand-light)) !important;
+}
+
+.recommendation-form {
+  max-width: 720px;
+}
+
+.recommendation-card {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+.recommendation-card__icon {
+  margin: 0 15px 0 0;
+}
+
+@media (max-width: 760px) {
+  .goal-form {
+    grid-template-columns: 1fr !important;
+  }
+
+  .recommendation-card {
+    grid-template-columns: auto 1fr !important;
+  }
+
+  .recommendation-card > :last-child {
+    grid-column: 1 / -1;
+    align-items: flex-start !important;
+  }
+}

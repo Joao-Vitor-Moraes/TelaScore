@@ -1,113 +1,60 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FiArrowRight, FiFilm, FiLayers, FiPlus } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
 import { listaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import './listas.css';
 
 export default function MinhasListas() {
   const { sessao } = useAuth();
-  const USUARIO_ID = sessao.id;
   const [listas, setListas] = useState([]);
   const [erro, setErro] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    listaService.listarPorUsuario(USUARIO_ID, USUARIO_ID)
+    listaService.listarPorUsuario(sessao.id, sessao.id)
       .then(setListas)
       .catch(() => setErro('Erro ao carregar listas.'));
-  }, []);
+  }, [sessao.id]);
+
+  const normais = listas.filter(l => l.tipo !== 'WATCHLIST');
 
   return (
-    <div style={styles.pagina}>
+    <div className="cinema-page">
       <Navbar />
-      <div style={styles.conteudo}>
-        <div style={styles.cabecalho}>
-          <h2 style={styles.titulo}>Minhas Listas</h2>
-          <button style={styles.botaoCriar} onClick={() => navigate('/listas/nova?tipo=NORMAL')}>+ Criar Lista</button>
+      <main className="cinema-container">
+        <div className="page-heading">
+          <div>
+            <p className="page-eyebrow">Sua curadoria</p>
+            <h1 className="page-title">Minhas listas</h1>
+            <p className="page-description">Crie coleções temáticas e organize os filmes que definem o seu gosto.</p>
+          </div>
+          <button className="btn-primary" onClick={() => navigate('/listas/nova?tipo=NORMAL')}><FiPlus /> Criar lista</button>
         </div>
 
-        {erro && <p style={styles.erro}>{erro}</p>}
-
-        {listas.length === 0 && !erro && (
-          <p style={styles.vazio}>Você ainda não tem listas. Crie uma!</p>
+        {erro && <div className="empty-state">{erro}</div>}
+        {!erro && normais.length === 0 && (
+          <div className="empty-state list-empty"><FiLayers size={35} /><h3>Sua primeira coleção começa aqui</h3><p>Agrupe favoritos, maratonas e descobertas.</p></div>
         )}
 
-        <div style={styles.grid}>
-          {listas.filter(l => l.tipo !== 'WATCHLIST').map(lista => (
-            <div key={lista.id} style={styles.card} onClick={() => navigate(`/listas/${lista.id}`)}>
-              <h3 style={styles.nomeLista}>{lista.nome}</h3>
-              <span style={styles.tag}>Normal</span>
-              <p style={styles.filmes}>{lista.quantidadeTotalDeFilmes} filme(s)</p>
-            </div>
+        <div className="collection-grid">
+          {normais.map((lista, index) => (
+            <button key={lista.id} className={`collection-card palette-${index % 4}`} onClick={() => navigate(`/listas/${lista.id}`)}>
+              <div className="collection-card__art">
+                <FiFilm />
+                <span>{String(index + 1).padStart(2, '0')}</span>
+              </div>
+              <div className="collection-card__content">
+                <span className="collection-card__label">Lista pessoal</span>
+                <h3>{lista.nome}</h3>
+                <p>{lista.quantidadeTotalDeFilmes} filme(s)</p>
+                <span className="collection-card__open">Abrir coleção <FiArrowRight /></span>
+              </div>
+            </button>
           ))}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
-
-const styles = {
-  pagina: {
-    minHeight: '100vh',
-    backgroundColor: '#0f3460',
-    color: 'white',
-  },
-  conteudo: {
-    padding: '32px',
-  },
-  cabecalho: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '24px',
-  },
-  titulo: {
-    margin: 0,
-    fontSize: '24px',
-  },
-  botaoCriar: {
-    backgroundColor: '#e94560',
-    color: 'white',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold',
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-    gap: '16px',
-  },
-  card: {
-    backgroundColor: '#16213e',
-    borderRadius: '12px',
-    padding: '20px',
-    cursor: 'pointer',
-    transition: 'transform 0.2s',
-  },
-  nomeLista: {
-    margin: '0 0 8px 0',
-    fontSize: '16px',
-  },
-  tag: {
-    backgroundColor: '#e94560',
-    borderRadius: '4px',
-    padding: '2px 8px',
-    fontSize: '12px',
-  },
-  filmes: {
-    marginTop: '12px',
-    fontSize: '13px',
-    color: '#aaa',
-  },
-  vazio: {
-    color: '#aaa',
-    textAlign: 'center',
-    marginTop: '60px',
-  },
-  erro: {
-    color: '#e94560',
-  },
-};

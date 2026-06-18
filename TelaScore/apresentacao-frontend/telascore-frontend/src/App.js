@@ -20,6 +20,7 @@ import AdminUsuarios from './pages/usuario/AdminUsuarios';
 import MeuUsuario from './pages/usuario/MeuUsuario';
 import Metas from './pages/analise/Metas';
 import Recomendacoes from './pages/analise/Recomendacoes';
+import './App.css';
 
 function App() {
   return (

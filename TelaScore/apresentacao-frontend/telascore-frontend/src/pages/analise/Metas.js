@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar';
 import { metaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { FiActivity, FiPlus, FiTarget } from 'react-icons/fi';
+import './analise.css';
 
 export default function Metas() {
   const { sessao } = useAuth();
@@ -43,25 +45,26 @@ export default function Metas() {
   }
 
   return (
-    <div style={styles.pagina}>
+    <div style={styles.pagina} className="cinema-page">
       <Navbar />
-      <main style={styles.conteudo}>
-        <h2>Minhas Metas</h2>
-        <form onSubmit={criar} style={styles.form}>
+      <main style={styles.conteudo} className="cinema-container">
+        <div className="page-heading"><div><p className="page-eyebrow">Desafio pessoal</p><h1 className="page-title">Minhas metas</h1><p className="page-description">Transforme sua paixão por cinema em objetivos que você consegue acompanhar.</p></div><FiTarget className="heading-icon" /></div>
+        <form onSubmit={criar} style={styles.form} className="glass-panel goal-form">
           <input style={styles.input} placeholder="Ex.: Assistir 30 filmes" value={form.titulo}
             onChange={e => setForm({ ...form, titulo: e.target.value })} required />
           <input style={styles.input} type="number" min="1" value={form.quantidadeAlvo}
             onChange={e => setForm({ ...form, quantidadeAlvo: e.target.value })} required />
           <input style={styles.input} type="date" value={form.dataPrazo}
             onChange={e => setForm({ ...form, dataPrazo: e.target.value })} required />
-          <button style={styles.primario}>Criar meta</button>
+          <button style={styles.primario} className="btn-primary"><FiPlus /> Criar meta</button>
         </form>
         {erro && <p style={styles.erro}>{erro}</p>}
         <div style={styles.grid}>
           {metas.map(meta => {
             const percentual = Math.min(100, Math.round(meta.quantidadeAtual * 100 / meta.quantidadeAlvo));
             return (
-              <article key={meta.id} style={styles.card}>
+              <article key={meta.id} style={styles.card} className="goal-card">
+                <FiActivity className="goal-card__icon" />
                 <div style={styles.linha}><h3 style={{ margin: 0 }}>{meta.titulo}</h3><span style={styles.status}>{meta.status}</span></div>
                 <p>{meta.quantidadeAtual} de {meta.quantidadeAlvo} filmes</p>
                 <div style={styles.barra}><div style={{ ...styles.progresso, width: `${percentual}%` }} /></div>
