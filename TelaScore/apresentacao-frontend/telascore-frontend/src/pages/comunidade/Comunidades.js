@@ -147,6 +147,7 @@ export default function Comunidades() {
     async function handleEntrarComunidade(comunidadeId) {
         const cIdStr = extrairIdString(comunidadeId);
         try {
+            setErro('');
             await comunidadeService.entrar(cIdStr, { usuarioId: sessao.id });
             setFeedback('Você entrou na comunidade!');
             await carregarDados();
@@ -155,7 +156,17 @@ export default function Comunidades() {
                 setMembros(memb || []);
             }
         } catch (e) {
-            setErro(e.message);
+            const dadosErro = e.response?.data;
+
+            if (typeof dadosErro === 'string') {
+                setErro(dadosErro);
+            } else if (dadosErro?.message) {
+                setErro(dadosErro.message);
+            } else if (dadosErro?.error) {
+                setErro(dadosErro.error);
+            } else {
+                setErro('Acesso negado: Limite de requisições atingido. Aguarde um minuto.');
+            }
         }
     }
 
