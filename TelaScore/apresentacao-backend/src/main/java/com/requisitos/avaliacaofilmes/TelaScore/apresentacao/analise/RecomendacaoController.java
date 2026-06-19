@@ -68,8 +68,9 @@ public class RecomendacaoController {
     @PostMapping
     public ResponseEntity<String> enviarRecomendacao(@RequestBody EnviarRecomendacaoRequest request) {
         try {
+            UsuarioLogado remetente = usuarioAtual();
             enviarRecomendacaoCasoDeUso.executar(new EnviarRecomendacaoComando(
-                    usuarioAtual().getId().getId(),
+                    remetente.getId().getId(),
                     request.destinatarioId(),
                     request.conteudoId(),
                     request.tipoConteudo(),
@@ -141,6 +142,7 @@ public class RecomendacaoController {
         recomendacoes.salvar(recomendacao);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
 
     private UsuarioLogado usuarioAtual() {
         UsuarioLogado usuario = sessao.obterUsuarioLogado();
@@ -220,4 +222,5 @@ public class RecomendacaoController {
 
     public record AvaliacaoPosteriorRequest(int nota, String comentario, String visibilidade) {
     }
+
 }
