@@ -13,6 +13,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.SessaoUsuar
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.Recomendacao;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.TipoConteudo;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioLogado;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -46,14 +47,14 @@ public class RecomendacaoController {
     }
 
     @PostMapping
-    public ResponseEntity<String> enviarRecomendacao(@RequestBody EnviarRecomendacaoComando comando) {
+    public ResponseEntity<String> enviarRecomendacao(@RequestBody EnviarRecomendacaoRequest request) {
         try {
             enviarRecomendacaoCasoDeUso.executar(new EnviarRecomendacaoComando(
                     usuarioAtual().getId().getId(),
-                    comando.destinatarioId,
-                    comando.conteudoId,
-                    comando.tipoConteudo,
-                    comando.mensagem));
+                    request.destinatarioId(),
+                    request.conteudoId(),
+                    request.tipoConteudo(),
+                    request.mensagem()));
             return ResponseEntity.ok("Recomendação enviada com sucesso!");
         } catch (ResponseStatusException e) {
             throw e;
@@ -87,5 +88,12 @@ public class RecomendacaoController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Faça login para acessar recomendações.");
         }
         return usuario;
+    }
+
+    public record EnviarRecomendacaoRequest(
+            int destinatarioId,
+            String conteudoId,
+            TipoConteudo tipoConteudo,
+            String mensagem) {
     }
 }
