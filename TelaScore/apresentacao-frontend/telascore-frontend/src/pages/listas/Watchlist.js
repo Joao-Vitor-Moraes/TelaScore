@@ -13,7 +13,7 @@ export default function Watchlist() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    listaService.listarPorUsuario(sessao.id)
+    listaService.listarPorUsuario(sessao.id, sessao.id)
       .then(todas => setListas(todas.filter(l => l.tipo === 'WATCHLIST')))
       .catch(() => setErro('Erro ao carregar watchlists.'));
   }, [sessao.id]);

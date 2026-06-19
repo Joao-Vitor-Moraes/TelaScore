@@ -94,10 +94,12 @@ public class ListaController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> criarLista(@RequestBody CriarListaComando comando) {
-        criarLista.executar(comando);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<CriarListaResponse> criarLista(@RequestBody CriarListaComando comando) {
+        int listaId = criarLista.executar(comando);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CriarListaResponse(listaId));
     }
+
+    public record CriarListaResponse(int id) {}
 
     @GetMapping("/{listaId}")
     public ListaResumo obterLista(@PathVariable int listaId,

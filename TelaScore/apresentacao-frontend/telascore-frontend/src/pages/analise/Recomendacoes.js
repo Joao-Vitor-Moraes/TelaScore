@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Navbar from '../../components/Navbar';
-import { filmeService, recomendacaoService, usuarioService } from '../../services/api';
+import { filmeService, listaService, recomendacaoService, usuarioService } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import {
-  FiCheckCircle, FiChevronDown, FiClock, FiFilm, FiHeart,
-  FiInbox, FiSearch, FiSend, FiUser, FiX, FiXCircle, FiZap,
+  FiBookmark, FiCheckCircle, FiChevronDown, FiClock, FiFilm, FiHeart,
+  FiInbox, FiPlus, FiSearch, FiSend, FiUser, FiX, FiXCircle, FiZap,
 } from 'react-icons/fi';
 import './analise.css';
 
 export default function Recomendacoes() {
+  const { sessao } = useAuth();
   const [recomendacoes, setRecomendacoes] = useState([]);
   const [enviadas, setEnviadas] = useState([]);
   const [aba, setAba] = useState('recebidas');
@@ -24,6 +26,9 @@ export default function Recomendacoes() {
   const [respondendoId, setRespondendoId] = useState(null);
   const [resposta, setResposta] = useState('');
   const [comentarioResposta, setComentarioResposta] = useState('');
+  const [listas, setListas] = useState([]);
+  const [salvandoRecomendacao, setSalvandoRecomendacao] = useState(null);
+  const [novaListaNome, setNovaListaNome] = useState('');
 
   const carregar = useCallback(() => {
     return Promise.all([
@@ -38,7 +43,8 @@ export default function Recomendacoes() {
   useEffect(() => {
     carregar();
     filmeService.listar().then(setFilmes).catch(() => setFilmes([]));
-  }, [carregar]);
+    listaService.listarPorUsuario(sessao.id, sessao.id).then(setListas).catch(() => setListas([]));
+  }, [carregar, sessao.id]);
 
   useEffect(() => {
     if (destinatario || buscaApelido.trim().replace(/^@/, '').length < 2) {
@@ -165,6 +171,62 @@ export default function Recomendacoes() {
       await carregar();
       cancelarResposta();
       setFeedback('Sua resposta foi enviada para quem fez a recomendação.');
+    } catch (e) {
+      setErro(e.message);
+    }
+  }
+
+  function abrirSalvar(recomendacao) {
+    setSalvandoRecomendacao(recomendacao);
+    setNovaListaNome('');
+    setErro('');
+  }
+
+  function fecharSalvar() {
+    setSalvandoRecomendacao(null);
+    setNovaListaNome('');
+  }
+
+  async function adicionarEmLista(listaId) {
+    try {
+      setErro('');
+      await listaService.adicionarFilme(listaId, {
+        usuarioId: sessao.id,
+        filmeId: Number(salvandoRecomendacao.conteudoId),
+      });
+      const lista = listas.find(item => item.id === listaId);
+      setFeedback(`Filme adicionado à lista “${lista?.nome || 'selecionada'}”.`);
+      fecharSalvar();
+    } catch (e) {
+      setErro(e.message);
+    }
+  }
+
+  async function criarWatchlistEAdicionar() {
+    const nome = novaListaNome.trim();
+    if (!nome) {
+      setErro('Digite um nome para a nova Watchlist.');
+      return;
+    }
+    try {
+      setErro('');
+      const criada = await listaService.criar({
+        criadorId: sessao.id,
+        nome,
+        descricao: 'Filmes salvos a partir de recomendações.',
+        tipo: 'WATCHLIST',
+        visibilidade: 'PRIVADA',
+        rankeada: false,
+        colaborativa: false,
+      });
+      await listaService.adicionarFilme(criada.id, {
+        usuarioId: sessao.id,
+        filmeId: Number(salvandoRecomendacao.conteudoId),
+      });
+      const atualizadas = await listaService.listarPorUsuario(sessao.id, sessao.id);
+      setListas(atualizadas);
+      setFeedback(`Watchlist “${nome}” criada e filme adicionado.`);
+      fecharSalvar();
     } catch (e) {
       setErro(e.message);
     }
@@ -335,6 +397,11 @@ export default function Recomendacoes() {
                     <button className="recommendation-accept" onClick={() => abrirResposta(r.id)}>Responder</button>
                   </div>
                 )}
+                {!['PENDENTE', 'VISUALIZADA', 'SEM_INTERESSE', 'REJEITADA'].includes(r.status) && (
+                  <button type="button" className="recommendation-save" onClick={() => abrirSalvar(r)}>
+                    <FiBookmark /> Salvar em lista
+                  </button>
+                )}
               </div>
               {respondendoId === r.id && (
                 <div className="recommendation-response">
@@ -400,6 +467,38 @@ export default function Recomendacoes() {
           {aba === 'enviadas' && !enviadas.length && <div className="recommendations-empty"><FiSend /><p>Nenhuma recomendação enviada ainda.</p><span>As indicações enviadas aparecerão aqui com a resposta da pessoa.</span></div>}
           </div>
         </section>
+        {salvandoRecomendacao && (
+          <div className="recommendation-list-modal" role="dialog" aria-modal="true" aria-label="Salvar filme em uma lista">
+            <button type="button" className="recommendation-list-modal__backdrop" onClick={fecharSalvar} aria-label="Fechar" />
+            <div className="recommendation-list-modal__content">
+              <div className="recommendation-list-modal__heading">
+                <div>
+                  <p className="page-eyebrow">Guardar para depois</p>
+                  <h2>Salvar em uma lista</h2>
+                  <span>{nomesFilmes[salvandoRecomendacao.conteudoId]}</span>
+                </div>
+                <button type="button" onClick={fecharSalvar} aria-label="Fechar"><FiX /></button>
+              </div>
+              <div className="recommendation-list-modal__lists">
+                {listas.map(lista => (
+                  <button type="button" key={lista.id} onClick={() => adicionarEmLista(lista.id)}>
+                    <FiBookmark />
+                    <span><strong>{lista.nome}</strong><small>{lista.tipo === 'WATCHLIST' ? 'Watchlist' : 'Lista'} · {lista.quantidadeTotalDeFilmes} filmes</small></span>
+                  </button>
+                ))}
+                {!listas.length && <p>Você ainda não possui listas.</p>}
+              </div>
+              <div className="recommendation-list-modal__new">
+                <strong><FiPlus /> Criar uma nova Watchlist</strong>
+                <div>
+                  <input maxLength="80" value={novaListaNome} onChange={e => setNovaListaNome(e.target.value)}
+                    placeholder="Nome da nova Watchlist" />
+                  <button type="button" onClick={criarWatchlistEAdicionar}>Criar e adicionar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
