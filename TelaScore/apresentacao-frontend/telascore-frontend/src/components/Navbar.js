@@ -10,6 +10,7 @@ const links = [
   { label: 'Watchlist', path: '/watchlist' },
   { label: 'Metas', path: '/metas' },
   { label: 'Recomendações', path: '/recomendacoes' },
+  { label: 'Comunidades', path: '/comunidades' },
   { label: 'Solicitações', path: '/solicitacoes' },
   { label: 'Denúncias', path: '/denuncias' },
 ];
@@ -54,12 +55,12 @@ export default function Navbar() {
         if (!ativo) return;
         const titulos = Object.fromEntries(filmes.map(filme => [String(filme.id), filme.titulo]));
         setNotificacoes(recebidas
-          .filter(recomendacao => recomendacao.status === 'PENDENTE')
-          .map(recomendacao => ({
-            ...recomendacao,
-            titulo: titulos[String(recomendacao.conteudoId)] || 'Filme recomendado',
-          }))
-          .sort((a, b) => new Date(b.dataGeracao) - new Date(a.dataGeracao)));
+            .filter(recomendacao => recomendacao.status === 'PENDENTE')
+            .map(recomendacao => ({
+              ...recomendacao,
+              titulo: titulos[String(recomendacao.conteudoId)] || 'Filme recomendado',
+            }))
+            .sort((a, b) => new Date(b.dataGeracao) - new Date(a.dataGeracao)));
       } catch {
         if (ativo) setNotificacoes([]);
       }
@@ -87,7 +88,6 @@ export default function Navbar() {
       await recomendacaoService.visualizar(notificacao.id);
       setNotificacoes(atuais => atuais.filter(item => item.id !== notificacao.id));
     } catch {
-      // A página de recomendações fará uma nova leitura do estado.
     }
     navegar('/recomendacoes');
   }
@@ -103,118 +103,118 @@ export default function Navbar() {
   const inicial = (usuario?.apelido || usuario?.nome || '?').trim().charAt(0).toUpperCase();
 
   return (
-    <header className="site-header">
-      <div className="site-header__inner">
-        <div className="mobile-menu-wrap">
-          <button className="mobile-trigger" onClick={() => setMobileAberto(v => !v)} aria-label="Abrir menu">
-            {mobileAberto ? <FiX size={21} /> : <FiMenu size={21} />}
-          </button>
-          {mobileAberto && (
-            <div className="header-dropdown mobile-dropdown">
-              {links.map(link => (
-                <button key={link.path} className="dropdown-action"
-                  onClick={() => navegar(link.label === 'Solicitações' ? rotaSolicitacoes : link.path)}>
-                  {link.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <button className="brand" onClick={() => navegar('/filmes')}>
-          <span className="brand__mark"><FiFilm /></span>
-          <span className="brand__name">TelaScore</span>
-        </button>
-
-        <nav className="desktop-nav">
-          {links.map(link => {
-            const path = link.label === 'Solicitações' ? rotaSolicitacoes : link.path;
-            const ativo = location.pathname === path || (path !== '/filmes' && location.pathname.startsWith(`${path}/`));
-            return (
-              <button key={link.path} className={`nav-link ${ativo ? 'is-active' : ''}`} onClick={() => navegar(path)}>
-                {link.label}
-              </button>
-            );
-          })}
-        </nav>
-
-        <div className="site-header__actions">
-          <div className="notification-wrap">
-            <button
-              className={`header-icon ${notificacoesAbertas ? 'is-active' : ''}`}
-              aria-label={`Notificações${notificacoes.length ? `: ${notificacoes.length} novas` : ''}`}
-              onClick={() => {
-                setNotificacoesAbertas(abertas => !abertas);
-                setPerfilAberto(false);
-              }}
-            >
-              <FiBell size={18} />
-              {notificacoes.length > 0 && (
-                <span className="notification-badge">{notificacoes.length > 9 ? '9+' : notificacoes.length}</span>
-              )}
+      <header className="site-header">
+        <div className="site-header__inner">
+          <div className="mobile-menu-wrap">
+            <button className="mobile-trigger" onClick={() => setMobileAberto(v => !v)} aria-label="Abrir menu">
+              {mobileAberto ? <FiX size={21} /> : <FiMenu size={21} />}
             </button>
-            {notificacoesAbertas && (
-              <div className="header-dropdown notification-dropdown">
-                <div className="notification-heading">
-                  <div>
-                    <strong>Recomendações</strong>
-                    <span>{notificacoes.length ? `${notificacoes.length} nova${notificacoes.length > 1 ? 's' : ''}` : 'Tudo em dia'}</span>
-                  </div>
-                  <FiBell />
-                </div>
-                <div className="notification-list">
-                  {notificacoes.length === 0 ? (
-                    <div className="notification-empty">Nenhuma recomendação nova por enquanto.</div>
-                  ) : notificacoes.slice(0, 5).map(notificacao => (
-                    <button
-                      key={notificacao.id}
-                      className="notification-item"
-                      onClick={() => abrirNotificacao(notificacao)}
-                    >
-                      <span className="notification-dot" />
-                      <span className="notification-content">
-                        <strong>{notificacao.titulo}</strong>
-                        <span>Recomendado por @{notificacao.remetenteApelido || 'usuário'}</span>
-                        {notificacao.mensagem && <small>“{notificacao.mensagem}”</small>}
-                        <time>{formatarDataNotificacao(notificacao.dataGeracao)}</time>
-                      </span>
-                    </button>
+            {mobileAberto && (
+                <div className="header-dropdown mobile-dropdown">
+                  {links.map(link => (
+                      <button key={link.path} className="dropdown-action"
+                              onClick={() => navegar(link.label === 'Solicitações' ? rotaSolicitacoes : link.path)}>
+                        {link.label}
+                      </button>
                   ))}
                 </div>
-                <button className="notification-all" onClick={() => navegar('/recomendacoes')}>
-                  Ver todas as recomendações
-                </button>
-              </div>
             )}
           </div>
-          <div className="profile-wrap">
-            <button className="profile-trigger" onClick={() => setPerfilAberto(v => !v)}>
+
+          <button className="brand" onClick={() => navegar('/filmes')}>
+            <span className="brand__mark"><FiFilm /></span>
+            <span className="brand__name">TelaScore</span>
+          </button>
+
+          <nav className="desktop-nav">
+            {links.map(link => {
+              const path = link.label === 'Solicitações' ? rotaSolicitacoes : link.path;
+              const ativo = location.pathname === path || (path !== '/filmes' && location.pathname.startsWith(`${path}/`));
+              return (
+                  <button key={link.path} className={`nav-link ${ativo ? 'is-active' : ''}`} onClick={() => navegar(path)}>
+                    {link.label}
+                  </button>
+              );
+            })}
+          </nav>
+
+          <div className="site-header__actions">
+            <div className="notification-wrap">
+              <button
+                  className={`header-icon ${notificacoesAbertas ? 'is-active' : ''}`}
+                  aria-label={`Notificações${notificacoes.length ? `: ${notificacoes.length} novas` : ''}`}
+                  onClick={() => {
+                    setNotificacoesAbertas(abertas => !abertas);
+                    setPerfilAberto(false);
+                  }}
+              >
+                <FiBell size={18} />
+                {notificacoes.length > 0 && (
+                    <span className="notification-badge">{notificacoes.length > 9 ? '9+' : notificacoes.length}</span>
+                )}
+              </button>
+              {notificacoesAbertas && (
+                  <div className="header-dropdown notification-dropdown">
+                    <div className="notification-heading">
+                      <div>
+                        <strong>Recomendações</strong>
+                        <span>{notificacoes.length ? `${notificacoes.length} nova${notificacoes.length > 1 ? 's' : ''}` : 'Tudo em dia'}</span>
+                      </div>
+                      <FiBell />
+                    </div>
+                    <div className="notification-list">
+                      {notificacoes.length === 0 ? (
+                          <div className="notification-empty">Nenhuma recomendação nova por enquanto.</div>
+                      ) : notificacoes.slice(0, 5).map(notificacao => (
+                          <button
+                              key={notificacao.id}
+                              className="notification-item"
+                              onClick={() => abrirNotificacao(notificacao)}
+                          >
+                            <span className="notification-dot" />
+                            <span className="notification-content">
+                        <strong>{notificacao.titulo}</strong>
+                        <span>Recomendado por @{notificacao.remetenteApelido || 'usuário'}</span>
+                              {notificacao.mensagem && <small>“{notificacao.mensagem}”</small>}
+                              <time>{formatarDataNotificacao(notificacao.dataGeracao)}</time>
+                      </span>
+                          </button>
+                      ))}
+                    </div>
+                    <button className="notification-all" onClick={() => navegar('/recomendacoes')}>
+                      Ver todas as recomendações
+                    </button>
+                  </div>
+              )}
+            </div>
+            <div className="profile-wrap">
+              <button className="profile-trigger" onClick={() => setPerfilAberto(v => !v)}>
               <span className="profile-avatar">
                 {usuario?.avatarUrl ? <img src={usuario.avatarUrl} alt="" /> : inicial}
               </span>
-              <span className="profile-meta">
+                <span className="profile-meta">
                 <strong>{nomeExibicao}</strong>
-                {detalheExibicao && <span>{detalheExibicao}</span>}
-              </span>
-              <FiChevronDown size={14} />
-            </button>
-            {perfilAberto && (
-              <div className="header-dropdown">
-                <div className="dropdown-user">
-                  <strong>{nomeExibicao}</strong>
                   {detalheExibicao && <span>{detalheExibicao}</span>}
-                </div>
-                <button className="dropdown-action" onClick={() => navegar('/meuusuario')}><FiUser /> Meu perfil</button>
-                {sessao?.papel === 'ADMIN' && (
-                  <button className="dropdown-action" onClick={() => navegar('/admin/solicitacoes')}><FiShield /> Administração</button>
-                )}
-                <button className="dropdown-action danger" onClick={handleLogout}><FiLogOut /> Sair</button>
-              </div>
-            )}
+              </span>
+                <FiChevronDown size={14} />
+              </button>
+              {perfilAberto && (
+                  <div className="header-dropdown">
+                    <div className="dropdown-user">
+                      <strong>{nomeExibicao}</strong>
+                      {detalheExibicao && <span>{detalheExibicao}</span>}
+                    </div>
+                    <button className="dropdown-action" onClick={() => navegar('/meuusuario')}><FiUser /> Meu perfil</button>
+                    {sessao?.papel === 'ADMIN' && (
+                        <button className="dropdown-action" onClick={() => navegar('/admin/solicitacoes')}><FiShield /> Administração</button>
+                    )}
+                    <button className="dropdown-action danger" onClick={handleLogout}><FiLogOut /> Sair</button>
+                  </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
   );
 }
 

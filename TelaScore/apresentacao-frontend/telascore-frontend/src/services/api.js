@@ -1,6 +1,6 @@
 const BASE_URL = process.env.REACT_APP_API_URL !== undefined
-  ? process.env.REACT_APP_API_URL
-  : 'http://localhost:8080';
+    ? process.env.REACT_APP_API_URL
+    : 'http://localhost:8080';
 
 function getToken() {
   try {
@@ -11,13 +11,14 @@ function getToken() {
   }
 }
 
-async function request(method, path, body) {
+async function request(method, path, body, extraHeaders = {}) {
   const token = getToken();
   const options = {
     method,
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...extraHeaders,
     },
   };
   if (body) options.body = JSON.stringify(body);
@@ -67,7 +68,7 @@ export const listaService = {
   removerFilme: (listaId, filmeId, usuarioId) => request('DELETE', `/api/listas/${listaId}/filmes/${filmeId}?usuarioId=${usuarioId}`),
   reordenarFilme: (listaId, filmeId, body) => request('PATCH', `/api/listas/${listaId}/filmes/${filmeId}/posicao`, body),
   tornarColaborativa: (listaId, usuarioId) => request('PATCH', `/api/listas/${listaId}/colaborativa`, { usuarioId }),
-  adicionarColaborador: (listaId, body) => request('POST', `/api/listas/${listaId}/colaboradores`, body),
+  adicionarColaborador: (listaId, body) => request('POST', '/api/listas/${listaId}/colaboradores', body),
   removerColaborador: (listaId, colaboradorId, donoId) => request('DELETE', `/api/listas/${listaId}/colaboradores/${colaboradorId}?donoId=${donoId}`),
   registrarAssistido: (listaId, filmeId, usuarioId) => request('PATCH', `/api/listas/${listaId}/filmes/${filmeId}/assistido`, { usuarioId }),
 };
@@ -84,7 +85,7 @@ export const solicitacaoService = {
   listarPorStatus: (status) => request('GET', `/api/solicitacoes?status=${status}`),
 };
 
-// Filmes — substitua o filmeService existente por este:
+// Filmes
 export const filmeService = {
   listar: () => request('GET', '/filmes'),
   obter: (id) => request('GET', `/filmes/${id}`),
@@ -99,7 +100,7 @@ export const authService = {
   registrar: (dados) => request('POST', '/api/identidade/usuario/registrar', dados),
 };
 
-// Avaliações — adicione depois do filmeService:
+// Avaliações
 export const avaliacaoService = {
   listarPorFilme: (filmeId, usuarioId) => {
     const query = usuarioId ? `?usuarioId=${usuarioId}` : '';
@@ -110,6 +111,7 @@ export const avaliacaoService = {
   remover: (id) => request('DELETE', `/avaliacoes/${id}`),
 };
 
+// Usuários
 export const usuarioService = {
   meuUsuario: () => request('GET', '/api/identidade/usuario/meu-usuario'),
   editarMeuUsuario: (dados) => request('PUT', '/api/identidade/usuario/meu-usuario', dados),
@@ -118,9 +120,10 @@ export const usuarioService = {
   editar: (id, dados) => request('PUT', `/api/identidade/usuario/${id}`, dados),
   remover: (id) => request('DELETE', `/api/identidade/usuario/${id}`),
   buscarPorApelido: (apelido) =>
-    request('GET', `/api/identidade/usuario/buscar?apelido=${encodeURIComponent(apelido)}`),
+      request('GET', `/api/identidade/usuario/buscar?apelido=${encodeURIComponent(apelido)}`),
 };
 
+// Denúncias
 export const denunciaService = {
   registrar: (dados) => request('POST', '/api/denuncias', dados),
   listarMinhas: () => request('GET', '/api/denuncias/minhas'),
@@ -130,6 +133,7 @@ export const denunciaService = {
   avaliar: (id, decisao) => request('PATCH', `/api/denuncias/${id}/avaliar`, { decisao }),
 };
 
+// Metas
 export const metaService = {
   listar: () => request('GET', '/api/metas'),
   criar: (dados) => request('POST', '/api/metas', dados),
@@ -141,13 +145,29 @@ export const metaService = {
   criarSistema: (dados) => request('POST', '/api/metas/sistema', dados),
 };
 
+// Recomendações
 export const recomendacaoService = {
   listar: () => request('GET', '/api/recomendacoes'),
   listarEnviadas: () => request('GET', '/api/recomendacoes/enviadas'),
   enviar: (dados) => request('POST', '/api/recomendacoes', dados),
   visualizar: (recomendacaoId) => request('PUT', `/api/recomendacoes/${recomendacaoId}/visualizar`),
   avaliarPosteriormente: (recomendacaoId, dados) =>
-    request('POST', `/api/recomendacoes/${recomendacaoId}/avaliacao`, dados),
+      request('POST', `/api/recomendacoes/${recomendacaoId}/avaliacao`, dados),
   responder: (recomendacaoId, resposta, comentario) =>
-    request('PUT', '/api/recomendacoes/reagir', { recomendacaoId, resposta, comentario: comentario || null }),
+      request('PUT', '/api/recomendacoes/reagir', { recomendacaoId, resposta, comentario: comentario || null }),
+};
+
+// Comunidades
+export const comunidadeService = {
+  listarTodas: () => request('GET', '/api/comunidades'),
+  buscarComunidadesDoUsuario: (usuarioId) => request('GET', `/api/comunidades?usuarioId=${usuarioId}`),
+  listarMensagens: (comunidadeId) => request('GET', `/api/comunidades/${comunidadeId}/mensagens`),
+  listarMembros: (comunidadeId) => request('GET', `/api/comunidades/${comunidadeId}/membros`),
+  criar: (dados) => request('POST', '/api/comunidades', dados),
+  entrar: (comunidadeId, dados) => request('POST', `/api/comunidades/${comunidadeId}/membros`, dados),
+  enviarMensagem: (dados) => request('POST', `/api/comunidades/${dados.comunidadeId}/mensagens`, dados),
+  removerMembro: (comunidadeId, usuarioId, operadorId) => request('DELETE', `/api/comunidades/${comunidadeId}/membros/${usuarioId}`, null, { 'X-Usuario-Id': operadorId }),
+  promoverMembro: (comunidadeId, usuarioId, operadorId) => request('PUT', `/api/comunidades/${comunidadeId}/membros/${usuarioId}/promover`, null, { 'X-Usuario-Id': operadorId }),
+  rebaixarMembro: (comunidadeId, usuarioId, operadorId) => request('PUT', `/api/comunidades/${comunidadeId}/membros/${usuarioId}/rebaixar`, null, { 'X-Usuario-Id': operadorId }),
+  excluirComunidade: (comunidadeId, usuarioId) => request('DELETE', `/api/comunidades/${comunidadeId}`, null, { 'X-Usuario-Id': usuarioId }),
 };
