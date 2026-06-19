@@ -25,6 +25,9 @@ import Denuncias from './pages/denuncias/Denuncias';
 import AdminDenuncias from './pages/denuncias/AdminDenuncias';
 import Comunidades from './pages/comunidade/Comunidades';
 import Noticias from './pages/noticias/Noticias';
+import Eventos from './pages/eventos/Eventos';
+import CriarEvento from './pages/eventos/CriarEvento';
+import Calendario from './pages/calendario/Calendario';
 
 function App() {
   return (
@@ -72,6 +75,13 @@ function App() {
             {/* Análise */}
             <Route path="/metas" element={<RotaProtegida><Metas /></RotaProtegida>} />
             <Route path="/recomendacoes" element={<RotaProtegida><Recomendacoes /></RotaProtegida>} />
+
+            {/* Eventos */}
+            <Route path="/eventos" element={<RotaProtegida><Eventos /></RotaProtegida>} />
+            <Route path="/eventos/novo" element={<RotaProtegida><CriarEvento /></RotaProtegida>} />
+
+            {/* Calendário de estreias */}
+            <Route path="/calendario" element={<RotaProtegida><Calendario /></RotaProtegida>} />
 
             {/* Raiz */}
             <Route path="/" element={<RotaProtegida><Filmes /></RotaProtegida>} />

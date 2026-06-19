@@ -12,6 +12,8 @@ const links = [
   { label: 'Recomendações', path: '/recomendacoes' },
   { label: 'Comunidades', path: '/comunidades' },
   { label: 'Notícias', path: '/noticias' },
+  { label: 'Calendário', path: '/calendario' },
+  { label: 'Eventos', path: '/eventos' },
   { label: 'Solicitações', path: '/solicitacoes' },
   { label: 'Denúncias', path: '/denuncias' },
 ];

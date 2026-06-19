@@ -72,6 +72,11 @@ public class GeradorIdImpl implements GeradorId {
     }
 
     @Override
+    public int gerarProximoIdCalendario() {
+        return proximoId("SELECT MAX(c.id) FROM CalendarioEntity c");
+    }
+
+    @Override
     public int gerarProximoIdNoticia() {
         throw new UnsupportedOperationException("Geracao de ID de noticia nao implementada neste modulo");
     }

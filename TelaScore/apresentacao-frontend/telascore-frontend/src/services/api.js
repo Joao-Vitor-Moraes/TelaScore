@@ -123,6 +123,24 @@ export const usuarioService = {
       request('GET', `/api/identidade/usuario/buscar?apelido=${encodeURIComponent(apelido)}`),
 };
 
+// Eventos
+export const eventoService = {
+  listarFuturos: (aPartirDe) => request('GET', `/api/eventos${aPartirDe ? `?aPartirDe=${encodeURIComponent(aPartirDe)}` : ''}`),
+  obter: (id) => request('GET', `/api/eventos/${id}`),
+  agendar: (comando) => request('POST', '/api/eventos', comando),
+  cancelar: (id) => request('DELETE', `/api/eventos/${id}`),
+};
+
+// Calendário de estreias
+export const calendarioService = {
+  criar: (usuarioId) => request('POST', '/api/calendarios', { usuarioId }),
+  obter: (usuarioId) => request('GET', `/api/calendarios/${usuarioId}`),
+  registrarFilme: (usuarioId, body) => request('POST', `/api/calendarios/${usuarioId}/filmes`, body),
+  removerFilme: (usuarioId, filmeId) => request('DELETE', `/api/calendarios/${usuarioId}/filmes/${filmeId}`),
+  alternarLembrete: (usuarioId, filmeId) => request('PATCH', `/api/calendarios/${usuarioId}/filmes/${filmeId}/lembrete`),
+  dispararLembretes: (usuarioId, data) => request('POST', `/api/calendarios/${usuarioId}/lembretes?data=${data}`),
+};
+
 // Denúncias
 export const denunciaService = {
   registrar: (dados) => request('POST', '/api/denuncias', dados),
