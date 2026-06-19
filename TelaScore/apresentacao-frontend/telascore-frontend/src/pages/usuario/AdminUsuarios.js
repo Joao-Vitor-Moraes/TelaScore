@@ -113,6 +113,27 @@ export default function AdminUsuarios() {
         }
     }
 
+    async function alternarPapelAutor(usuario) {
+        setErroAcao(null);
+        const proximoPapel = usuario.papel === 'AUTOR' ? 'CINEFILO' : 'AUTOR';
+        const dadosDinamicos = {
+            nome: usuario.nome ?? '',
+            email: usuario.email ?? '',
+            papel: proximoPapel,
+            apelido: usuario.apelido ?? '',
+            biografia: usuario.biografia ?? '',
+            avatarUrl: usuario.avatarUrl ?? '',
+        };
+        try {
+            const usuarioAtualizado = await usuarioService.editar(usuario.id, dadosDinamicos);
+            setUsuarios(atuais => atuais.map(u =>
+                u.id === usuario.id ? usuarioAtualizado : u
+            ));
+        } catch {
+            setErroAcao('Erro ao modificar papel do usuário.');
+        }
+    }
+
     async function confirmarRemocao() {
         if (!usuarioParaRemover) return;
 
@@ -191,7 +212,7 @@ export default function AdminUsuarios() {
                                     <div className="admin-card__body">
                                         <div className="admin-card__title-row">
                                             <h3>{usuario.nome || 'Usuário sem nome'}</h3>
-                                            <span className={`admin-badge ${usuario.papel === 'ADMIN' ? 'is-admin' : 'is-user'}`}>
+                                            <span className={`admin-badge ${usuario.papel === 'ADMIN' ? 'is-admin' : usuario.papel === 'AUTOR' ? 'is-autor' : 'is-user'}`}>
                                                 <FiShield />
                                                 {usuario.papel}
                                             </span>
@@ -209,6 +230,12 @@ export default function AdminUsuarios() {
                                     </div>
 
                                     <div className="admin-actions">
+                                        {usuario.papel !== 'ADMIN' && (
+                                            <button className="btn-secondary" onClick={() => alternarPapelAutor(usuario)}>
+                                                <FiShield />
+                                                {usuario.papel === 'AUTOR' ? 'Remover Autor' : 'Definir Autor'}
+                                            </button>
+                                        )}
                                         <button className="btn-secondary" onClick={() => abrirEdicao(usuario)}>
                                             {editandoId === usuario.id ? <FiX /> : <FiEdit2 />}
                                             {editandoId === usuario.id ? 'Fechar' : 'Editar'}
@@ -239,6 +266,7 @@ export default function AdminUsuarios() {
                                                 Papel
                                                 <select value={form.papel} onChange={e => atualizarCampo('papel', e.target.value)}>
                                                     <option value="CINEFILO">CINEFILO</option>
+                                                    <option value="AUTOR">AUTOR</option>
                                                     <option value="ADMIN">ADMIN</option>
                                                 </select>
                                             </label>

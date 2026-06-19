@@ -137,8 +137,8 @@ export const denunciaService = {
 export const metaService = {
   listar: () => request('GET', '/api/metas'),
   criar: (dados) => request('POST', '/api/metas', dados),
-  adicionarProgresso: (id, quantidade) => request('PUT', `/api/metas/${id}/progresso?quantidade=${quantidade}`),
-  removerProgresso: (id, quantidade) => request('PUT', `/api/metas/${id}/progresso/remover?quantidade=${quantidade}`),
+  adicionarProgresso: (id, quantity) => request('PUT', `/api/metas/${id}/progresso?quantidade=${quantity}`),
+  removerProgresso: (id, quantity) => request('PUT', `/api/metas/${id}/progresso/remover?quantidade=${quantity}`),
   estenderPrazo: (metaId, novoPrazo) => request('PUT', '/api/metas/prazo', { metaId, novoPrazo }),
   pontuacao: () => request('GET', '/api/metas/pontuacao'),
   listarSistema: () => request('GET', '/api/metas/sistema'),
@@ -170,4 +170,17 @@ export const comunidadeService = {
   promoverMembro: (comunidadeId, usuarioId, operadorId) => request('PUT', `/api/comunidades/${comunidadeId}/membros/${usuarioId}/promover`, null, { 'X-Usuario-Id': operadorId }),
   rebaixarMembro: (comunidadeId, usuarioId, operadorId) => request('PUT', `/api/comunidades/${comunidadeId}/membros/${usuarioId}/rebaixar`, null, { 'X-Usuario-Id': operadorId }),
   excluirComunidade: (comunidadeId, usuarioId) => request('DELETE', `/api/comunidades/${comunidadeId}`, null, { 'X-Usuario-Id': usuarioId }),
+};
+
+// Notícias
+export const noticiaService = {
+  pesquisar: (termo, categoria) => {
+    const query = [];
+    if (termo) query.push(`termo=${encodeURIComponent(termo)}`);
+    if (categoria) query.push(`categoria=${encodeURIComponent(categoria)}`);
+    const queryString = query.length > 0 ? `?${query.join('&')}` : '';
+    return request('GET', `/noticias${queryString}`);
+  },
+  criar: (dados) => request('POST', '/noticias', dados),
+  remover: (id) => request('DELETE', `/noticias/${id}`),
 };

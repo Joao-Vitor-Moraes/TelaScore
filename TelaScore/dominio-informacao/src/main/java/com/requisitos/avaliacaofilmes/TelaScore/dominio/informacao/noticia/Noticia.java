@@ -2,15 +2,15 @@ package com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia;
 
 import static org.apache.commons.lang3.Validate.notBlank;
 import static org.apache.commons.lang3.Validate.notNull;
-import static org.apache.commons.lang3.Validate.isTrue; // Adicionado
+import static org.apache.commons.lang3.Validate.isTrue;
 
 import java.time.LocalDateTime;
-
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
 public class Noticia {
 	private final NoticiaId id;
 	private final UsuarioId autorId;
+	private final String autorApelido;
 
 	private String titulo;
 	private String conteudo;
@@ -23,6 +23,21 @@ public class Noticia {
 
 		this.id = id;
 		this.autorId = autorId;
+		this.autorApelido = null;
+		this.dataPublicacao = LocalDateTime.now();
+		this.categoria = categoria;
+
+		setTitulo(titulo);
+		setConteudo(conteudo);
+	}
+
+	public Noticia(NoticiaId id, UsuarioId autorId, String autorApelido, String titulo, String conteudo, CategoriaNoticia categoria) {
+		notNull(id, "O id da notícia não pode ser nulo");
+		notNull(autorId, "O id do autor não pode ser nulo");
+
+		this.id = id;
+		this.autorId = autorId;
+		this.autorApelido = autorApelido;
 		this.dataPublicacao = LocalDateTime.now();
 		this.categoria = categoria;
 
@@ -32,6 +47,7 @@ public class Noticia {
 
 	public NoticiaId getId() { return id; }
 	public UsuarioId getAutorId() { return autorId; }
+	public String getAutorApelido() { return autorApelido; }
 	public LocalDateTime getDataPublicacao() { return dataPublicacao; }
 
 	public void setTitulo(String titulo) {

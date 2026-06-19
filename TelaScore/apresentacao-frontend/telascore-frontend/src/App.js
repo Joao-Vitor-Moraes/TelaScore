@@ -24,6 +24,7 @@ import './App.css';
 import Denuncias from './pages/denuncias/Denuncias';
 import AdminDenuncias from './pages/denuncias/AdminDenuncias';
 import Comunidades from './pages/comunidade/Comunidades';
+import Noticias from './pages/noticias/Noticias';
 
 function App() {
   return (
@@ -64,6 +65,9 @@ function App() {
 
             {/* Comunidades */}
             <Route path="/comunidades" element={<RotaProtegida><Comunidades /></RotaProtegida>} />
+
+            {/* Notícias */}
+            <Route path="/noticias" element={<RotaProtegida><Noticias /></RotaProtegida>} />
 
             {/* Análise */}
             <Route path="/metas" element={<RotaProtegida><Metas /></RotaProtegida>} />

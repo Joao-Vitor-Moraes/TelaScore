@@ -11,6 +11,7 @@ const links = [
   { label: 'Metas', path: '/metas' },
   { label: 'Recomendações', path: '/recomendacoes' },
   { label: 'Comunidades', path: '/comunidades' },
+  { label: 'Notícias', path: '/noticias' },
   { label: 'Solicitações', path: '/solicitacoes' },
   { label: 'Denúncias', path: '/denuncias' },
 ];
