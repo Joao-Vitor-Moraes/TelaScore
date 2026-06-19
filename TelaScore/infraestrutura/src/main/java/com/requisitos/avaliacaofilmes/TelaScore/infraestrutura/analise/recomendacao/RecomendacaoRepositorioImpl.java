@@ -38,6 +38,9 @@ public class RecomendacaoRepositorioImpl implements RecomendacaoRepositorio {
             entity.setMensagem(recomendacao.getMensagem());
             entity.setDataGeracao(recomendacao.getDataGeracao());
             entity.setStatus(recomendacao.getStatus().name());
+            entity.setComentarioResposta(recomendacao.getComentarioResposta());
+            entity.setNotaPosterior(recomendacao.getNotaPosterior());
+            entity.setAvaliacaoPosterior(recomendacao.getAvaliacaoPosterior());
 
             if (!em.contains(entity)) {
                 em.persist(entity);
@@ -89,7 +92,9 @@ public class RecomendacaoRepositorioImpl implements RecomendacaoRepositorio {
         EntityManager em = ConexaoBanco.obterEntityManager();
         try {
             List<RecomendacaoEntity> entities = em.createQuery(
-                    "SELECT r FROM RecomendacaoEntity r WHERE r.usuarioId = :uid ORDER BY r.pontuacaoCompatibilidade DESC", RecomendacaoEntity.class)
+                    "SELECT r FROM RecomendacaoEntity r WHERE r.usuarioId = :uid "
+                    + "ORDER BY CASE WHEN r.status = 'PENDENTE' THEN 0 ELSE 1 END, r.dataGeracao DESC",
+                    RecomendacaoEntity.class)
                     .setParameter("uid", usuarioId.getId())
                     .setMaxResults(limite)
                     .getResultList();
@@ -109,7 +114,9 @@ public class RecomendacaoRepositorioImpl implements RecomendacaoRepositorio {
         EntityManager em = ConexaoBanco.obterEntityManager();
         try {
             List<RecomendacaoEntity> entities = em.createQuery(
-                    "SELECT r FROM RecomendacaoEntity r WHERE r.usuarioId = :uid AND r.remetenteId IS NOT NULL", RecomendacaoEntity.class)
+                    "SELECT r FROM RecomendacaoEntity r WHERE r.usuarioId = :uid AND r.remetenteId IS NOT NULL "
+                    + "ORDER BY CASE WHEN r.status = 'PENDENTE' THEN 0 ELSE 1 END, r.dataGeracao DESC",
+                    RecomendacaoEntity.class)
                     .setParameter("uid", usuarioId.getId())
                     .getResultList();
 
@@ -143,6 +150,23 @@ public class RecomendacaoRepositorioImpl implements RecomendacaoRepositorio {
         }
     }
 
+    @Override
+    public List<Recomendacao> buscarEnviadasPorUsuario(UsuarioId remetenteId) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT r FROM RecomendacaoEntity r WHERE r.remetenteId = :uid ORDER BY r.dataGeracao DESC",
+                    RecomendacaoEntity.class)
+                    .setParameter("uid", remetenteId.getId())
+                    .getResultList()
+                    .stream()
+                    .map(this::mapearParaDominio)
+                    .toList();
+        } finally {
+            em.close();
+        }
+    }
+
     private Recomendacao mapearParaDominio(RecomendacaoEntity entity) {
         UsuarioId remetenteId = entity.getRemetenteId() != null ? new UsuarioId(entity.getRemetenteId()) : null;
 
@@ -155,7 +179,10 @@ public class RecomendacaoRepositorioImpl implements RecomendacaoRepositorio {
             remetenteId,
             entity.getMensagem(),
             entity.getDataGeracao(),
-            StatusRecomendacao.valueOf(entity.getStatus())
+            StatusRecomendacao.valueOf(entity.getStatus()),
+            entity.getComentarioResposta(),
+            entity.getNotaPosterior(),
+            entity.getAvaliacaoPosterior()
         );
     }
 }

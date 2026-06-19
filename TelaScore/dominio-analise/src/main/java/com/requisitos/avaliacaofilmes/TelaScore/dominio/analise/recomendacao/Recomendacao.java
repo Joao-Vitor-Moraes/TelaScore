@@ -20,6 +20,9 @@ public class Recomendacao {
     private double pontuacaoCompatibilidade;
     private final LocalDateTime dataGeracao;
     private StatusRecomendacao status;
+    private String comentarioResposta;
+    private Integer notaPosterior;
+    private String avaliacaoPosterior;
 
     public Recomendacao(RecomendacaoId id, UsuarioId usuarioId, String conteudoId, TipoConteudo tipoConteudo, double pontuacaoCompatibilidade, UsuarioId remetenteId, String mensagem) {
         notNull(id, "O id da recomendação não pode ser nulo");
@@ -49,7 +52,7 @@ public class Recomendacao {
 
     public Recomendacao(RecomendacaoId id, UsuarioId usuarioId, String conteudoId, TipoConteudo tipoConteudo,
                         Double pontuacaoCompatibilidade, UsuarioId remetenteId, String mensagem, LocalDateTime dataGeracao,
-                        StatusRecomendacao status) {
+                        StatusRecomendacao status, String comentarioResposta, Integer notaPosterior, String avaliacaoPosterior) {
         notNull(id, "O id da recomendação não pode ser nulo");
         notNull(usuarioId, "O id do utilizador não pode ser nulo");
         notNull(conteudoId, "O id do conteúdo não pode ser nulo");
@@ -66,6 +69,9 @@ public class Recomendacao {
         this.mensagem = mensagem;
         this.dataGeracao = dataGeracao;
         this.status = status;
+        setComentarioResposta(comentarioResposta);
+        this.notaPosterior = notaPosterior;
+        this.avaliacaoPosterior = avaliacaoPosterior;
     }
 
 	public void marcarComoVisualizada() {
@@ -85,6 +91,18 @@ public class Recomendacao {
         this.status = StatusRecomendacao.REJEITADA;
     }
 
+    public void responder(StatusRecomendacao resposta, String comentario) {
+        notNull(resposta, "A resposta da recomendação não pode ser nula");
+        isTrue(
+            resposta == StatusRecomendacao.VOU_ASSISTIR
+                || resposta == StatusRecomendacao.JA_ASSISTI
+                || resposta == StatusRecomendacao.SEM_INTERESSE,
+            "Resposta inválida para a recomendação"
+        );
+        this.status = resposta;
+        setComentarioResposta(comentario);
+    }
+
     public boolean ehSocial() {
         return remetenteId != null;
     }
@@ -97,6 +115,18 @@ public class Recomendacao {
     public LocalDateTime getDataGeracao() { return dataGeracao; }
     public String getMensagem() { return mensagem; }
     public StatusRecomendacao getStatus() { return status; }
+    public String getComentarioResposta() { return comentarioResposta; }
+    public Integer getNotaPosterior() { return notaPosterior; }
+    public String getAvaliacaoPosterior() { return avaliacaoPosterior; }
+
+    public void registrarAvaliacaoPosterior(int nota, String comentario) {
+        inclusiveBetween(1, 5, nota, "A nota deve estar entre 1 e 5 estrelas");
+        if (comentario != null) {
+            inclusiveBetween(0, 500, comentario.length(), "A avaliação deve ter no máximo 500 caracteres");
+        }
+        this.notaPosterior = nota;
+        this.avaliacaoPosterior = comentario == null || comentario.isBlank() ? null : comentario.trim();
+    }
     public double getPontuacaoCompatibilidade() { return pontuacaoCompatibilidade; }
 
     public void setPontuacaoCompatibilidade(double pontuacaoCompatibilidade) {
@@ -109,5 +139,14 @@ public class Recomendacao {
             inclusiveBetween(0, 255, mensagem.length(), "A mensagem deve ter no máximo 255 caracteres");
         }
         this.mensagem = mensagem;
+    }
+
+    public void setComentarioResposta(String comentarioResposta) {
+        if (comentarioResposta != null) {
+            inclusiveBetween(0, 255, comentarioResposta.length(), "O comentário da resposta deve ter no máximo 255 caracteres");
+        }
+        this.comentarioResposta = comentarioResposta == null || comentarioResposta.isBlank()
+                ? null
+                : comentarioResposta.trim();
     }
 }

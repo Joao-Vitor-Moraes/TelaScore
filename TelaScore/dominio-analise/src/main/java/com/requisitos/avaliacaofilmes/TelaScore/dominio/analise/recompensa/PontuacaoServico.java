@@ -11,20 +11,21 @@ public class PontuacaoServico {
         this.repositorio = repositorio;
     }
 
-    public void concederPontos(UsuarioId usuarioId, AcaoPontuada acao, EstrategiaPontuacao estrategia) {
+    public Pontos concederPontos(UsuarioId usuarioId, AcaoPontuada acao, EstrategiaPontuacao estrategia) {
         Pontos pontos = estrategia.calcular(acao);
 
         RegistroPontuacao registro = new RegistroPontuacao(
-            new RegistroPontuacaoId(gerarId()),
+            new RegistroPontuacaoId(repositorio.proximoId()),
             usuarioId,
             pontos,
             acao
         );
 
         repositorio.salvar(registro);
+        return pontos;
     }
 
-    private int gerarId() {
-        return (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
+    public int calcularTotal(UsuarioId usuarioId) {
+        return repositorio.calcularTotalPontos(usuarioId);
     }
 }

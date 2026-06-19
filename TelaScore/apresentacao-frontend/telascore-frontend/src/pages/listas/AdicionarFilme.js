@@ -27,8 +27,6 @@ export default function AdicionarFilme() {
       .catch(() => setErro('Erro ao carregar dados.'));
   }, [id]);
 
-  const isWatchlist = lista?.tipo === 'WATCHLIST';
-
   const filmesFiltrados = filmes.filter(f =>
     f.titulo.toLowerCase().includes(busca.toLowerCase())
   );
@@ -38,7 +36,6 @@ export default function AdicionarFilme() {
       await listaService.adicionarFilme(id, {
         usuarioId: USUARIO_ID,
         filmeId: filme.id,
-        filmeJaFoiAssistido: !isWatchlist,
       });
       setAdicionados(prev => new Set([...prev, filme.id]));
     } catch (e) {

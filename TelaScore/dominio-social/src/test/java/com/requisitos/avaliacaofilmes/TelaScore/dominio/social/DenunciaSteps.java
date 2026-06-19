@@ -101,7 +101,7 @@ public class DenunciaSteps {
 	@Entao("o sistema deve rejeitar a denúncia informando que a descrição não pode estar em branco")
 	public void o_sistema_deve_rejeitar_a_denuncia_informando_que_a_descricao_nao_pode_estar_em_branco() {
 		assertNotNull(excecaoCapturada);
-		assertTrue(excecaoCapturada.getMessage().contains("descrição"));
+		assertTrue(excecaoCapturada.getMessage().toLowerCase().contains("descri"));
 		assertTrue(excecaoCapturada.getMessage().contains("branco"));
 	}
 

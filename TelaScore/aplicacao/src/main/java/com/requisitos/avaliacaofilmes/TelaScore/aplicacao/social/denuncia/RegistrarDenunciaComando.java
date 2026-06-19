@@ -5,5 +5,6 @@ public record RegistrarDenunciaComando(
 	int alvoId,
 	String tipoAlvo,
 	String motivo,
-	String descricao
+	String descricao,
+	String linkOcorrencia
 ) {}

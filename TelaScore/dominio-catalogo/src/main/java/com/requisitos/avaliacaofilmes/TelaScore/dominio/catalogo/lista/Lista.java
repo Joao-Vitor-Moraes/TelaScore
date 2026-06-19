@@ -104,6 +104,13 @@ public class Lista implements Iterable<ItemLista> {
         }
     }
 
+    public void removerColaborador(UsuarioId donoAcao, UsuarioId colaboradorParaRemover) {
+        if (!this.donoId.equals(donoAcao)) {
+            throw new IllegalStateException("Apenas o dono da lista pode remover colaboradores");
+        }
+        this.colaboradores.remove(colaboradorParaRemover);
+    }
+
     private void garantirPermissao(UsuarioId usuarioId) {
         boolean isDono = this.donoId.equals(usuarioId);
         boolean isColaborador = this.colaboradores.contains(usuarioId);

@@ -76,6 +76,19 @@ public class RegistroPontuacaoRepositorioImpl implements RegistroPontuacaoReposi
         }
     }
 
+    @Override
+    public int proximoId() {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            Integer max = em.createQuery(
+                    "SELECT MAX(r.id) FROM RegistroPontuacaoEntity r", Integer.class)
+                    .getSingleResult();
+            return max == null ? 1 : max + 1;
+        } finally {
+            em.close();
+        }
+    }
+
     private RegistroPontuacao mapearParaDominio(RegistroPontuacaoEntity e) {
     return new RegistroPontuacao(
         new RegistroPontuacaoId(e.getId()),

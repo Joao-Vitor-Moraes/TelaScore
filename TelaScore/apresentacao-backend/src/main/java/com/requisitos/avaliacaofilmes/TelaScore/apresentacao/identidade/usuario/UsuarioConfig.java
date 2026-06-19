@@ -1,11 +1,14 @@
 package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.identidade.usuario;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.CadastrarUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.EditarMeuUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.EditarUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.ListarUsuariosCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.LoginUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.ObterMeuUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.RemoverUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.SessaoUsuario;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilRepositorio;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Email;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Senha;
@@ -17,7 +20,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuar
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.context.annotation.SessionScope;
+import org.springframework.web.context.annotation.RequestScope;
 
 @Configuration
 public class UsuarioConfig {
@@ -31,12 +34,7 @@ public class UsuarioConfig {
     }
 
     @Bean
-    public PerfilServico perfilServico(PerfilRepositorio perfilRepositorio) {
-        return new PerfilServico(perfilRepositorio);
-    }
-
-    @Bean
-    @SessionScope
+    @RequestScope
     public SessaoUsuario sessaoUsuario() {
         return new SessaoUsuario();
     }
@@ -49,9 +47,43 @@ public class UsuarioConfig {
     @Bean
     public CadastrarUsuarioCasoDeUso cadastrarUsuarioCasoDeUso(
             UsuarioServico usuarioServico,
-            PerfilServico perfilServico,
             GeradorId geradorId) {
-        return new CadastrarUsuarioCasoDeUso(usuarioServico, perfilServico, geradorId);
+        return new CadastrarUsuarioCasoDeUso(usuarioServico, geradorId);
+    }
+
+    @Bean
+    public ListarUsuariosCasoDeUso listarUsuariosCasoDeUso(
+            UsuarioServico usuarioServico,
+            SessaoUsuario sessaoUsuario) {
+        return new ListarUsuariosCasoDeUso(usuarioServico, sessaoUsuario);
+    }
+
+    @Bean
+    public ObterMeuUsuarioCasoDeUso obterMeuUsuarioCasoDeUso(
+            UsuarioServico usuarioServico,
+            SessaoUsuario sessaoUsuario) {
+        return new ObterMeuUsuarioCasoDeUso(usuarioServico, sessaoUsuario);
+    }
+
+    @Bean
+    public EditarMeuUsuarioCasoDeUso editarMeuUsuarioCasoDeUso(
+            UsuarioServico usuarioServico,
+            SessaoUsuario sessaoUsuario) {
+        return new EditarMeuUsuarioCasoDeUso(usuarioServico, sessaoUsuario);
+    }
+
+    @Bean
+    public EditarUsuarioCasoDeUso editarUsuarioCasoDeUso(
+            UsuarioServico usuarioServico,
+            SessaoUsuario sessaoUsuario) {
+        return new EditarUsuarioCasoDeUso(usuarioServico, sessaoUsuario);
+    }
+
+    @Bean
+    public RemoverUsuarioCasoDeUso removerUsuarioCasoDeUso(
+            UsuarioServico usuarioServico,
+            SessaoUsuario sessaoUsuario) {
+        return new RemoverUsuarioCasoDeUso(usuarioServico, sessaoUsuario);
     }
 
     @Bean

@@ -2,6 +2,8 @@ package com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.config;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaSistemaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.RegistroPontuacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.avaliacao.AvaliacaoRepositorio;
@@ -11,19 +13,20 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaRepo
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ListaServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.solicitacao.SolicitacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.solicitacao.SolicitacaoServico;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.filme.FilmeRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.lista.ListaRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.solicitacao.SolicitacaoRepositorioImpl;
-import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.perfil.PerfilRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuario.UsuarioRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.NoticiaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.calendario.CalendarioRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.evento.EventoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.ComunidadeRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.denuncia.DenunciaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.mensagem.MensagemRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.MetaRepositorioImpl;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.MetaSistemaRepositorioImpl;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recompensa.RegistroPontuacaoRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.QuizRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recomendacao.RecomendacaoRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.avaliacao.AvaliacaoRepositorioImpl;
@@ -35,6 +38,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.notici
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.calendario.CalendarioRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.evento.EventoRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.ComunidadeRepositorioImpl;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.denuncia.DenunciaRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.mensagem.MensagemRepositorioImpl;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.mensagem.MensagemRepositorioLoggingDecorator;
 
@@ -71,11 +75,6 @@ public class InfraestruturaConfig {
     }
 
     @Bean
-    public PerfilRepositorio perfilRepositorio() {
-        return new PerfilRepositorioImpl();
-    }
-
-    @Bean
     public AvaliacaoRepositorio avaliacaoRepositorio() {
         return new AvaliacaoRepositorioImpl();
     }
@@ -89,6 +88,16 @@ public class InfraestruturaConfig {
     @Bean
     public MetaRepositorio metaRepositorio() {
         return new MetaRepositorioImpl();
+    }
+
+    @Bean
+    public MetaSistemaRepositorio metaSistemaRepositorio() {
+        return new MetaSistemaRepositorioImpl();
+    }
+
+    @Bean
+    public RegistroPontuacaoRepositorio registroPontuacaoRepositorio() {
+        return new RegistroPontuacaoRepositorioImpl();
     }
 
     @Bean
@@ -127,6 +136,11 @@ public class InfraestruturaConfig {
     public MensagemRepositorio mensagemRepositorio() {
         return new MensagemRepositorioLoggingDecorator(
                 new MensagemRepositorioImpl(ConexaoBanco.obterEntityManager()));
+    }
+
+    @Bean
+    public DenunciaRepositorio denunciaRepositorio() {
+        return new DenunciaRepositorioImpl();
     }
 
     // servicos de dominio

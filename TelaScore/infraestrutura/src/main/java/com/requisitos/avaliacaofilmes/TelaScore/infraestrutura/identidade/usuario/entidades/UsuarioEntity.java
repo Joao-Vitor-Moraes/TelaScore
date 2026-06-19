@@ -13,6 +13,9 @@ public class UsuarioEntity {
     @Id
     private Integer id;
 
+    @Column
+    private String nome;
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -25,6 +28,15 @@ public class UsuarioEntity {
     @Column(name = "data_cadastro", nullable = false)
     private LocalDateTime dataCadastro;
 
+    @Column(unique = true)
+    private String apelido;
+
+    @Column(columnDefinition = "TEXT")
+    private String biografia;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
     public UsuarioEntity() {
     }
 
@@ -34,6 +46,14 @@ public class UsuarioEntity {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getEmail() {
@@ -67,4 +87,29 @@ public class UsuarioEntity {
     public void setDataCadastro(LocalDateTime dataCadastro) {
         this.dataCadastro = dataCadastro;
     }
+
+    public String getApelido() {
+        return apelido;
+    }
+
+    public void setApelido(String apelido) {
+        this.apelido = apelido;
+    }
+
+    public String getBiografia() {
+        return biografia;
+    }
+
+    public void setBiografia(String biografia) {
+        this.biografia = biografia;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
 }

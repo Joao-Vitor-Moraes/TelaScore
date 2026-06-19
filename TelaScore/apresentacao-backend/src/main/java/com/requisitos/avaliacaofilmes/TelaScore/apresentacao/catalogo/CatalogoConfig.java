@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarColaboradorListaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverColaboradorListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarSolicitacaoFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.SolicitarAjustesFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarListasPorUsuarioCasoDeUso;
@@ -58,8 +59,8 @@ public class CatalogoConfig {
 
     @Bean
     public AdicionarFilmeNaListaCasoDeUso adicionarFilmeNaListaCasoDeUso(ListaRepositorio listaRepositorio,
-            FilmeRepositorio filmeRepositorio, ListaServico listaServico) {
-        return new AdicionarFilmeNaListaCasoDeUso(listaRepositorio, filmeRepositorio, listaServico);
+            FilmeRepositorio filmeRepositorio, ListaServico listaServico, AvaliacaoRepositorio avaliacaoRepositorio) {
+        return new AdicionarFilmeNaListaCasoDeUso(listaRepositorio, filmeRepositorio, listaServico, avaliacaoRepositorio);
     }
 
     @Bean
@@ -84,6 +85,12 @@ public class CatalogoConfig {
     public AdicionarColaboradorListaCasoDeUso adicionarColaboradorListaCasoDeUso(ListaRepositorio listaRepositorio,
             ListaServico listaServico) {
         return new AdicionarColaboradorListaCasoDeUso(listaRepositorio, listaServico);
+    }
+
+    @Bean
+    public RemoverColaboradorListaCasoDeUso removerColaboradorListaCasoDeUso(ListaRepositorio listaRepositorio,
+            ListaServico listaServico) {
+        return new RemoverColaboradorListaCasoDeUso(listaRepositorio, listaServico);
     }
 
     @Bean
@@ -198,8 +205,9 @@ public class CatalogoConfig {
 
     @Bean
     public AvaliarFilmeCasoDeUso avaliarFilmeCasoDeUso(AvaliacaoRepositorio avaliacaoRepositorio,
-            FilmeRepositorio filmeRepositorio, GeradorId geradorId) {
-        return new AvaliarFilmeCasoDeUso(avaliacaoRepositorio, filmeRepositorio, geradorId);
+            FilmeRepositorio filmeRepositorio, GeradorId geradorId,
+            ListaRepositorio listaRepositorio, ListaServico listaServico) {
+        return new AvaliarFilmeCasoDeUso(avaliacaoRepositorio, filmeRepositorio, geradorId, listaRepositorio, listaServico);
     }
 
     @Bean

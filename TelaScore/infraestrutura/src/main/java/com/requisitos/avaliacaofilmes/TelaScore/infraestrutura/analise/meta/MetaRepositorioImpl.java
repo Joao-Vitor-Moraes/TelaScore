@@ -17,6 +17,23 @@ import jakarta.persistence.EntityTransaction;
 public class MetaRepositorioImpl implements MetaRepositorio {
 
     @Override
+    public void remover(MetaId id) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            MetaEntity entity = em.find(MetaEntity.class, id.getId());
+            if (entity != null) em.remove(entity);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw new RuntimeException("Erro ao remover meta do banco.", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public void salvar(Meta meta) {
         EntityManager em = ConexaoBanco.obterEntityManager();
         EntityTransaction tx = em.getTransaction();
@@ -36,6 +53,8 @@ public class MetaRepositorioImpl implements MetaRepositorio {
             entity.setQuantidadeAtual(meta.getQuantidadeAtual());
             entity.setDataPrazo(meta.getDataPrazo());
             entity.setStatus(meta.getStatus().name());
+            entity.setMetaSistemaId(meta.getMetaSistemaId());
+            entity.setPontosConcedidos(meta.isPontosConcedidos());
 
             if (!em.contains(entity)) {
                 em.persist(entity);
@@ -112,7 +131,9 @@ public class MetaRepositorioImpl implements MetaRepositorio {
             entity.getQuantidadeAlvo(),
             entity.getQuantidadeAtual(),
             entity.getDataPrazo(),
-            StatusMeta.valueOf(entity.getStatus())
+            StatusMeta.valueOf(entity.getStatus()),
+            entity.getMetaSistemaId(),
+            Boolean.TRUE.equals(entity.getPontosConcedidos())
         );
     }
 }

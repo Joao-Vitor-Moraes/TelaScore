@@ -1,6 +1,7 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.informacao.noticia;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.CategoriaNoticia;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.Noticia;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.NoticiaRepositorio;
 
 import java.util.List;
@@ -21,8 +22,11 @@ public class PesquisarNoticiasCasoDeUso {
                 .map(n -> new NoticiaResumo(
                         n.getId().getId(),
                         n.getTitulo(),
-                        n.getCategoria().getDescricao(),
-                        n.getDataPublicacao().toString()))
+                        n.getConteudo(),
+                        n.getAutorId().getId(),
+                        n.getAutorApelido(),
+                        n.getDataPublicacao(),
+                        n.getCategoria().name()))
                 .toList();
     }
 }

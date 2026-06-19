@@ -23,6 +23,7 @@ public class AutenticacaoTokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        sessaoUsuario.encerrar();
         String token = extrairToken(request);
         tokenServico.validar(token).ifPresent(sessaoUsuario::iniciar);
         return true;

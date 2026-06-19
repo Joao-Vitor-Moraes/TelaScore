@@ -51,6 +51,12 @@ public class ListaServico {
         listaRepositorio.salvar(lista);
     }
 
+    public void removerColaborador(Lista lista, UsuarioId donoAcao, UsuarioId colaboradorId) {
+        notNull(lista, "A lista não pode ser nula");
+        lista.removerColaborador(donoAcao, colaboradorId);
+        listaRepositorio.salvar(lista);
+    }
+
     public void editarLista(Lista lista, String novoTitulo, String novaDescricao, Visibilidade novaVisibilidade, boolean novaRanqueada, UsuarioId usuarioId) {
         notNull(lista, "A lista não pode ser nula");
         lista.editarDados(novoTitulo, novaDescricao, novaVisibilidade, novaRanqueada, usuarioId);

@@ -1,5 +1,6 @@
 package com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades;
 
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuario.entidades.UsuarioEntity;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,8 +14,9 @@ public class MembroComunidadeEntity {
     @Column(name = "comunidade_id", nullable = false)
     private Integer comunidadeId;
 
-    @Column(name = "usuario_id", nullable = false)
-    private Integer usuarioId;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private UsuarioEntity usuario;
 
     @Column(nullable = false)
     private String papel;
@@ -23,8 +25,8 @@ public class MembroComunidadeEntity {
     public void setId(Integer id) { this.id = id; }
     public Integer getComunidadeId() { return comunidadeId; }
     public void setComunidadeId(Integer comunidadeId) { this.comunidadeId = comunidadeId; }
-    public Integer getUsuarioId() { return usuarioId; }
-    public void setUsuarioId(Integer usuarioId) { this.usuarioId = usuarioId; }
+    public UsuarioEntity getUsuario() { return usuario; }
+    public void setUsuario(UsuarioEntity usuario) { this.usuario = usuario; }
     public String getPapel() { return papel; }
     public void setPapel(String papel) { this.papel = papel; }
 }

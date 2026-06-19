@@ -18,7 +18,7 @@ public class ConexaoBanco {
             props.put("jakarta.persistence.jdbc.user",
                     env("DB_USER", "root"));
             props.put("jakarta.persistence.jdbc.password",
-                    env("DB_PASSWORD", ""));
+                    env("DB_PASSWORD", "Barbosa09_"));
             emf = Persistence.createEntityManagerFactory("telascorePU", props);
         } catch (Throwable ex) {
             System.err.println("Initial EntityManagerFactory creation failed." + ex);

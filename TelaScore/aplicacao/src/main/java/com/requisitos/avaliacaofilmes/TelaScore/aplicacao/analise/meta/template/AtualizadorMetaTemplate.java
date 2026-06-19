@@ -1,34 +1,32 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.template;
 
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.ResultadoAtualizacaoMeta;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.Meta;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.StatusMeta;
 
 public abstract class AtualizadorMetaTemplate {
-
     protected final MetaRepositorio metaRepositorio;
 
-    public AtualizadorMetaTemplate(MetaRepositorio metaRepositorio) {
+    protected AtualizadorMetaTemplate(MetaRepositorio metaRepositorio) {
         this.metaRepositorio = metaRepositorio;
     }
 
-
-    public final void executarAtualizacao(MetaId metaId, int quantidadeAssistida) {
+    public final ResultadoAtualizacaoMeta executarAtualizacao(MetaId metaId, int quantidadeAssistida) {
         Meta meta = metaRepositorio.obter(metaId);
         if (meta == null) {
-            throw new IllegalArgumentException("Meta não encontrada para o ID fornecido.");
+            throw new IllegalArgumentException("Meta não encontrada.");
         }
 
-        boolean estavaConcluidaAntes = meta.getStatus().name().equals("CONCLUIDA");
-
+        boolean estavaConcluida = meta.getStatus() == StatusMeta.CONCLUIDA;
         meta.adicionarProgresso(quantidadeAssistida);
+        boolean concluiuAgora = !estavaConcluida && meta.getStatus() == StatusMeta.CONCLUIDA;
 
+        ResultadoAtualizacaoMeta resultado = executarEfeitoColateral(meta, concluiuAgora);
         metaRepositorio.salvar(meta);
-
-        boolean concluiuAgora = !estavaConcluidaAntes && meta.getStatus().name().equals("CONCLUIDA");
-
-        executarEfeitoColateral(meta, concluiuAgora);
+        return resultado;
     }
 
-    protected abstract void executarEfeitoColateral(Meta meta, boolean concluiuAgora);
+    protected abstract ResultadoAtualizacaoMeta executarEfeitoColateral(Meta meta, boolean concluiuAgora);
 }

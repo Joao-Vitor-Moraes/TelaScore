@@ -9,4 +9,5 @@ public interface ListaRepositorio {
 	void remover(ListaId id);
 	
 	List<Lista> pesquisarPorDono(UsuarioId donoId);
+	List<Lista> pesquisarPorColaborador(UsuarioId colaboradorId);
 }

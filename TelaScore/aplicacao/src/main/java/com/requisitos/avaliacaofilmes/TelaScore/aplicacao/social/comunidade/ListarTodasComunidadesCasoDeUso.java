@@ -14,7 +14,7 @@ public class ListarTodasComunidadesCasoDeUso {
     public List<ComunidadeResumo> executar() {
         return repositorio.listarTodas()
                 .stream()
-                .map(c -> new ComunidadeResumo(c.getId().getId(), c.getNome()))
+                .map(c -> new ComunidadeResumo(c.getId().getId(), c.getNome(), c.getDescricao()))
                 .collect(Collectors.toList());
     }
 }

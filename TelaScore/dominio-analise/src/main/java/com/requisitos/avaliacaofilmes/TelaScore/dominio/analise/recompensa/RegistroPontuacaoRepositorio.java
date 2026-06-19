@@ -9,4 +9,5 @@ public interface RegistroPontuacaoRepositorio {
 	List<RegistroPontuacao> buscarPorUsuario(UsuarioId usuarioId);
 	
 	Integer calcularTotalPontos(UsuarioId usuarioId);
+	int proximoId();
 }

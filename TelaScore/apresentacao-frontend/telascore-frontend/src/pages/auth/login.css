@@ -1,0 +1,195 @@
+.login-page {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.25fr) minmax(440px, .75fr);
+  min-height: 100vh;
+  padding: 0 !important;
+  background: var(--bg) !important;
+}
+
+.login-showcase {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  padding: 42px 6vw 70px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(90deg, rgba(5, 5, 7, .4), rgba(5, 5, 7, .1)),
+    linear-gradient(0deg, rgba(5, 5, 7, .9), rgba(5, 5, 7, .08)),
+    url('https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1800&q=85') center/cover;
+}
+
+.login-showcase::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle at 30% 80%, rgba(229, 9, 20, .24), transparent 35rem);
+}
+
+.login-showcase__brand, .login-card__mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.login-showcase__brand span {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--brand);
+}
+
+.login-showcase__content {
+  max-width: 720px;
+}
+
+.login-showcase__content h1 {
+  margin: 0;
+  font-size: clamp(46px, 6.5vw, 88px);
+  line-height: 1.01;
+  text-shadow: 0 5px 35px rgba(0, 0, 0, .45);
+}
+
+.login-showcase__content > p:not(.page-eyebrow) {
+  max-width: 590px;
+  color: #dedee4;
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+.login-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 27px;
+}
+
+.login-features span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 99px;
+  background: rgba(0, 0, 0, .28);
+  backdrop-filter: blur(10px);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.login-card {
+  align-self: center;
+  width: min(430px, calc(100% - 60px)) !important;
+  margin: 35px auto;
+  padding: 44px !important;
+  border: 1px solid var(--line);
+  border-radius: 22px !important;
+  background: linear-gradient(145deg, rgba(26, 26, 32, .96), rgba(13, 13, 17, .98)) !important;
+  box-shadow: var(--shadow);
+}
+
+.login-card__mobile-brand {
+  display: none;
+}
+
+.login-kicker {
+  margin: 0 0 -3px;
+  color: var(--brand-light);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.login-card h1 {
+  color: white !important;
+  font-size: 30px !important;
+  text-align: left !important;
+}
+
+.login-card form {
+  margin-top: 19px;
+}
+
+.login-card input, .login-card textarea {
+  min-height: 48px;
+  background: rgba(255, 255, 255, .055) !important;
+}
+
+.login-card button[type="submit"] {
+  min-height: 48px;
+  border-radius: 11px !important;
+  background: linear-gradient(135deg, var(--brand-light), var(--brand)) !important;
+  box-shadow: 0 12px 26px rgba(229, 9, 20, .23);
+}
+
+.login-card .auth-action {
+  flex: 1;
+  min-height: 48px;
+  border-radius: 11px;
+  font-size: 14px;
+}
+
+.login-switch-button {
+  padding: 0;
+  border: 0;
+  color: var(--brand-light);
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+.register-step-number {
+  position: relative;
+  z-index: 2;
+  display: block;
+  color: #fff !important;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+
+@media (max-width: 940px) {
+  .login-page {
+    display: flex !important;
+    padding: 25px !important;
+    background:
+      linear-gradient(rgba(5, 5, 7, .78), rgba(5, 5, 7, .94)),
+      url('https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=80') center/cover !important;
+  }
+
+  .login-showcase {
+    display: none;
+  }
+
+  .login-card__mobile-brand {
+    display: flex;
+    margin-bottom: 24px;
+    color: white;
+  }
+
+  .login-card__mobile-brand svg {
+    color: var(--brand-light);
+  }
+}
+
+@media (max-width: 520px) {
+  .login-page {
+    padding: 14px !important;
+  }
+
+  .login-card {
+    width: 100% !important;
+    padding: 30px 24px !important;
+  }
+}

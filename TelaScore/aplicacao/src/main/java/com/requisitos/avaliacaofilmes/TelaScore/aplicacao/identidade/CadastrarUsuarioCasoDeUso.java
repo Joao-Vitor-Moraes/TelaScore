@@ -1,9 +1,6 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade;
 
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.Apelido;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.Perfil;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilId;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.perfil.PerfilServico;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Apelido;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Email;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Senha;
@@ -14,24 +11,24 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuar
 public class CadastrarUsuarioCasoDeUso {
 
     private final UsuarioServico usuarioServico;
-    private final PerfilServico perfilServico;
     private final GeradorId geradorId;
 
-    public CadastrarUsuarioCasoDeUso(
-        UsuarioServico usuarioServico,
-        PerfilServico perfilServico,
-        GeradorId geradorId
-    ) {
+    public CadastrarUsuarioCasoDeUso(UsuarioServico usuarioServico, GeradorId geradorId) {
         this.usuarioServico = usuarioServico;
-        this.perfilServico = perfilServico;
         this.geradorId = geradorId;
     }
 
     public void executar(CadastrarUsuarioComando comando) {
         Email email = new Email(comando.email());
+        Apelido apelido = new Apelido(apelidoOuNome(comando.apelido(), comando.nome()));
 
         if (usuarioServico.obterPorEmail(email) != null) {
             throw new IllegalArgumentException("Já existe um usuário cadastrado com este e-mail");
+        }
+
+        if (usuarioServico.listarTodos().stream()
+                .anyMatch(usuario -> usuario.getApelido().getValor().equalsIgnoreCase(apelido.getValor()))) {
+            throw new IllegalArgumentException("Já existe um usuário cadastrado com este apelido");
         }
 
         UsuarioId usuarioId = new UsuarioId(geradorId.gerarProximoIdUsuario());
@@ -41,22 +38,28 @@ public class CadastrarUsuarioCasoDeUso {
             comando.nome(),
             email,
             new Senha(comando.senha()),
-            PapelUsuario.CINEFILO
+            PapelUsuario.CINEFILO,
+            apelido,
+            comando.biografia(),
+            comando.avatarUrl()
         );
 
         usuarioServico.salvar(usuario);
-
-        Perfil perfil = new Perfil(
-            new PerfilId(geradorId.gerarProximoIdPerfil()),
-            usuarioId,
-            new Apelido(usuario.getNome())
-        );
-
-        try {
-            perfilServico.salvar(perfil);
-        } catch (RuntimeException e) {
-            usuarioServico.remover(usuarioId);
-            throw e;
-        }
     }
+
+    private String apelidoOuNome(String apelido, String nome) {
+        if (apelido != null && !apelido.isBlank()) {
+            return apelido;
+        }
+
+        String apelidoPadrao = nome == null ? "usuario" : nome.trim();
+        if (apelidoPadrao.isBlank()) {
+            apelidoPadrao = "usuario";
+        }
+        if (apelidoPadrao.length() < 3) {
+            apelidoPadrao = (apelidoPadrao + "usr").substring(0, 3);
+        }
+        return apelidoPadrao.length() > 20 ? apelidoPadrao.substring(0, 20) : apelidoPadrao;
+    }
+
 }

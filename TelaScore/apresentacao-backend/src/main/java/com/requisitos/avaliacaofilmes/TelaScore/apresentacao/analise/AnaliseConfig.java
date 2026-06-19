@@ -1,56 +1,102 @@
 package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.analise;
 
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaRepositorio;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.CriarMetaCasoDeUso;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.AdicionarProgressoMetaCasoDeUso;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.RemoverProgressoMetaCasoDeUso;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.EstenderPrazoMetaCasoDeUso;
-
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoServico;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.EnviarRecomendacaoCasoDeUso;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.ResponderRecomendacaoCasoDeUso;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
-
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.*;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.template.AtualizadorMetaComNotificacao;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.template.AtualizadorMetaTemplate;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.*;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.*;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.*;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.*;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recompensa.EstrategiaPontuacaoFactory;
 
 @Configuration
 public class AnaliseConfig {
-
     @Bean
-    public CriarMetaCasoDeUso criarMetaCasoDeUso(MetaRepositorio metaRepositorio, GeradorId geradorId) {
-        return new CriarMetaCasoDeUso(metaRepositorio, geradorId);
+    public CriarMetaCasoDeUso criarMetaCasoDeUso(MetaRepositorio repositorio, GeradorId geradorId) {
+        return new CriarMetaCasoDeUso(repositorio, geradorId);
     }
 
     @Bean
-    public AdicionarProgressoMetaCasoDeUso adicionarProgressoMetaCasoDeUso(MetaRepositorio metaRepositorio) {
-        return new AdicionarProgressoMetaCasoDeUso(metaRepositorio);
+    public PontuacaoServico pontuacaoServico(RegistroPontuacaoRepositorio repositorio) {
+        return new PontuacaoServico(repositorio);
     }
 
     @Bean
-    public RemoverProgressoMetaCasoDeUso removerProgressoMetaCasoDeUso(MetaRepositorio metaRepositorio) {
-        return new RemoverProgressoMetaCasoDeUso(metaRepositorio);
+    public AtualizadorMetaTemplate atualizadorMetaTemplate(
+            MetaRepositorio metas, PontuacaoServico pontuacao,
+            EstrategiaPontuacaoFactory estrategias) {
+        return new AtualizadorMetaComNotificacao(
+                metas, pontuacao, estrategias.obter(AcaoPontuada.COMPLETAR_META));
     }
 
     @Bean
-    public EstenderPrazoMetaCasoDeUso estenderPrazoMetaCasoDeUso(MetaRepositorio metaRepositorio) {
-        return new EstenderPrazoMetaCasoDeUso(metaRepositorio);
+    public AdicionarProgressoMetaCasoDeUso adicionarProgressoMetaCasoDeUso(
+            AtualizadorMetaTemplate atualizador) {
+        return new AdicionarProgressoMetaCasoDeUso(atualizador);
     }
 
     @Bean
-    public RecomendacaoServico recomendacaoServico(RecomendacaoRepositorio recomendacaoRepositorio) {
-        return new RecomendacaoServico(recomendacaoRepositorio);
+    public RemoverProgressoMetaCasoDeUso removerProgressoMetaCasoDeUso(MetaRepositorio repositorio) {
+        return new RemoverProgressoMetaCasoDeUso(repositorio);
     }
 
     @Bean
-    public EnviarRecomendacaoCasoDeUso enviarRecomendacaoCasoDeUso(RecomendacaoServico recomendacaoServico) {
-        return new EnviarRecomendacaoCasoDeUso(recomendacaoServico);
+    public EstenderPrazoMetaCasoDeUso estenderPrazoMetaCasoDeUso(MetaRepositorio repositorio) {
+        return new EstenderPrazoMetaCasoDeUso(repositorio);
     }
+
     @Bean
-    public ResponderRecomendacaoCasoDeUso responderRecomendacaoCasoDeUso(RecomendacaoRepositorio recomendacaoRepositorio) {
-        return new ResponderRecomendacaoCasoDeUso(recomendacaoRepositorio);
+    public ListarMetasPorUsuarioCasoDeUso listarMetasPorUsuarioCasoDeUso(
+            MetaRepositorio repositorio, MetaSistemaRepositorio sistemas, GeradorId geradorId) {
+        return new ListarMetasPorUsuarioCasoDeUso(repositorio, sistemas, geradorId);
+    }
+
+    @Bean
+    public CriarMetaSistemaCasoDeUso criarMetaSistemaCasoDeUso(
+            MetaSistemaRepositorio sistemas, MetaRepositorio metas,
+            UsuarioRepositorio usuarios, GeradorId geradorId) {
+        return new CriarMetaSistemaCasoDeUso(sistemas, metas, usuarios, geradorId);
+    }
+
+    @Bean
+    public ApplicationRunner metasSistemaIniciais(MetaSistemaRepositorio repositorio) {
+        return args -> {
+            if (!repositorio.listarAtivas().isEmpty()) return;
+            repositorio.salvar(new MetaSistema(repositorio.proximoId(),
+                    "Começar minha jornada no cinema", 5, 30, 2));
+            repositorio.salvar(new MetaSistema(repositorio.proximoId(),
+                    "Descobrir novos favoritos", 10, 90, 2));
+            repositorio.salvar(new MetaSistema(repositorio.proximoId(),
+                    "Desafio cinéfilo do ano", 25, 365, 2));
+        };
+    }
+
+    @Bean
+    public RecomendacaoServico recomendacaoServico(RecomendacaoRepositorio repositorio) {
+        return new RecomendacaoServico(repositorio);
+    }
+
+    @Bean
+    public EnviarRecomendacaoCasoDeUso enviarRecomendacaoCasoDeUso(
+            RecomendacaoServico servico, GeradorId geradorId) {
+        return new EnviarRecomendacaoCasoDeUso(servico, geradorId);
+    }
+
+    @Bean
+    public ResponderRecomendacaoCasoDeUso responderRecomendacaoCasoDeUso(
+            RecomendacaoRepositorio repositorio) {
+        return new ResponderRecomendacaoCasoDeUso(repositorio);
+    }
+
+    @Bean
+    public ListarRecomendacoesPorUsuarioCasoDeUso listarRecomendacoesPorUsuarioCasoDeUso(
+            RecomendacaoRepositorio repositorio) {
+        return new ListarRecomendacoesPorUsuarioCasoDeUso(repositorio);
     }
 }

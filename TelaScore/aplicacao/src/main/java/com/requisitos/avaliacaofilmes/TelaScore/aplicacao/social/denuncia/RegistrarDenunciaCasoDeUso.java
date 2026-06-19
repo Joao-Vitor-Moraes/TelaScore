@@ -24,7 +24,8 @@ public class RegistrarDenunciaCasoDeUso {
 			comando.alvoId(),
 			TipoAlvoDenuncia.valueOf(comando.tipoAlvo()),
 			MotivoDenuncia.valueOf(comando.motivo()),
-			comando.descricao()
+			comando.descricao(),
+			comando.linkOcorrencia()
 		);
 
 		servico.registrar(denuncia);

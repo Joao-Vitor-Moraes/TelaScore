@@ -31,6 +31,12 @@ public class MetaEntity {
     @Column(nullable = false)
     private String status;
 
+    @Column(name = "meta_sistema_id")
+    private Integer metaSistemaId;
+
+    @Column(name = "pontos_concedidos", nullable = false)
+    private Boolean pontosConcedidos = false;
+
     public MetaEntity() {}
 
     public Integer getId() { return id; }
@@ -53,4 +59,8 @@ public class MetaEntity {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public Integer getMetaSistemaId() { return metaSistemaId; }
+    public void setMetaSistemaId(Integer metaSistemaId) { this.metaSistemaId = metaSistemaId; }
+    public Boolean getPontosConcedidos() { return pontosConcedidos; }
+    public void setPontosConcedidos(Boolean pontosConcedidos) { this.pontosConcedidos = pontosConcedidos; }
 }

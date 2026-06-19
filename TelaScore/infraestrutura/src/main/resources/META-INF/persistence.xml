@@ -17,6 +17,8 @@
 
         <!-- analise -->
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.entidades.MetaEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.entidades.MetaSistemaEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recompensa.entidades.RegistroPontuacaoEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recomendacao.entidades.RecomendacaoEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.QuizEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.PerguntaEntity</class>
@@ -25,12 +27,12 @@
 
         <!-- identidade -->
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuario.entidades.UsuarioEntity</class>
-        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.perfil.entidades.PerfilEntity</class>
 
         <!-- social -->
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.ComunidadeEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.MembroComunidadeEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.MensagemComunidadeEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.denuncia.entidades.DenunciaEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.mensagem.entidades.MensagemEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.mensagem.entidades.FigurinhaEntity</class>
 

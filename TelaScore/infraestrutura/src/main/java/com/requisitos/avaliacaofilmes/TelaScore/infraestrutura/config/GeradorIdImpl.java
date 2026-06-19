@@ -47,6 +47,11 @@ public class GeradorIdImpl implements GeradorId {
     }
 
     @Override
+    public int gerarProximoIdRecomendacao() {
+        return proximoId("SELECT MAX(r.id) FROM RecomendacaoEntity r");
+    }
+
+    @Override
     public int gerarProximoIdUsuario() {
         return proximoIdNativo("SELECT MAX(id) FROM usuario");
     }
@@ -54,11 +59,6 @@ public class GeradorIdImpl implements GeradorId {
     @Override
     public int gerarProximoIdFilme() {
         return proximoIdNativo("SELECT MAX(CAST(id AS UNSIGNED)) FROM filme");
-    }
-
-    @Override
-    public int gerarProximoIdPerfil() {
-        return proximoIdNativo("SELECT MAX(id) FROM perfil");
     }
 
     @Override
@@ -98,7 +98,7 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdDenuncia() {
-        throw new UnsupportedOperationException("Geracao de ID de denuncia nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(id) FROM denuncia");
     }
 
     @Override

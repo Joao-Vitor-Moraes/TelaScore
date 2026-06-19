@@ -30,6 +30,7 @@ public class EnviarMensagemCasoDeUso {
                 0,
                 comando.comunidadeId(),
                 comando.usuarioId(),
+                null,
                 comando.conteudo(),
                 LocalDateTime.now()
         );

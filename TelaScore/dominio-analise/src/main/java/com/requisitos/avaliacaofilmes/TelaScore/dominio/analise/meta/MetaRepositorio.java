@@ -5,6 +5,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuar
 
 public interface MetaRepositorio {
     void salvar(Meta meta);
+    void remover(MetaId id);
     Meta obter(MetaId id);
     List<Meta> buscarPorUsuario(UsuarioId usuarioId);
     List<Meta> buscarEmAndamentoPorUsuario(UsuarioId usuarioId);

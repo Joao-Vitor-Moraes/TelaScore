@@ -65,11 +65,21 @@ export default function ListaAberta() {
     e.preventDefault();
     try {
       await listaService.adicionarColaborador(id, { donoId: USUARIO_ID, novoColaboradorId: parseInt(colaboradorId) });
+      setLista(prev => ({ ...prev, colaboradores: [...(prev.colaboradores || []), parseInt(colaboradorId)] }));
       setModalColaborador(false);
       setColaboradorId('');
-      alert('Colaborador adicionado com sucesso!');
     } catch {
       alert('Erro ao adicionar colaborador. Verifique o ID informado.');
+    }
+  }
+
+  async function handleRemoverColaborador(colaboradorIdParaRemover) {
+    if (!window.confirm(`Remover colaborador ID ${colaboradorIdParaRemover}?`)) return;
+    try {
+      await listaService.removerColaborador(id, colaboradorIdParaRemover, USUARIO_ID);
+      setLista(prev => ({ ...prev, colaboradores: prev.colaboradores.filter(c => c !== colaboradorIdParaRemover) }));
+    } catch {
+      alert('Erro ao remover colaborador.');
     }
   }
 
@@ -130,7 +140,7 @@ export default function ListaAberta() {
                     )}
                     {lista.donoId === USUARIO_ID && (
                       <button style={styles.dropdownItem} onClick={() => { setMenuAberto(false); setModalColaborador(true); }}>
-                        Adicionar colaborador
+                        Gerenciar colaboradores
                       </button>
                     )}
                     {lista.donoId !== USUARIO_ID && (
@@ -196,19 +206,33 @@ export default function ListaAberta() {
     {modalColaborador && (
       <div style={styles.overlayModal}>
         <div style={styles.modal}>
-          <h3 style={styles.modalTitulo}>Adicionar Colaborador</h3>
+          <h3 style={styles.modalTitulo}>Colaboradores</h3>
+
+          {lista.colaboradores && lista.colaboradores.length > 0 && (
+            <div style={{ marginBottom: '16px' }}>
+              {lista.colaboradores.map(cId => (
+                <div key={cId} style={styles.colaboradorItem}>
+                  <span style={{ fontSize: '14px', color: 'white' }}>ID: {cId}</span>
+                  <button style={styles.btnRemoverColaborador} onClick={() => handleRemoverColaborador(cId)}>
+                    Remover
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           <form onSubmit={handleAdicionarColaborador}>
             <input
               style={styles.modalInput}
               type="number"
-              placeholder="ID do usuário"
+              placeholder="ID do usuário para adicionar"
               value={colaboradorId}
               onChange={e => setColaboradorId(e.target.value)}
               required
             />
             <div style={styles.modalBotoes}>
               <button type="button" style={styles.btnCancelarModal} onClick={() => { setModalColaborador(false); setColaboradorId(''); }}>
-                Cancelar
+                Fechar
               </button>
               <button type="submit" style={styles.btnConfirmarModal}>
                 Adicionar
@@ -458,5 +482,21 @@ const styles = {
     cursor: 'pointer',
     fontSize: '14px',
     fontWeight: 'bold',
+  },
+  colaboradorItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '8px 0',
+    borderBottom: '1px solid #2a2a4a',
+  },
+  btnRemoverColaborador: {
+    padding: '4px 10px',
+    borderRadius: '6px',
+    border: 'none',
+    backgroundColor: '#e94560',
+    color: 'white',
+    cursor: 'pointer',
+    fontSize: '12px',
   },
 };

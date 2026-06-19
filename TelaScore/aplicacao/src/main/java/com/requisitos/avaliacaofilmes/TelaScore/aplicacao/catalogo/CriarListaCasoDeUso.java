@@ -18,7 +18,7 @@ public class CriarListaCasoDeUso {
 		this.geradorId = geradorId;
 	}
 
-	public void executar(CriarListaComando comando) {
+	public int executar(CriarListaComando comando) {
 		UsuarioId criadorId = new UsuarioId(comando.criadorId());
 		ListaId novaListaId = new ListaId(geradorId.gerarProximoIdLista());
 		
@@ -36,5 +36,6 @@ public class CriarListaCasoDeUso {
 			lista.tornarColaborativa();
 		}
 		listaServico.salvar(lista);
+		return novaListaId.getId();
 	}
 }

@@ -14,11 +14,12 @@ public class AdicionarNoticiaCasoDeUso {
     }
 
     public void executar(AdicionarNoticiaComando comando) {
-        NoticiaId novoId = new NoticiaId((int) (Math.random() * 10000)); // Simulação de ID
+        int idGarantido = (int) (Math.random() * 9000) + 1;
+        NoticiaId novoId = new NoticiaId(idGarantido);
         UsuarioId autorId = new UsuarioId(comando.autorId());
         CategoriaNoticia categoria = CategoriaNoticia.valueOf(comando.categoria().toUpperCase());
 
-        Noticia noticia = new Noticia(novoId, autorId, comando.titulo(), comando.conteudo(), categoria);
+        Noticia noticia = new Noticia(novoId, autorId, null, comando.titulo(), comando.conteudo(), categoria);
 
         servico.publicarNoticia(noticia);
     }

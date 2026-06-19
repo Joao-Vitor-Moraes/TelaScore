@@ -9,6 +9,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.*;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.ComunidadeEntity;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.MembroComunidadeEntity;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.MensagemComunidadeEntity;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuario.entidades.UsuarioEntity;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.config.ConexaoBanco;
 
 import jakarta.persistence.EntityManager;
@@ -54,7 +55,7 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
             tx.begin();
 
             List<MembroComunidadeEntity> resultados = em.createQuery(
-                            "SELECT m FROM MembroComunidadeEntity m WHERE m.comunidadeId = :cid AND m.usuarioId = :uid",
+                            "SELECT m FROM MembroComunidadeEntity m WHERE m.comunidadeId = :cid AND m.usuario.id = :uid",
                             MembroComunidadeEntity.class)
                     .setParameter("cid", membro.getComunidadeId().getId())
                     .setParameter("uid", membro.getUsuarioId().getId())
@@ -64,7 +65,8 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
             if (resultados.isEmpty()) {
                 entity = new MembroComunidadeEntity();
                 entity.setComunidadeId(membro.getComunidadeId().getId());
-                entity.setUsuarioId(membro.getUsuarioId().getId());
+                UsuarioEntity usuarioRef = em.getReference(UsuarioEntity.class, membro.getUsuarioId().getId());
+                entity.setUsuario(usuarioRef);
             } else {
                 entity = resultados.get(0);
             }
@@ -121,7 +123,7 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            em.createQuery("DELETE FROM MembroComunidadeEntity m WHERE m.comunidadeId = :cid AND m.usuarioId = :uid")
+            em.createQuery("DELETE FROM MembroComunidadeEntity m WHERE m.comunidadeId = :cid AND m.usuario.id = :uid")
                     .setParameter("cid", cid.getId())
                     .setParameter("uid", uid.getId())
                     .executeUpdate();
@@ -139,7 +141,7 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
         EntityManager em = ConexaoBanco.obterEntityManager();
         try {
             List<MembroComunidadeEntity> membros = em.createQuery(
-                            "SELECT m FROM MembroComunidadeEntity m WHERE m.usuarioId = :uid", MembroComunidadeEntity.class)
+                            "SELECT m FROM MembroComunidadeEntity m WHERE m.usuario.id = :uid", MembroComunidadeEntity.class)
                     .setParameter("uid", uid.getId())
                     .getResultList();
 
@@ -181,7 +183,7 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            em.createQuery("UPDATE MembroComunidadeEntity m SET m.papel = :novoPapel WHERE m.comunidadeId = :cid AND m.usuarioId = :uid")
+            em.createQuery("UPDATE MembroComunidadeEntity m SET m.papel = :novoPapel WHERE m.comunidadeId = :cid AND m.usuario.id = :uid")
                     .setParameter("novoPapel", novoPapel.name())
                     .setParameter("cid", cid.getId())
                     .setParameter("uid", uid.getId())
@@ -200,7 +202,7 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
         EntityManager em = ConexaoBanco.obterEntityManager();
         try {
             List<String> resultados = em.createQuery(
-                            "SELECT m.papel FROM MembroComunidadeEntity m WHERE m.comunidadeId = :cid AND m.usuarioId = :uid", String.class)
+                            "SELECT m.papel FROM MembroComunidadeEntity m WHERE m.comunidadeId = :cid AND m.usuario.id = :uid", String.class)
                     .setParameter("cid", cid.getId())
                     .setParameter("uid", uid.getId())
                     .getResultList();
@@ -217,7 +219,7 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
         EntityManager em = ConexaoBanco.obterEntityManager();
         try {
             Long contagem = em.createQuery(
-                            "SELECT COUNT(m) FROM MembroComunidadeEntity m WHERE m.comunidadeId = :cid AND m.usuarioId = :uid", Long.class)
+                            "SELECT COUNT(m) FROM MembroComunidadeEntity m WHERE m.comunidadeId = :cid AND m.usuario.id = :uid", Long.class)
                     .setParameter("cid", cid.getId())
                     .setParameter("uid", uid.getId())
                     .getSingleResult();
@@ -266,7 +268,8 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
             }
 
             entity.setComunidadeId(mensagem.comunidadeId());
-            entity.setUsuarioId(mensagem.usuarioId());
+            UsuarioEntity usuarioRef = em.getReference(UsuarioEntity.class, mensagem.usuarioId());
+            entity.setUsuario(usuarioRef);
             entity.setConteudo(mensagem.conteudo());
             entity.setEnviadoEm(mensagem.enviadoEm());
 
@@ -299,7 +302,8 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
                 mensagens.add(new MensagemComunidade(
                         entity.getId(),
                         entity.getComunidadeId(),
-                        entity.getUsuarioId(),
+                        entity.getUsuario().getId(),
+                        entity.getUsuario().getApelido(),
                         entity.getConteudo(),
                         entity.getEnviadoEm()
                 ));
@@ -319,7 +323,8 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
             return new MensagemComunidade(
                     entity.getId(),
                     entity.getComunidadeId(),
-                    entity.getUsuarioId(),
+                    entity.getUsuario().getId(),
+                    entity.getUsuario().getApelido(),
                     entity.getConteudo(),
                     entity.getEnviadoEm()
             );
@@ -358,7 +363,8 @@ public class ComunidadeRepositorioImpl implements ComunidadeRepositorio {
     private MembroComunidade mapearParaMembroDominio(MembroComunidadeEntity entity) {
         return new MembroComunidade(
                 new ComunidadeId(entity.getComunidadeId()),
-                new UsuarioId(entity.getUsuarioId()),
+                new UsuarioId(entity.getUsuario().getId()),
+                entity.getUsuario().getApelido(),
                 PapelComunidade.valueOf(entity.getPapel())
         );
     }

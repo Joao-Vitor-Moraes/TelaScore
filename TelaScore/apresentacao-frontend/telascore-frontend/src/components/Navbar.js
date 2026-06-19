@@ -1,153 +1,234 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FiMenu, FiSearch, FiHome, FiBell } from 'react-icons/fi';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { FiBell, FiChevronDown, FiFilm, FiLogOut, FiMenu, FiShield, FiUser, FiX } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
+import { filmeService, recomendacaoService, usuarioService } from '../services/api';
+
+const links = [
+  { label: 'Filmes', path: '/filmes' },
+  { label: 'Listas', path: '/listas' },
+  { label: 'Watchlist', path: '/watchlist' },
+  { label: 'Metas', path: '/metas' },
+  { label: 'Recomendações', path: '/recomendacoes' },
+  { label: 'Comunidades', path: '/comunidades' },
+  { label: 'Notícias', path: '/noticias' },
+  { label: 'Calendário', path: '/calendario' },
+  { label: 'Eventos', path: '/eventos' },
+  { label: 'Solicitações', path: '/solicitacoes' },
+  { label: 'Denúncias', path: '/denuncias' },
+];
 
 export default function Navbar() {
-  const [menuAberto, setMenuAberto] = useState(false);
+  const [perfilAberto, setPerfilAberto] = useState(false);
+  const [mobileAberto, setMobileAberto] = useState(false);
+  const [usuario, setUsuario] = useState(null);
+  const [notificacoes, setNotificacoes] = useState([]);
+  const [notificacoesAbertas, setNotificacoesAbertas] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { sessao, logout } = useAuth();
+
+  useEffect(() => {
+    let ativo = true;
+    async function carregarPerfil() {
+      try {
+        const dados = await usuarioService.meuUsuario();
+        if (ativo) setUsuario(dados);
+      } catch {
+        if (ativo) setUsuario(null);
+      }
+    }
+
+    carregarPerfil();
+    window.addEventListener('telascore:perfil-atualizado', carregarPerfil);
+    return () => {
+      ativo = false;
+      window.removeEventListener('telascore:perfil-atualizado', carregarPerfil);
+    };
+  }, [sessao?.id]);
+
+  useEffect(() => {
+    let ativo = true;
+    async function carregarNotificacoes() {
+      try {
+        const [recebidas, filmes] = await Promise.all([
+          recomendacaoService.listar(),
+          filmeService.listar(),
+        ]);
+        if (!ativo) return;
+        const titulos = Object.fromEntries(filmes.map(filme => [String(filme.id), filme.titulo]));
+        setNotificacoes(recebidas
+            .filter(recomendacao => recomendacao.status === 'PENDENTE')
+            .map(recomendacao => ({
+              ...recomendacao,
+              titulo: titulos[String(recomendacao.conteudoId)] || 'Filme recomendado',
+            }))
+            .sort((a, b) => new Date(b.dataGeracao) - new Date(a.dataGeracao)));
+      } catch {
+        if (ativo) setNotificacoes([]);
+      }
+    }
+
+    carregarNotificacoes();
+    const intervalo = window.setInterval(carregarNotificacoes, 30000);
+    window.addEventListener('telascore:recomendacoes-atualizadas', carregarNotificacoes);
+    return () => {
+      ativo = false;
+      window.clearInterval(intervalo);
+      window.removeEventListener('telascore:recomendacoes-atualizadas', carregarNotificacoes);
+    };
+  }, [sessao?.id]);
+
+  const navegar = path => {
+    navigate(path);
+    setPerfilAberto(false);
+    setNotificacoesAbertas(false);
+    setMobileAberto(false);
+  };
+
+  async function abrirNotificacao(notificacao) {
+    try {
+      await recomendacaoService.visualizar(notificacao.id);
+      setNotificacoes(atuais => atuais.filter(item => item.id !== notificacao.id));
+    } catch {
+    }
+    navegar('/recomendacoes');
+  }
 
   function handleLogout() {
     logout();
     navigate('/login');
   }
 
-  return (
-    <nav style={styles.nav}>
-      <div style={styles.esquerda}>
-        <button style={styles.hamburguer} onClick={() => setMenuAberto(!menuAberto)}><FiMenu size={20} /></button>
-        <span style={styles.logo}>TelaScore</span>
-        {menuAberto && (
-          <div style={styles.menu}>
-            <button style={styles.menuItem} onClick={() => { navigate('/perfil'); setMenuAberto(false); }}>Meu Perfil</button>
-            <button style={styles.menuItem} onClick={() => { navigate('/listas'); setMenuAberto(false); }}>Minhas Listas</button>
-            <button style={styles.menuItem} onClick={() => { navigate('/watchlist'); setMenuAberto(false); }}>Watchlist</button>
-            <button style={styles.menuItem} onClick={() => { navigate('/solicitacoes'); setMenuAberto(false); }}>Solicitações</button>
-            <button style={styles.menuItem} onClick={() => { navigate('/calendario'); setMenuAberto(false); }}>Calendário</button>
-            <button style={styles.menuItem} onClick={() => { navigate('/eventos'); setMenuAberto(false); }}>Eventos</button>
-            {sessao?.papel === 'ADMIN' && (
-              <button style={{ ...styles.menuItem, color: '#f97316' }} onClick={() => { navigate('/admin/solicitacoes'); setMenuAberto(false); }}>
-                Painel Admin
-              </button>
-            )}
-            <button style={styles.menuItem} onClick={() => { navigate('/configuracoes'); setMenuAberto(false); }}>Configurações</button>
-            {sessao && (
-              <div style={styles.usuarioInfo}>
-                <span style={styles.usuarioPapel}>{sessao.papel}</span>
-                <span style={styles.usuarioId}>ID: {sessao.id}</span>
-              </div>
-            )}
-            <button style={{ ...styles.menuItem, color: '#e94560' }} onClick={handleLogout}>Sair</button>
-          </div>
-        )}
-      </div>
+  const rotaSolicitacoes = sessao?.papel === 'ADMIN' ? '/admin/solicitacoes' : '/solicitacoes';
+  const nomeExibicao = usuario?.nome || (sessao?.papel === 'ADMIN' ? 'Administrador' : 'Usuário');
+  const detalheExibicao = usuario?.apelido ? `@${usuario.apelido.replace(/^@/, '')}` : usuario?.papel;
+  const inicial = (usuario?.apelido || usuario?.nome || '?').trim().charAt(0).toUpperCase();
 
-      <div style={styles.direita}>
-        <div style={styles.pesquisaWrapper}>
-          <FiSearch size={16} style={{ color: '#aaa' }} />
-          <input style={styles.pesquisa} type="text" placeholder="Pesquisar..." />
+  return (
+      <header className="site-header">
+        <div className="site-header__inner">
+          <div className="mobile-menu-wrap">
+            <button className="mobile-trigger" onClick={() => setMobileAberto(v => !v)} aria-label="Abrir menu">
+              {mobileAberto ? <FiX size={21} /> : <FiMenu size={21} />}
+            </button>
+            {mobileAberto && (
+                <div className="header-dropdown mobile-dropdown">
+                  {links.map(link => (
+                      <button key={link.path} className="dropdown-action"
+                              onClick={() => navegar(link.label === 'Solicitações' ? rotaSolicitacoes : link.path)}>
+                        {link.label}
+                      </button>
+                  ))}
+                </div>
+            )}
+          </div>
+
+          <button className="brand" onClick={() => navegar('/filmes')}>
+            <span className="brand__mark"><FiFilm /></span>
+            <span className="brand__name">TelaScore</span>
+          </button>
+
+          <nav className="desktop-nav">
+            {links.map(link => {
+              const path = link.label === 'Solicitações' ? rotaSolicitacoes : link.path;
+              const ativo = location.pathname === path || (path !== '/filmes' && location.pathname.startsWith(`${path}/`));
+              return (
+                  <button key={link.path} className={`nav-link ${ativo ? 'is-active' : ''}`} onClick={() => navegar(path)}>
+                    {link.label}
+                  </button>
+              );
+            })}
+          </nav>
+
+          <div className="site-header__actions">
+            <div className="notification-wrap">
+              <button
+                  className={`header-icon ${notificacoesAbertas ? 'is-active' : ''}`}
+                  aria-label={`Notificações${notificacoes.length ? `: ${notificacoes.length} novas` : ''}`}
+                  onClick={() => {
+                    setNotificacoesAbertas(abertas => !abertas);
+                    setPerfilAberto(false);
+                  }}
+              >
+                <FiBell size={18} />
+                {notificacoes.length > 0 && (
+                    <span className="notification-badge">{notificacoes.length > 9 ? '9+' : notificacoes.length}</span>
+                )}
+              </button>
+              {notificacoesAbertas && (
+                  <div className="header-dropdown notification-dropdown">
+                    <div className="notification-heading">
+                      <div>
+                        <strong>Recomendações</strong>
+                        <span>{notificacoes.length ? `${notificacoes.length} nova${notificacoes.length > 1 ? 's' : ''}` : 'Tudo em dia'}</span>
+                      </div>
+                      <FiBell />
+                    </div>
+                    <div className="notification-list">
+                      {notificacoes.length === 0 ? (
+                          <div className="notification-empty">Nenhuma recomendação nova por enquanto.</div>
+                      ) : notificacoes.slice(0, 5).map(notificacao => (
+                          <button
+                              key={notificacao.id}
+                              className="notification-item"
+                              onClick={() => abrirNotificacao(notificacao)}
+                          >
+                            <span className="notification-dot" />
+                            <span className="notification-content">
+                        <strong>{notificacao.titulo}</strong>
+                        <span>Recomendado por @{notificacao.remetenteApelido || 'usuário'}</span>
+                              {notificacao.mensagem && <small>“{notificacao.mensagem}”</small>}
+                              <time>{formatarDataNotificacao(notificacao.dataGeracao)}</time>
+                      </span>
+                          </button>
+                      ))}
+                    </div>
+                    <button className="notification-all" onClick={() => navegar('/recomendacoes')}>
+                      Ver todas as recomendações
+                    </button>
+                  </div>
+              )}
+            </div>
+            <div className="profile-wrap">
+              <button className="profile-trigger" onClick={() => setPerfilAberto(v => !v)}>
+              <span className="profile-avatar">
+                {usuario?.avatarUrl ? <img src={usuario.avatarUrl} alt="" /> : inicial}
+              </span>
+                <span className="profile-meta">
+                <strong>{nomeExibicao}</strong>
+                  {detalheExibicao && <span>{detalheExibicao}</span>}
+              </span>
+                <FiChevronDown size={14} />
+              </button>
+              {perfilAberto && (
+                  <div className="header-dropdown">
+                    <div className="dropdown-user">
+                      <strong>{nomeExibicao}</strong>
+                      {detalheExibicao && <span>{detalheExibicao}</span>}
+                    </div>
+                    <button className="dropdown-action" onClick={() => navegar('/meuusuario')}><FiUser /> Meu perfil</button>
+                    {sessao?.papel === 'ADMIN' && (
+                        <button className="dropdown-action" onClick={() => navegar('/admin/solicitacoes')}><FiShield /> Administração</button>
+                    )}
+                    <button className="dropdown-action danger" onClick={handleLogout}><FiLogOut /> Sair</button>
+                  </div>
+              )}
+            </div>
+          </div>
         </div>
-        <button style={styles.icone} onClick={() => navigate('/')}><FiHome size={20} /></button>
-        <button style={styles.icone}><FiBell size={20} /></button>
-      </div>
-    </nav>
+      </header>
   );
 }
 
-const styles = {
-  nav: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '12px 24px',
-    backgroundColor: '#1a1a2e',
-    color: 'white',
-    position: 'relative',
-  },
-  esquerda: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    position: 'relative',
-  },
-  logo: {
-    fontWeight: 'bold',
-    fontSize: '20px',
-    color: '#e94560',
-  },
-  hamburguer: {
-    background: 'none',
-    border: 'none',
-    color: 'white',
-    fontSize: '20px',
-    cursor: 'pointer',
-  },
-  menu: {
-    position: 'absolute',
-    top: '40px',
-    left: '0',
-    backgroundColor: '#16213e',
-    borderRadius: '8px',
-    padding: '8px 0',
-    zIndex: 100,
-    minWidth: '180px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
-  },
-  menuItem: {
-    display: 'block',
-    width: '100%',
-    padding: '10px 16px',
-    background: 'none',
-    border: 'none',
-    color: 'white',
-    textAlign: 'left',
-    cursor: 'pointer',
-    fontSize: '14px',
-  },
-  direita: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-  },
-  pesquisaWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    backgroundColor: '#16213e',
-    borderRadius: '20px',
-    padding: '6px 12px',
-  },
-  pesquisa: {
-    border: 'none',
-    backgroundColor: 'transparent',
-    color: 'white',
-    outline: 'none',
-    fontSize: '14px',
-  },
-  icone: {
-    background: 'none',
-    border: 'none',
-    fontSize: '20px',
-    cursor: 'pointer',
-    color: 'white',
-  },
-  usuarioInfo: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '8px 16px',
-    borderTop: '1px solid #2a2a4a',
-    borderBottom: '1px solid #2a2a4a',
-    gap: '2px',
-  },
-  usuarioPapel: {
-    fontSize: '11px',
-    color: '#e94560',
-    fontWeight: 'bold',
-    letterSpacing: '1px',
-  },
-  usuarioId: {
-    fontSize: '11px',
-    color: '#aaa',
-  },
-};
+function formatarDataNotificacao(valor) {
+  if (!valor) return '';
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return '';
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(data);
+}
