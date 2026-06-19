@@ -1,59 +1,140 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Navbar from '../../components/Navbar';
-import { filmeService, recomendacaoService } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
-import { FiHeart, FiSend, FiZap } from 'react-icons/fi';
+import { filmeService, recomendacaoService, usuarioService } from '../../services/api';
+import { FiHeart, FiSearch, FiSend, FiUser, FiX, FiZap } from 'react-icons/fi';
 import './analise.css';
 
 export default function Recomendacoes() {
-  const { sessao } = useAuth();
   const [recomendacoes, setRecomendacoes] = useState([]);
   const [filmes, setFilmes] = useState([]);
   const [form, setForm] = useState({ destinatarioId: '', conteudoId: '', mensagem: '' });
+  const [buscaApelido, setBuscaApelido] = useState('');
+  const [usuarios, setUsuarios] = useState([]);
+  const [destinatario, setDestinatario] = useState(null);
   const [erro, setErro] = useState('');
 
   const carregar = useCallback(() => {
-    recomendacaoService.listar(sessao.id).then(setRecomendacoes).catch(e => setErro(e.message));
-  }, [sessao.id]);
+    recomendacaoService.listar().then(setRecomendacoes).catch(e => setErro(e.message));
+  }, []);
 
   useEffect(() => {
     carregar();
     filmeService.listar().then(setFilmes).catch(() => setFilmes([]));
   }, [carregar]);
 
-  const nomesFilmes = useMemo(() => Object.fromEntries(filmes.map(f => [String(f.id), f.titulo])), [filmes]);
+  useEffect(() => {
+    if (destinatario || buscaApelido.trim().replace(/^@/, '').length < 2) {
+      setUsuarios([]);
+      return undefined;
+    }
+    const timeout = setTimeout(() => {
+      usuarioService.buscarPorApelido(buscaApelido)
+        .then(setUsuarios)
+        .catch(e => setErro(e.message));
+    }, 250);
+    return () => clearTimeout(timeout);
+  }, [buscaApelido, destinatario]);
+
+  const nomesFilmes = useMemo(
+    () => Object.fromEntries(filmes.map(f => [String(f.id), f.titulo])),
+    [filmes],
+  );
 
   async function enviar(e) {
     e.preventDefault();
+    if (!destinatario) {
+      setErro('Selecione um usuário na busca por apelido.');
+      return;
+    }
     try {
+      setErro('');
       await recomendacaoService.enviar({
-        remetenteId: sessao.id,
         destinatarioId: Number(form.destinatarioId),
         conteudoId: String(form.conteudoId),
         tipoConteudo: 'FILME',
         mensagem: form.mensagem || null,
       });
       setForm({ destinatarioId: '', conteudoId: '', mensagem: '' });
+      setBuscaApelido('');
+      setDestinatario(null);
+      setUsuarios([]);
       alert('Recomendação enviada.');
-    } catch (e) { setErro(e.message); }
+    } catch (e) {
+      setErro(e.message);
+    }
+  }
+
+  function selecionarDestinatario(usuario) {
+    setDestinatario(usuario);
+    setBuscaApelido(`@${usuario.apelido}`);
+    setUsuarios([]);
+    setForm(atual => ({ ...atual, destinatarioId: usuario.id }));
+  }
+
+  function limparDestinatario() {
+    setDestinatario(null);
+    setBuscaApelido('');
+    setForm(atual => ({ ...atual, destinatarioId: '' }));
   }
 
   async function responder(id, aceitar) {
     try {
       await recomendacaoService.responder(id, aceitar);
       carregar();
-    } catch (e) { setErro(e.message); }
+    } catch (e) {
+      setErro(e.message);
+    }
   }
 
   return (
     <div style={styles.pagina} className="cinema-page">
       <Navbar />
       <main style={styles.conteudo} className="cinema-container">
-        <div className="page-heading"><div><p className="page-eyebrow">Cinema compartilhado</p><h1 className="page-title">Recomendações</h1><p className="page-description">Envie boas descobertas e veja o que seus amigos separaram para você.</p></div><FiZap className="heading-icon" /></div>
+        <div className="page-heading">
+          <div>
+            <p className="page-eyebrow">Cinema compartilhado</p>
+            <h1 className="page-title">Recomendações</h1>
+            <p className="page-description">Envie boas descobertas e veja o que seus amigos separaram para você.</p>
+          </div>
+          <FiZap className="heading-icon" />
+        </div>
+
         <form onSubmit={enviar} style={styles.form} className="glass-panel recommendation-form">
           <h3 style={{ marginTop: 0 }}>Recomendar um filme</h3>
-          <input style={styles.input} type="number" min="1" placeholder="ID do usuário destinatário"
-            value={form.destinatarioId} onChange={e => setForm({ ...form, destinatarioId: e.target.value })} required />
+          <div className="recipient-picker">
+            <div className={`recipient-picker__input ${destinatario ? 'is-selected' : ''}`}>
+              {destinatario ? <FiUser /> : <FiSearch />}
+              <input type="text" placeholder="Busque pelo apelido, ex.: @natalia"
+                value={buscaApelido}
+                onChange={e => {
+                  setBuscaApelido(e.target.value);
+                  setDestinatario(null);
+                  setForm(atual => ({ ...atual, destinatarioId: '' }));
+                }}
+                autoComplete="off" required />
+              {destinatario && (
+                <button type="button" onClick={limparDestinatario} aria-label="Trocar destinatário"><FiX /></button>
+              )}
+            </div>
+            {!!usuarios.length && (
+              <div className="recipient-picker__results">
+                {usuarios.map(usuario => (
+                  <button type="button" key={usuario.id} onClick={() => selecionarDestinatario(usuario)}>
+                    <span className="recipient-picker__avatar">
+                      {usuario.avatarUrl
+                        ? <img src={usuario.avatarUrl} alt="" />
+                        : usuario.apelido.charAt(0).toUpperCase()}
+                    </span>
+                    <span><strong>@{usuario.apelido}</strong><small>{usuario.nome}</small></span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {!destinatario && buscaApelido.trim().length >= 2 && !usuarios.length && (
+              <small className="recipient-picker__hint">Digite o apelido e selecione uma pessoa na busca.</small>
+            )}
+          </div>
+
           <select style={styles.input} value={form.conteudoId}
             onChange={e => setForm({ ...form, conteudoId: e.target.value })} required>
             <option value="">Escolha o filme</option>
@@ -63,6 +144,7 @@ export default function Recomendacoes() {
             value={form.mensagem} onChange={e => setForm({ ...form, mensagem: e.target.value })} />
           <button style={styles.primario} className="btn-primary"><FiSend /> Enviar recomendação</button>
         </form>
+
         {erro && <p style={styles.erro}>{erro}</p>}
         <div style={styles.lista}>
           {recomendacoes.map(r => (

@@ -20,9 +20,15 @@ public class CadastrarUsuarioCasoDeUso {
 
     public void executar(CadastrarUsuarioComando comando) {
         Email email = new Email(comando.email());
+        Apelido apelido = new Apelido(apelidoOuNome(comando.apelido(), comando.nome()));
 
         if (usuarioServico.obterPorEmail(email) != null) {
             throw new IllegalArgumentException("Já existe um usuário cadastrado com este e-mail");
+        }
+
+        if (usuarioServico.listarTodos().stream()
+                .anyMatch(usuario -> usuario.getApelido().getValor().equalsIgnoreCase(apelido.getValor()))) {
+            throw new IllegalArgumentException("Já existe um usuário cadastrado com este apelido");
         }
 
         UsuarioId usuarioId = new UsuarioId(geradorId.gerarProximoIdUsuario());
@@ -33,7 +39,7 @@ public class CadastrarUsuarioCasoDeUso {
             email,
             new Senha(comando.senha()),
             PapelUsuario.CINEFILO,
-            new Apelido(apelidoOuNome(comando.apelido(), comando.nome())),
+            apelido,
             comando.biografia(),
             comando.avatarUrl()
         );

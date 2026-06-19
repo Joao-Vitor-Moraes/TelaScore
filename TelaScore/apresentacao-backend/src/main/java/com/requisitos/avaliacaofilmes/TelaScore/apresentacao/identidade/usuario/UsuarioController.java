@@ -18,6 +18,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.apresentacao.seguranca.TokenServ
 import com.requisitos.avaliacaofilmes.TelaScore.apresentacao.seguranca.TokenServico.TokenGerado;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioLogado;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioServico;
 
 import java.util.List;
 
@@ -30,7 +31,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/identidade/usuario")
@@ -45,6 +48,7 @@ public class UsuarioController {
     private final RemoverUsuarioCasoDeUso removerUsuario;
     private final SessaoUsuario sessaoUsuario;
     private final TokenServico tokenServico;
+    private final UsuarioServico usuarioServico;
 
     public UsuarioController(
             CadastrarUsuarioCasoDeUso cadastrarUsuario,
@@ -55,7 +59,8 @@ public class UsuarioController {
             EditarUsuarioCasoDeUso editarUsuario,
             RemoverUsuarioCasoDeUso removerUsuario,
             SessaoUsuario sessaoUsuario,
-            TokenServico tokenServico) {
+            TokenServico tokenServico,
+            UsuarioServico usuarioServico) {
         this.cadastrarUsuario = cadastrarUsuario;
         this.loginUsuario = loginUsuario;
         this.listarUsuarios = listarUsuarios;
@@ -65,6 +70,7 @@ public class UsuarioController {
         this.removerUsuario = removerUsuario;
         this.sessaoUsuario = sessaoUsuario;
         this.tokenServico = tokenServico;
+        this.usuarioServico = usuarioServico;
     }
 
     @PostMapping({"/registrar"})
@@ -160,6 +166,26 @@ public class UsuarioController {
                     : HttpStatus.FORBIDDEN;
             return ResponseEntity.status(status).body(new ErroLoginResponse(e.getMessage()));
         }
+    }
+
+    @GetMapping("/buscar")
+    public List<UsuarioPublicoResponse> buscarPorApelido(@RequestParam(defaultValue = "") String apelido) {
+        UsuarioLogado atual = sessaoUsuario.obterUsuarioLogado();
+        if (atual == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Faça login para buscar usuários.");
+        }
+
+        String termo = apelido.trim().replaceFirst("^@", "").toLowerCase();
+        if (termo.length() < 2) {
+            return List.of();
+        }
+
+        return usuarioServico.listarTodos().stream()
+                .filter(usuario -> usuario.getId().getId() != atual.getId().getId())
+                .filter(usuario -> usuario.getApelido().getValor().toLowerCase().contains(termo))
+                .limit(8)
+                .map(UsuarioPublicoResponse::de)
+                .toList();
     }
 
     @PutMapping("/{id}")
@@ -270,6 +296,16 @@ public class UsuarioController {
                     usuario.getPapel().name(),
                     usuario.getApelido().getValor(),
                     usuario.getBiografia(),
+                    usuario.getAvatarUrl());
+        }
+    }
+
+    public static record UsuarioPublicoResponse(int id, String nome, String apelido, String avatarUrl) {
+        static UsuarioPublicoResponse de(Usuario usuario) {
+            return new UsuarioPublicoResponse(
+                    usuario.getId().getId(),
+                    usuario.getNome(),
+                    usuario.getApelido().getValor(),
                     usuario.getAvatarUrl());
         }
     }

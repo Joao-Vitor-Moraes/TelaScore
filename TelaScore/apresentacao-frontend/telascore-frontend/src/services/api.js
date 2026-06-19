@@ -97,6 +97,8 @@ export const usuarioService = {
   listar: () => request('GET', '/api/identidade/usuario'),
   editar: (id, dados) => request('PUT', `/api/identidade/usuario/${id}`, dados),
   remover: (id) => request('DELETE', `/api/identidade/usuario/${id}`),
+  buscarPorApelido: (apelido) =>
+    request('GET', `/api/identidade/usuario/buscar?apelido=${encodeURIComponent(apelido)}`),
 };
 
 export const denunciaService = {
@@ -120,7 +122,7 @@ export const metaService = {
 };
 
 export const recomendacaoService = {
-  listar: (usuarioId) => request('GET', `/api/recomendacoes?usuarioId=${usuarioId}`),
+  listar: () => request('GET', '/api/recomendacoes'),
   enviar: (dados) => request('POST', '/api/recomendacoes', dados),
   responder: (recomendacaoId, aceitar) => request('PUT', '/api/recomendacoes/reagir', { recomendacaoId, aceitar }),
 };
