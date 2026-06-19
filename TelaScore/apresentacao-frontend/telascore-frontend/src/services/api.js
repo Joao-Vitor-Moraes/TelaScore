@@ -36,6 +36,25 @@ async function request(method, path, body) {
   return contentType.includes('application/json') ? JSON.parse(text) : text;
 }
 
+async function upload(path, file) {
+  const token = getToken();
+  const formData = new FormData();
+  formData.append('arquivo', file);
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    let msg = `Erro ${res.status}`;
+    try { const json = JSON.parse(text); if (json.mensagem) msg = json.mensagem; }
+    catch { if (text) msg = text; }
+    throw new Error(msg);
+  }
+  return res.json();
+}
+
 // Listas
 export const listaService = {
   listarPorUsuario: (usuarioId, quemPedeId) => request('GET', `/api/listas?usuarioId=${usuarioId}${quemPedeId != null ? `&quemPedeId=${quemPedeId}` : ''}`),
@@ -94,6 +113,7 @@ export const avaliacaoService = {
 export const usuarioService = {
   meuUsuario: () => request('GET', '/api/identidade/usuario/meu-usuario'),
   editarMeuUsuario: (dados) => request('PUT', '/api/identidade/usuario/meu-usuario', dados),
+  enviarAvatar: (arquivo) => upload('/api/identidade/usuario/meu-usuario/avatar', arquivo),
   listar: () => request('GET', '/api/identidade/usuario'),
   editar: (id, dados) => request('PUT', `/api/identidade/usuario/${id}`, dados),
   remover: (id) => request('DELETE', `/api/identidade/usuario/${id}`),

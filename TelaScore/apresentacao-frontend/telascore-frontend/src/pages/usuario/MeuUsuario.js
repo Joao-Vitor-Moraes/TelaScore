@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { FiAtSign, FiEdit2, FiFileText, FiImage, FiMail, FiSave, FiShield, FiUser, FiX } from 'react-icons/fi';
+import { FiAtSign, FiEdit2, FiFileText, FiImage, FiMail, FiSave, FiShield, FiUpload, FiUser, FiX } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
 import { usuarioService } from '../../services/api';
 import './usuario.css';
@@ -37,6 +37,7 @@ export default function MeuUsuario() {
     const [erroAcao, setErroAcao] = useState(null);
     const [editando, setEditando] = useState(false);
     const [salvando, setSalvando] = useState(false);
+    const [enviandoFoto, setEnviandoFoto] = useState(false);
     const [form, setForm] = useState(formInicial);
 
     useEffect(() => {
@@ -73,6 +74,32 @@ export default function MeuUsuario() {
 
     function atualizarCampo(campo, valor) {
         setForm(atual => ({ ...atual, [campo]: valor }));
+    }
+
+    async function selecionarFoto(event) {
+        const arquivo = event.target.files?.[0];
+        event.target.value = '';
+        if (!arquivo) return;
+
+        if (!arquivo.type.startsWith('image/')) {
+            setErroAcao('Escolha um arquivo de imagem.');
+            return;
+        }
+        if (arquivo.size > 5 * 1024 * 1024) {
+            setErroAcao('A imagem deve ter no máximo 5 MB.');
+            return;
+        }
+
+        setEnviandoFoto(true);
+        setErroAcao(null);
+        try {
+            const resultado = await usuarioService.enviarAvatar(arquivo);
+            atualizarCampo('avatarUrl', resultado.url);
+        } catch (e) {
+            setErroAcao(e.message || 'Erro ao enviar a imagem.');
+        } finally {
+            setEnviandoFoto(false);
+        }
     }
 
     async function salvarUsuario(event) {
@@ -195,11 +222,24 @@ export default function MeuUsuario() {
                                     </label>
 
                                     <label className="user-field is-wide">
-                                        Avatar URL
+                                        Foto do perfil
+                                        <span className="user-avatar-options">
+                                            <label className={`user-upload-button ${enviandoFoto ? 'is-disabled' : ''}`}>
+                                                <FiUpload />
+                                                {enviandoFoto ? 'Enviando imagem...' : 'Escolher do computador'}
+                                                <input
+                                                    type="file"
+                                                    accept="image/jpeg,image/png,image/webp,image/gif"
+                                                    onChange={selecionarFoto}
+                                                    disabled={enviandoFoto}
+                                                />
+                                            </label>
+                                            <span className="user-avatar-divider">ou use um link</span>
+                                        </span>
                                         <span className="user-input-with-icon">
                                             <FiImage />
                                             <input
-                                                type="url"
+                                                type="text"
                                                 value={form.avatarUrl}
                                                 onChange={e => atualizarCampo('avatarUrl', e.target.value)}
                                                 placeholder="https://exemplo.com/minha-foto.jpg"
@@ -221,7 +261,7 @@ export default function MeuUsuario() {
                                         <FiX />
                                         Cancelar
                                     </button>
-                                    <button type="submit" className="btn-primary" disabled={salvando}>
+                                    <button type="submit" className="btn-primary" disabled={salvando || enviandoFoto}>
                                         <FiSave />
                                         {salvando ? 'Salvando...' : 'Salvar alterações'}
                                     </button>

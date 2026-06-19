@@ -185,6 +185,53 @@
   box-shadow: none !important;
 }
 
+.user-avatar-options {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+
+.user-upload-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 11px;
+  color: var(--text);
+  background: rgba(255, 255, 255, .07);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
+  transition: border-color .2s, background .2s;
+}
+
+.user-upload-button:hover {
+  border-color: rgba(255, 255, 255, .3);
+  background: rgba(255, 255, 255, .11);
+}
+
+.user-upload-button.is-disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
+.user-upload-button input {
+  display: none;
+}
+
+.user-avatar-divider {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 .user-form-actions {
   display: flex;
   justify-content: flex-end;
@@ -218,6 +265,11 @@
   }
 
   .user-form-actions {
+    flex-direction: column;
+  }
+
+  .user-avatar-options {
+    align-items: flex-start;
     flex-direction: column;
   }
 }

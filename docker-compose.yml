@@ -28,11 +28,14 @@ services:
       DB_USER: telascore
       DB_PASSWORD: telascore
       TELASCORE_TOKEN_SECRET: troque-este-segredo-em-producao
+      TELASCORE_UPLOAD_DIR: /app/uploads/avatars
     ports:
       - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - telascore_uploads:/app/uploads
 
   frontend:
     build:
@@ -47,3 +50,4 @@ services:
 
 volumes:
   telascore_mysql:
+  telascore_uploads:
