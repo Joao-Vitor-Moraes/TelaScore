@@ -16,6 +16,9 @@ import Filmes from './pages/filmes/Filmes';
 import CadastrarFilme from './pages/filmes/CadastrarFilme';
 import FilmeDetalhe from './pages/filmes/FilmeDetalhe';
 import EditarFilme from './pages/filmes/EditarFilme';
+import Eventos from './pages/eventos/Eventos';
+import CriarEvento from './pages/eventos/CriarEvento';
+import Calendario from './pages/calendario/Calendario';
 
 function App() {
   return (
@@ -45,6 +48,13 @@ function App() {
 
           {/* Watchlist */}
           <Route path="/watchlist" element={<RotaProtegida><Watchlist /></RotaProtegida>} />
+
+          {/* Eventos */}
+          <Route path="/eventos" element={<RotaProtegida><Eventos /></RotaProtegida>} />
+          <Route path="/eventos/novo" element={<RotaProtegida><CriarEvento /></RotaProtegida>} />
+
+          {/* Calendário de estreias */}
+          <Route path="/calendario" element={<RotaProtegida><Calendario /></RotaProtegida>} />
 
           {/* Raiz */}
           <Route path="/" element={<RotaProtegida><Filmes /></RotaProtegida>} />
