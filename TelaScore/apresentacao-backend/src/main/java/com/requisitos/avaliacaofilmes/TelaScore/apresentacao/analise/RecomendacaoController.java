@@ -47,8 +47,10 @@ public class RecomendacaoController {
     }
 
     @GetMapping
-    public List<RecomendacaoResumo> listar() {
-        return listarRecomendacoesCasoDeUso.executar(usuarioAtual().getId().getId());
+    public List<RecomendacaoRecebidaResponse> listar() {
+        return listarRecomendacoesCasoDeUso.executar(usuarioAtual().getId().getId()).stream()
+                .map(this::resumirRecebida)
+                .toList();
     }
 
     @GetMapping("/enviadas")
@@ -131,6 +133,23 @@ public class RecomendacaoController {
                 recomendacao.getComentarioResposta());
     }
 
+    private RecomendacaoRecebidaResponse resumirRecebida(RecomendacaoResumo recomendacao) {
+        Usuario remetente = recomendacao.remetenteId() == null
+                ? null
+                : usuarios.obter(new com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId(
+                        recomendacao.remetenteId()));
+        return new RecomendacaoRecebidaResponse(
+                recomendacao.id(),
+                recomendacao.conteudoId(),
+                recomendacao.tipoConteudo(),
+                recomendacao.remetenteId(),
+                remetente == null ? null : remetente.getApelido().getValor(),
+                recomendacao.mensagem(),
+                recomendacao.dataGeracao(),
+                recomendacao.status(),
+                recomendacao.comentarioResposta());
+    }
+
     public record EnviarRecomendacaoRequest(
             int destinatarioId,
             String conteudoId,
@@ -143,6 +162,18 @@ public class RecomendacaoController {
             String conteudoId,
             String tipoConteudo,
             String destinatarioApelido,
+            String mensagem,
+            java.time.LocalDateTime dataGeracao,
+            String status,
+            String comentarioResposta) {
+    }
+
+    public record RecomendacaoRecebidaResponse(
+            int id,
+            String conteudoId,
+            String tipoConteudo,
+            Integer remetenteId,
+            String remetenteApelido,
             String mensagem,
             java.time.LocalDateTime dataGeracao,
             String status,

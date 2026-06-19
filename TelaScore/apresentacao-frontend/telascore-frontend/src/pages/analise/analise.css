@@ -853,6 +853,77 @@
   gap: 13px;
 }
 
+.recommendations-filters {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 17px;
+}
+
+.recommendations-filters label {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 9px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, .025);
+}
+
+.recommendations-filters input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: white;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+}
+
+.recommendations-filters label button {
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  border: 0;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.recommendations-filters select {
+  min-height: 40px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  outline: 0;
+  color: #e7e7ec;
+  background: #17171b;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.recommendations-filters > span {
+  color: var(--muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+@media (max-width: 680px) {
+  .recommendations-filters {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .recommendations-filters > span {
+    text-align: right;
+  }
+}
+
 .recommendations-tabs {
   display: flex;
   gap: 5px;

@@ -29,6 +29,8 @@ export default function Recomendacoes() {
   const [listas, setListas] = useState([]);
   const [salvandoRecomendacao, setSalvandoRecomendacao] = useState(null);
   const [novaListaNome, setNovaListaNome] = useState('');
+  const [buscaHistorico, setBuscaHistorico] = useState('');
+  const [filtroStatus, setFiltroStatus] = useState('TODAS');
 
   const carregar = useCallback(() => {
     return Promise.all([
@@ -78,6 +80,24 @@ export default function Recomendacoes() {
     () => recomendacoes.filter(recomendacao => recomendacao.status === 'PENDENTE').length,
     [recomendacoes],
   );
+  const recomendacoesVisiveis = useMemo(() => {
+    const origem = aba === 'recebidas' ? recomendacoes : enviadas;
+    const termo = buscaHistorico.trim().replace(/^@/, '').toLocaleLowerCase('pt-BR');
+    return origem.filter(recomendacao => {
+      const statusCorresponde = filtroStatus === 'TODAS'
+        || (filtroStatus === 'PENDENTES' && ['PENDENTE', 'VISUALIZADA'].includes(recomendacao.status))
+        || (filtroStatus === 'POSITIVAS' && ['ACEITA', 'VOU_ASSISTIR', 'JA_ASSISTI'].includes(recomendacao.status))
+        || (filtroStatus === 'RECUSADAS' && ['REJEITADA', 'SEM_INTERESSE'].includes(recomendacao.status));
+      const pessoa = aba === 'recebidas' ? recomendacao.remetenteApelido : recomendacao.destinatarioApelido;
+      const texto = [
+        nomesFilmes[recomendacao.conteudoId],
+        pessoa,
+        recomendacao.mensagem,
+        recomendacao.comentarioResposta,
+      ].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR');
+      return statusCorresponde && (!termo || texto.includes(termo));
+    });
+  }, [aba, buscaHistorico, enviadas, filtroStatus, nomesFilmes, recomendacoes]);
 
   async function enviar(e) {
     e.preventDefault();
@@ -381,13 +401,30 @@ export default function Recomendacoes() {
               )}
             </button>
           </div>
+          <div className="recommendations-filters">
+            <label>
+              <FiSearch />
+              <input value={buscaHistorico} onChange={e => setBuscaHistorico(e.target.value)}
+                placeholder={aba === 'recebidas' ? 'Buscar por filme ou remetente' : 'Buscar por filme ou destinatário'} />
+              {buscaHistorico && <button type="button" onClick={() => setBuscaHistorico('')} aria-label="Limpar busca"><FiX /></button>}
+            </label>
+            <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)}>
+              <option value="TODAS">Todas as situações</option>
+              <option value="PENDENTES">Aguardando resposta</option>
+              <option value="POSITIVAS">Respostas positivas</option>
+              <option value="RECUSADAS">Sem interesse</option>
+            </select>
+            {(buscaHistorico || filtroStatus !== 'TODAS') && (
+              <span>{recomendacoesVisiveis.length} resultado{recomendacoesVisiveis.length === 1 ? '' : 's'}</span>
+            )}
+          </div>
           <div className="recommendations-list">
-          {aba === 'recebidas' && recomendacoes.map(r => (
+          {aba === 'recebidas' && recomendacoesVisiveis.map(r => (
             <article key={r.id} className={`recommendation-card ${r.status === 'PENDENTE' ? 'recommendation-card--unread' : ''}`}>
               <FiHeart className="recommendation-card__icon" />
               <div>
                 <h3>{nomesFilmes[r.conteudoId] || `${r.tipoConteudo} #${r.conteudoId}`}</h3>
-                <span className="recommendation-card__sender">{r.remetenteId ? `Enviada pelo usuário #${r.remetenteId}` : 'Sugestão da plataforma'}</span>
+                <span className="recommendation-card__sender">{r.remetenteApelido ? `Enviada por @${r.remetenteApelido}` : 'Sugestão da plataforma'}</span>
                 {r.mensagem && <p>{r.mensagem}</p>}
               </div>
               <div className="recommendation-card__side">
@@ -437,7 +474,7 @@ export default function Recomendacoes() {
               )}
             </article>
           ))}
-          {aba === 'enviadas' && enviadas.map(r => (
+          {aba === 'enviadas' && recomendacoesVisiveis.map(r => (
             <article key={r.id} className={`recommendation-card recommendation-card--sent recommendation-card--${r.status.toLowerCase()}`}>
               <div className="recommendation-card__result-icon">{iconeStatus(r.status)}</div>
               <div>
@@ -465,6 +502,13 @@ export default function Recomendacoes() {
           ))}
           {aba === 'recebidas' && !recomendacoes.length && <div className="recommendations-empty"><FiHeart /><p>Nenhuma recomendação recebida ainda.</p><span>Quando alguém separar um filme para você, ele aparecerá aqui.</span></div>}
           {aba === 'enviadas' && !enviadas.length && <div className="recommendations-empty"><FiSend /><p>Nenhuma recomendação enviada ainda.</p><span>As indicações enviadas aparecerão aqui com a resposta da pessoa.</span></div>}
+          {!!(aba === 'recebidas' ? recomendacoes.length : enviadas.length) && !recomendacoesVisiveis.length && (
+            <div className="recommendations-empty">
+              <FiSearch />
+              <p>Nenhuma recomendação encontrada.</p>
+              <span>Tente mudar a busca ou a situação selecionada.</span>
+            </div>
+          )}
           </div>
         </section>
         {salvandoRecomendacao && (
