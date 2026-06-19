@@ -615,6 +615,91 @@
   object-fit: cover;
 }
 
+.movie-picker {
+  position: relative;
+}
+
+.movie-picker__input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid #334;
+  border-radius: 8px;
+  color: var(--muted);
+  background: #0f3460;
+}
+
+.movie-picker__input.is-selected {
+  border-color: rgba(70, 211, 105, .45);
+  color: #65dc82;
+}
+
+.movie-picker__input input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  color: white;
+  background: transparent;
+  outline: none;
+}
+
+.movie-picker__input button {
+  display: grid;
+  place-items: center;
+  padding: 5px;
+  border: 0;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.movie-picker__results {
+  position: absolute;
+  z-index: 19;
+  top: calc(100% + 6px);
+  right: 0;
+  left: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #18181d;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, .5);
+}
+
+.movie-picker__results > button {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 13px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  color: white;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.movie-picker__results > button:hover {
+  background: rgba(255, 255, 255, .06);
+}
+
+.movie-picker__results small,
+.movie-picker__results p {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.movie-picker__results p {
+  margin: 0;
+  padding: 16px;
+  text-align: center;
+}
+
 .recommendation-card {
   display: grid !important;
   grid-template-columns: auto 1fr auto;

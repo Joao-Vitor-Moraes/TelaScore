@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Navbar from '../../components/Navbar';
 import { filmeService, recomendacaoService, usuarioService } from '../../services/api';
-import { FiHeart, FiSearch, FiSend, FiUser, FiX, FiZap } from 'react-icons/fi';
+import { FiChevronDown, FiFilm, FiHeart, FiSearch, FiSend, FiUser, FiX, FiZap } from 'react-icons/fi';
 import './analise.css';
 
 export default function Recomendacoes() {
@@ -11,6 +11,9 @@ export default function Recomendacoes() {
   const [buscaApelido, setBuscaApelido] = useState('');
   const [usuarios, setUsuarios] = useState([]);
   const [destinatario, setDestinatario] = useState(null);
+  const [buscaFilme, setBuscaFilme] = useState('');
+  const [filmeSelecionado, setFilmeSelecionado] = useState(null);
+  const [listaFilmesAberta, setListaFilmesAberta] = useState(false);
   const [erro, setErro] = useState('');
 
   const carregar = useCallback(() => {
@@ -39,6 +42,11 @@ export default function Recomendacoes() {
     () => Object.fromEntries(filmes.map(f => [String(f.id), f.titulo])),
     [filmes],
   );
+  const filmesFiltrados = useMemo(() => {
+    const termo = buscaFilme.trim().toLocaleLowerCase('pt-BR');
+    if (!termo) return filmes;
+    return filmes.filter(filme => filme.titulo.toLocaleLowerCase('pt-BR').includes(termo));
+  }, [buscaFilme, filmes]);
 
   async function enviar(e) {
     e.preventDefault();
@@ -58,6 +66,9 @@ export default function Recomendacoes() {
       setBuscaApelido('');
       setDestinatario(null);
       setUsuarios([]);
+      setBuscaFilme('');
+      setFilmeSelecionado(null);
+      setListaFilmesAberta(false);
       alert('Recomendação enviada.');
     } catch (e) {
       setErro(e.message);
@@ -75,6 +86,20 @@ export default function Recomendacoes() {
     setDestinatario(null);
     setBuscaApelido('');
     setForm(atual => ({ ...atual, destinatarioId: '' }));
+  }
+
+  function selecionarFilme(filme) {
+    setFilmeSelecionado(filme);
+    setBuscaFilme(filme.titulo);
+    setListaFilmesAberta(false);
+    setForm(atual => ({ ...atual, conteudoId: filme.id }));
+  }
+
+  function limparFilme() {
+    setFilmeSelecionado(null);
+    setBuscaFilme('');
+    setListaFilmesAberta(true);
+    setForm(atual => ({ ...atual, conteudoId: '' }));
   }
 
   async function responder(id, aceitar) {
@@ -135,11 +160,37 @@ export default function Recomendacoes() {
             )}
           </div>
 
-          <select style={styles.input} value={form.conteudoId}
-            onChange={e => setForm({ ...form, conteudoId: e.target.value })} required>
-            <option value="">Escolha o filme</option>
-            {filmes.map(f => <option key={f.id} value={f.id}>{f.titulo}</option>)}
-          </select>
+          <div className="movie-picker">
+            <div className={`movie-picker__input ${filmeSelecionado ? 'is-selected' : ''}`}>
+              <FiFilm />
+              <input type="text" placeholder="Digite o nome ou abra a lista de filmes"
+                value={buscaFilme}
+                onFocus={() => setListaFilmesAberta(true)}
+                onChange={e => {
+                  setBuscaFilme(e.target.value);
+                  setFilmeSelecionado(null);
+                  setListaFilmesAberta(true);
+                  setForm(atual => ({ ...atual, conteudoId: '' }));
+                }}
+                autoComplete="off" required />
+              {filmeSelecionado
+                ? <button type="button" onClick={limparFilme} aria-label="Trocar filme"><FiX /></button>
+                : <button type="button" onClick={() => setListaFilmesAberta(aberta => !aberta)}
+                    aria-label="Abrir lista de filmes"><FiChevronDown /></button>}
+            </div>
+            {listaFilmesAberta && (
+              <div className="movie-picker__results">
+                {filmesFiltrados.map(filme => (
+                  <button type="button" key={filme.id} onClick={() => selecionarFilme(filme)}>
+                    <FiFilm />
+                    <span>{filme.titulo}</span>
+                    {filme.anoLancamento && <small>{filme.anoLancamento}</small>}
+                  </button>
+                ))}
+                {!filmesFiltrados.length && <p>Nenhum filme encontrado.</p>}
+              </div>
+            )}
+          </div>
           <textarea style={styles.input} maxLength="255" placeholder="Por que essa pessoa deveria assistir?"
             value={form.mensagem} onChange={e => setForm({ ...form, mensagem: e.target.value })} />
           <button style={styles.primario} className="btn-primary"><FiSend /> Enviar recomendação</button>
