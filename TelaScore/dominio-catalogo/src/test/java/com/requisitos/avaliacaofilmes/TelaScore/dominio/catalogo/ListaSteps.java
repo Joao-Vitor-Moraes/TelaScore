@@ -221,8 +221,92 @@ public class ListaSteps {
 
     @Quando("ela registra que assistiu ao filme com ID {int}")
     public void ela_registra_que_assistiu_ao_filme_com_id(Integer idFilme) {
-        com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId = 
+        com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId =
             new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
         listaCriada.processarFilmeAssistido(filmeId, donoId);
+    }
+
+    @Quando("ela remove o filme com ID {int} da lista")
+    public void ela_remove_o_filme_com_id_da_lista(Integer idFilme) {
+        try {
+            com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId =
+                new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
+            listaCriada.removerItemPorFilme(filmeId, donoId);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Quando("ela edita a lista com título {string} e descrição {string}")
+    public void ela_edita_a_lista_com_titulo_e_descricao(String novoTitulo, String novaDescricao) {
+        try {
+            listaCriada.editarDados(novoTitulo, novaDescricao, listaCriada.getVisibilidade(), listaCriada.isRanqueada(), donoId);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Então("o título da lista deve ser {string}")
+    public void o_titulo_da_lista_deve_ser(String tituloEsperado) {
+        assertEquals(tituloEsperado, listaCriada.getTitulo());
+    }
+
+    @Quando("o usuário com ID {int} tenta editar os dados da lista")
+    public void o_usuario_com_id_tenta_editar_os_dados_da_lista(Integer idUsuario) {
+        try {
+            listaCriada.editarDados("Título qualquer", "Descrição qualquer", listaCriada.getVisibilidade(), listaCriada.isRanqueada(), new UsuarioId(idUsuario));
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Quando("ela edita a lista alterando a visibilidade para privada")
+    public void ela_edita_a_lista_alterando_a_visibilidade_para_privada() {
+        try {
+            listaCriada.editarDados(listaCriada.getTitulo(), listaCriada.getDescricao(), Visibilidade.PRIVADA, listaCriada.isRanqueada(), donoId);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Então("a visibilidade da lista deve ser privada")
+    public void a_visibilidade_da_lista_deve_ser_privada() {
+        assertEquals(Visibilidade.PRIVADA, listaCriada.getVisibilidade());
+    }
+
+    @Quando("o usuário com ID {int} tenta adicionar o usuário com ID {int} como colaborador")
+    public void o_usuario_com_id_tenta_adicionar_o_usuario_com_id_como_colaborador(Integer idSolicitante, Integer idColaborador) {
+        try {
+            listaCriada.adicionarColaborador(new UsuarioId(idSolicitante), new UsuarioId(idColaborador));
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Quando("ela remove o usuário com ID {int} dos colaboradores")
+    public void ela_remove_o_usuario_com_id_dos_colaboradores(Integer idColaborador) {
+        try {
+            listaCriada.removerColaborador(donoId, new UsuarioId(idColaborador));
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Então("a lista não deve ter colaboradores")
+    public void a_lista_nao_deve_ter_colaboradores() {
+        assertEquals(0, listaCriada.getColaboradores().size());
+    }
+
+    @Quando("ela tenta adicionar o filme com ID {int} à watchlist informando que já assistiu")
+    public void ela_tenta_adicionar_o_filme_com_id_a_watchlist_informando_que_ja_assistiu(Integer idFilme) {
+        try {
+            com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId filmeId =
+                new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId(String.valueOf(idFilme));
+            com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista novoItem =
+                new com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.lista.ItemLista(filmeId, null);
+            listaCriada.adicionarItem(novoItem, donoId, true);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
     }
 }

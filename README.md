@@ -107,24 +107,20 @@ CREATE DATABASE IF NOT EXISTS telascore_db;
 
 #### 2. Backend
 
-Abra um terminal na raiz do projeto e defina as variáveis de ambiente:
+Abra um terminal **na pasta raiz do projeto** (onde está o `docker-compose.yml`) e rode tudo no mesmo terminal:
 
 ```powershell
-# PowerShell
-$env:DB_URL      = "jdbc:mysql://localhost:3306/telascore_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
-$env:DB_USER     = "root"
+# 1. Variáveis de ambiente (substitua a senha)
+$env:DB_URL = "jdbc:mysql://localhost:3306/telascore_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+$env:DB_USER = "root"
 $env:DB_PASSWORD = "sua_senha_aqui"
 $env:TELASCORE_TOKEN_SECRET = "TelaScore-token-dev-secret"
-```
 
-Em seguida, faça o build e suba o servidor:
-
-```powershell
-# Build completo (apenas na primeira vez ou após mudanças nos módulos)
+# 2. Build completo (apenas na primeira vez ou após mudanças nos módulos)
 cd TelaScore
 mvn clean install "-Dmaven.test.skip=true"
 
-# Subir o backend
+# 3. Subir o backend
 cd apresentacao-backend
 mvn spring-boot:run "-Dmaven.test.skip=true"
 ```

@@ -163,15 +163,81 @@ public class SolicitacaoSteps {
         assertEquals(feedbackEsperado, solicitacaoCriada.getFeedbackAdmin());
     }
 
+    @Quando("{string} avalia a solicitação como rejeitada")
+    public void avalia_a_solicitacao_como_rejeitada(String nomeUsuario) {
+        tentarAvaliarSolicitacao(false);
+    }
+
+    @Então("a solicitação deve constar como rejeitada")
+    public void a_solicitacao_deve_constar_como_rejeitada() {
+        assertEquals(null, excecaoCapturada);
+        assertEquals(StatusSolicitacao.REJEITADA, solicitacaoCriada.getStatus());
+    }
+
+    @Dado("que existe uma solicitação aguardando ajustes para o filme {string}")
+    public void que_existe_uma_solicitacao_aguardando_ajustes_para_o_filme(String titulo) {
+        SolicitacaoId id = new SolicitacaoId(555);
+        UsuarioId solicitante = new UsuarioId(2);
+        solicitacaoCriada = SolicitacaoFilme.restaurar(
+            id, solicitante, titulo, null, null, null, null, null,
+            StatusSolicitacao.AGUARDANDO_AJUSTES, java.time.LocalDateTime.now(), "Precisa de mais informações"
+        );
+        solicitacaoRepositorioMock = mock(SolicitacaoRepositorio.class);
+        filmeRepositorioMock = mock(FilmeRepositorio.class);
+        excecaoCapturada = null;
+    }
+
+    @Quando("o solicitante edita a solicitação com o novo título {string}")
+    public void o_solicitante_edita_a_solicitacao_com_o_novo_titulo(String novoTitulo) {
+        try {
+            solicitacaoCriada.editar(novoTitulo, null, null, null, null, null);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Então("a solicitação deve voltar para pendente")
+    public void a_solicitacao_deve_voltar_para_pendente() {
+        assertEquals(null, excecaoCapturada);
+        assertEquals(StatusSolicitacao.PENDENTE, solicitacaoCriada.getStatus());
+    }
+
+    @Quando("o solicitante tenta editar a solicitação")
+    public void o_solicitante_tenta_editar_a_solicitacao() {
+        try {
+            solicitacaoCriada.editar("Título qualquer", null, null, null, null, null);
+        } catch (Exception e) {
+            excecaoCapturada = e;
+        }
+    }
+
+    @Dado("que existe uma solicitação aprovada para o filme {string}")
+    public void que_existe_uma_solicitacao_aprovada_para_o_filme(String titulo) {
+        SolicitacaoId id = new SolicitacaoId(555);
+        UsuarioId solicitante = new UsuarioId(2);
+        solicitacaoCriada = SolicitacaoFilme.restaurar(
+            id, solicitante, titulo, null, null, null, null, null,
+            StatusSolicitacao.APROVADA, java.time.LocalDateTime.now(), null
+        );
+        solicitacaoRepositorioMock = mock(SolicitacaoRepositorio.class);
+        filmeRepositorioMock = mock(FilmeRepositorio.class);
+        excecaoCapturada = null;
+    }
+
+    @Quando("ela tenta solicitar um filme sem título")
+    public void ela_tenta_solicitar_um_filme_sem_titulo() {
+        tentarCriarSolicitacao("", usuarioAutenticadoId);
+    }
+
     private void tentarCriarSolicitacao(String titulo, UsuarioId usuarioId) {
         try {
             if (filmeRepositorioMock.existeComTitulo(titulo)) {
                 throw new IllegalArgumentException("Filme já cadastrado");
             }
-            
+
             SolicitacaoId novaSolicitacaoId = new SolicitacaoId(999);
             solicitacaoCriada = new SolicitacaoFilme(novaSolicitacaoId, usuarioId, titulo);
-            
+
         } catch (Exception e) {
             excecaoCapturada = e;
         }

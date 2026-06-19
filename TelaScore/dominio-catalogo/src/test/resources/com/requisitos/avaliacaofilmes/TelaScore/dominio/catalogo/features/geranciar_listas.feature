@@ -59,3 +59,51 @@ Cenário: Reordenar filmes numa lista ranqueada
     E ela adicionou o filme com ID 50 à watchlist
     Quando ela registra que assistiu ao filme com ID 50
     Então a lista deve conter 0 item
+
+  Cenário: Remover um filme da lista
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista criada
+    E ela adicionou o filme com ID 5 na lista
+    Quando ela remove o filme com ID 5 da lista
+    Então a lista deve conter 0 item
+
+  Cenário: Dono edita o título e a descrição da lista
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista criada
+    Quando ela edita a lista com título "Novo Título" e descrição "Nova descrição"
+    Então a lista é criada com sucesso
+    E o título da lista deve ser "Novo Título"
+
+  Cenário: Outro usuário tenta editar os dados da lista
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista criada
+    Quando o usuário com ID 2 tenta editar os dados da lista
+    Então o sistema rejeita a operação
+    E retorna o erro "Apenas o dono da lista pode editar seus dados"
+
+  Cenário: Dono torna a lista privada
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista criada
+    Quando ela edita a lista alterando a visibilidade para privada
+    Então a visibilidade da lista deve ser privada
+
+  Cenário: Usuário não autorizado tenta adicionar filme à lista
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista criada
+    Quando o usuário com ID 99 adiciona o filme com ID 7 à lista
+    Então o sistema rejeita a operação
+    E retorna o erro "Apenas o criador ou colaboradores podem modificar a lista."
+
+  Cenário: Não-dono tenta adicionar colaborador
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista criada
+    Quando o usuário com ID 2 tenta adicionar o usuário com ID 3 como colaborador
+    Então o sistema rejeita a operação
+    E retorna o erro "Apenas o dono da lista pode adicionar colaboradores"
+
+  Cenário: Dono remove um colaborador da lista
+    Dado que a usuária "ana_lima" com ID 1 tem uma lista criada
+    E que a usuária "ana_lima" tornou a lista colaborativa
+    E adicionou o usuário com ID 2 como colaborador
+    Quando ela remove o usuário com ID 2 dos colaboradores
+    Então a lista não deve ter colaboradores
+
+  Cenário: Watchlist rejeita filme já assistido
+    Dado que a usuária "ana_lima" com ID 1 tem uma watchlist criada
+    Quando ela tenta adicionar o filme com ID 99 à watchlist informando que já assistiu
+    Então o sistema rejeita a operação
+    E retorna o erro "Você não pode adicionar à watchlist um filme que já assistiu"
