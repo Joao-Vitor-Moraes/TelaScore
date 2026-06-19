@@ -92,7 +92,10 @@ public class UsuarioConfig {
             UsuarioServico usuarioServico) {
         return args -> {
             Email email = new Email(ADMIN_EMAIL);
-            usuarioRepositorio.removerPorEmail(email);
+            Usuario existente = usuarioRepositorio.obterPorEmail(email);
+            if (existente != null) {
+                return;
+            }
 
             Usuario admin = new Usuario(
                     new UsuarioId(2),

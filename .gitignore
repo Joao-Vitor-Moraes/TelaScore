@@ -1,6 +1,12 @@
 # === Claude Code ===
 CLAUDE.md
 
+# === Variáveis locais e segredos ===
+.env
+.env.local
+.env.*.local
+!.env.example
+
 # === Build (Maven) ===
 target/
 src-gen
