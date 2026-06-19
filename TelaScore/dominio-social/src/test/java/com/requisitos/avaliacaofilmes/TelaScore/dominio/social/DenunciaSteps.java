@@ -35,6 +35,11 @@ public class DenunciaSteps {
 		}
 
 		@Override
+		public List<Denuncia> listarTodas() {
+			return List.copyOf(bancoDenuncias);
+		}
+
+		@Override
 		public List<Denuncia> listarPorStatus(StatusDenuncia status) {
 			return bancoDenuncias.stream().filter(d -> d.getStatus() == status).toList();
 		}
