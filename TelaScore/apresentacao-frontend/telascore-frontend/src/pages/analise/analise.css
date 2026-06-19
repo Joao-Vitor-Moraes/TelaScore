@@ -1061,13 +1061,78 @@
   position: relative;
   z-index: 0;
   display: grid !important;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
   align-items: center;
   align-self: start;
   box-sizing: border-box;
   width: 100%;
   min-height: 125px;
   padding: 20px 22px !important;
+}
+
+.recommendation-card__poster {
+  position: relative;
+  align-self: stretch;
+  width: 72px;
+  min-height: 104px;
+  overflow: visible;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 10px;
+  background: linear-gradient(145deg, #292932, #111116);
+}
+
+.recommendation-card__poster img,
+.recommendation-card__poster > span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 104px;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 9px;
+}
+
+.recommendation-card__poster img {
+  object-fit: cover;
+}
+
+.recommendation-card__poster > span {
+  color: #666670;
+  font-size: 24px;
+}
+
+.recommendation-card__poster i {
+  position: absolute;
+  right: -8px;
+  bottom: -8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 3px solid #151519;
+  border-radius: 50%;
+  color: #ff6672;
+  background: #291419;
+  font-size: 12px;
+  font-style: normal;
+}
+
+.recommendation-card__poster-status--aceita,
+.recommendation-card__poster-status--vou_assistir,
+.recommendation-card__poster-status--ja_assisti {
+  color: #65dc82 !important;
+  background: #11291a !important;
+}
+
+.recommendation-card__poster-status--rejeitada,
+.recommendation-card__poster-status--sem_interesse {
+  color: #aaaab3 !important;
+  background: #242429 !important;
+}
+
+.recommendation-card > div:nth-child(2) {
+  min-width: 0;
+  padding-left: 18px;
 }
 
 .recommendations-unread-summary {
@@ -1701,7 +1766,21 @@
   }
 
   .recommendation-card {
-    grid-template-columns: auto 1fr !important;
+    grid-template-columns: 64px minmax(0, 1fr) !important;
+  }
+
+  .recommendation-card__poster {
+    width: 64px;
+    min-height: 94px;
+  }
+
+  .recommendation-card__poster img,
+  .recommendation-card__poster > span {
+    min-height: 94px;
+  }
+
+  .recommendation-card > div:nth-child(2) {
+    padding-left: 13px;
   }
 
   .recommendation-card__side {
