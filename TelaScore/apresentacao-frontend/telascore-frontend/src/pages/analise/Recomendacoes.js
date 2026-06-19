@@ -21,6 +21,9 @@ export default function Recomendacoes() {
   const [listaFilmesAberta, setListaFilmesAberta] = useState(false);
   const [erro, setErro] = useState('');
   const [feedback, setFeedback] = useState('');
+  const [respondendoId, setRespondendoId] = useState(null);
+  const [resposta, setResposta] = useState('');
+  const [comentarioResposta, setComentarioResposta] = useState('');
 
   const carregar = useCallback(() => {
     return Promise.all([
@@ -65,6 +68,10 @@ export default function Recomendacoes() {
     if (!termo) return filmes;
     return filmes.filter(filme => filme.titulo.toLocaleLowerCase('pt-BR').includes(termo));
   }, [buscaFilme, filmes]);
+  const naoLidas = useMemo(
+    () => recomendacoes.filter(recomendacao => recomendacao.status === 'PENDENTE').length,
+    [recomendacoes],
+  );
 
   async function enviar(e) {
     e.preventDefault();
@@ -122,10 +129,42 @@ export default function Recomendacoes() {
     setForm(atual => ({ ...atual, conteudoId: '' }));
   }
 
-  async function responder(id, aceitar) {
+  async function abrirResposta(id) {
+    setRespondendoId(id);
+    setResposta('');
+    setComentarioResposta('');
+    setErro('');
+    const recomendacao = recomendacoes.find(item => item.id === id);
+    if (recomendacao?.status === 'PENDENTE') {
+      setRecomendacoes(atuais => atuais.map(item => (
+        item.id === id ? { ...item, status: 'VISUALIZADA' } : item
+      )));
+      try {
+        await recomendacaoService.visualizar(id);
+      } catch (e) {
+        setErro(e.message);
+        carregar();
+      }
+    }
+  }
+
+  function cancelarResposta() {
+    setRespondendoId(null);
+    setResposta('');
+    setComentarioResposta('');
+  }
+
+  async function responder(id) {
+    if (!resposta) {
+      setErro('Escolha uma resposta antes de confirmar.');
+      return;
+    }
     try {
-      await recomendacaoService.responder(id, aceitar);
-      carregar();
+      setErro('');
+      await recomendacaoService.responder(id, resposta, comentarioResposta);
+      await carregar();
+      cancelarResposta();
+      setFeedback('Sua resposta foi enviada para quem fez a recomendação.');
     } catch (e) {
       setErro(e.message);
     }
@@ -133,16 +172,19 @@ export default function Recomendacoes() {
 
   function textoStatus(status) {
     return {
-      PENDENTE: 'Aguardando resposta',
+      PENDENTE: 'Nova',
       VISUALIZADA: 'Visualizada',
       ACEITA: 'Aceita',
       REJEITADA: 'Rejeitada',
+      VOU_ASSISTIR: 'Vou assistir',
+      JA_ASSISTI: 'Já assisti',
+      SEM_INTERESSE: 'Não tenho interesse',
     }[status] || status.replaceAll('_', ' ');
   }
 
   function iconeStatus(status) {
-    if (status === 'ACEITA') return <FiCheckCircle />;
-    if (status === 'REJEITADA') return <FiXCircle />;
+    if (status === 'ACEITA' || status === 'VOU_ASSISTIR' || status === 'JA_ASSISTI') return <FiCheckCircle />;
+    if (status === 'REJEITADA' || status === 'SEM_INTERESSE') return <FiXCircle />;
     return <FiClock />;
   }
 
@@ -257,6 +299,11 @@ export default function Recomendacoes() {
               <p className="page-eyebrow">Cinema compartilhado</p>
               <h2>{aba === 'recebidas' ? 'Recomendações recebidas' : 'Recomendações enviadas'}</h2>
             </div>
+            {aba === 'recebidas' && naoLidas > 0 && (
+              <span className="recommendations-unread-summary">
+                {naoLidas} {naoLidas === 1 ? 'nova' : 'novas'}
+              </span>
+            )}
           </div>
           <div className="recommendations-tabs" role="tablist">
             <button type="button" className={aba === 'recebidas' ? 'is-active' : ''} onClick={() => setAba('recebidas')}>
@@ -274,7 +321,7 @@ export default function Recomendacoes() {
           </div>
           <div className="recommendations-list">
           {aba === 'recebidas' && recomendacoes.map(r => (
-            <article key={r.id} className="recommendation-card">
+            <article key={r.id} className={`recommendation-card ${r.status === 'PENDENTE' ? 'recommendation-card--unread' : ''}`}>
               <FiHeart className="recommendation-card__icon" />
               <div>
                 <h3>{nomesFilmes[r.conteudoId] || `${r.tipoConteudo} #${r.conteudoId}`}</h3>
@@ -285,11 +332,42 @@ export default function Recomendacoes() {
                 <span className={`recommendation-status recommendation-status--${r.status.toLowerCase()}`}>{textoStatus(r.status)}</span>
                 {(r.status === 'PENDENTE' || r.status === 'VISUALIZADA') && (
                   <div className="recommendation-card__actions">
-                    <button className="recommendation-accept" onClick={() => responder(r.id, true)}>Aceitar</button>
-                    <button className="recommendation-reject" onClick={() => responder(r.id, false)}>Rejeitar</button>
+                    <button className="recommendation-accept" onClick={() => abrirResposta(r.id)}>Responder</button>
                   </div>
                 )}
               </div>
+              {respondendoId === r.id && (
+                <div className="recommendation-response">
+                  <strong>O que você achou da indicação?</strong>
+                  <div className="recommendation-response__options">
+                    {[
+                      ['VOU_ASSISTIR', 'Vou assistir'],
+                      ['JA_ASSISTI', 'Já assisti'],
+                      ['SEM_INTERESSE', 'Não tenho interesse'],
+                    ].map(([valor, rotulo]) => (
+                      <button type="button" key={valor}
+                        className={resposta === valor ? 'is-selected' : ''}
+                        onClick={() => setResposta(valor)}>
+                        {rotulo}
+                      </button>
+                    ))}
+                  </div>
+                  <textarea maxLength="255" value={comentarioResposta}
+                    onChange={e => setComentarioResposta(e.target.value)}
+                    placeholder="Quer deixar um comentário? (opcional)" />
+                  <div className="recommendation-response__footer">
+                    <span>{comentarioResposta.length}/255</span>
+                    <button type="button" className="recommendation-response__cancel" onClick={cancelarResposta}>Cancelar</button>
+                    <button type="button" className="recommendation-response__submit" onClick={() => responder(r.id)}>Enviar resposta</button>
+                  </div>
+                </div>
+              )}
+              {r.comentarioResposta && (
+                <div className="recommendation-response-comment">
+                  <strong>Sua resposta</strong>
+                  <p>{r.comentarioResposta}</p>
+                </div>
+              )}
             </article>
           ))}
           {aba === 'enviadas' && enviadas.map(r => (
@@ -304,14 +382,18 @@ export default function Recomendacoes() {
                 <span className={`recommendation-status recommendation-status--${r.status.toLowerCase()}`}>
                   {textoStatus(r.status)}
                 </span>
-                {(r.status === 'ACEITA' || r.status === 'REJEITADA') && (
+                {!['PENDENTE', 'VISUALIZADA'].includes(r.status) && (
                   <small className="recommendation-result-text">
-                    {r.status === 'ACEITA'
-                      ? `@${r.destinatarioApelido} aceitou sua indicação.`
-                      : `@${r.destinatarioApelido} não aceitou desta vez.`}
+                    @{r.destinatarioApelido}: {textoStatus(r.status)}
                   </small>
                 )}
               </div>
+              {r.comentarioResposta && (
+                <div className="recommendation-response-comment recommendation-response-comment--sent">
+                  <strong>Comentário de @{r.destinatarioApelido}</strong>
+                  <p>{r.comentarioResposta}</p>
+                </div>
+              )}
             </article>
           ))}
           {aba === 'recebidas' && !recomendacoes.length && <div className="recommendations-empty"><FiHeart /><p>Nenhuma recomendação recebida ainda.</p><span>Quando alguém separar um filme para você, ele aparecerá aqui.</span></div>}

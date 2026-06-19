@@ -94,6 +94,22 @@ public class RecomendacaoController {
         }
     }
 
+    @PutMapping("/{id}/visualizar")
+    public ResponseEntity<Void> visualizar(@PathVariable int id) {
+        Recomendacao recomendacao = recomendacoes.obter(new RecomendacaoId(id));
+        if (recomendacao == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recomendação não encontrada.");
+        }
+        if (!usuarioAtual().isMesmoUsuario(recomendacao.getUsuarioId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Esta recomendação pertence a outro usuário.");
+        }
+        if (recomendacao.getStatus().name().equals("PENDENTE")) {
+            recomendacao.marcarComoVisualizada();
+            recomendacoes.salvar(recomendacao);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
     private UsuarioLogado usuarioAtual() {
         UsuarioLogado usuario = sessao.obterUsuarioLogado();
         if (usuario == null) {
@@ -111,7 +127,8 @@ public class RecomendacaoController {
                 destinatario == null ? "usuário" : destinatario.getApelido().getValor(),
                 recomendacao.getMensagem(),
                 recomendacao.getDataGeracao(),
-                recomendacao.getStatus().name());
+                recomendacao.getStatus().name(),
+                recomendacao.getComentarioResposta());
     }
 
     public record EnviarRecomendacaoRequest(
@@ -128,6 +145,7 @@ public class RecomendacaoController {
             String destinatarioApelido,
             String mensagem,
             java.time.LocalDateTime dataGeracao,
-            String status) {
+            String status,
+            String comentarioResposta) {
     }
 }

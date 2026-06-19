@@ -4,5 +4,8 @@ public enum StatusRecomendacao {
     PENDENTE,    
     VISUALIZADA, 
     ACEITA,      
-    REJEITADA    
+    REJEITADA,
+    VOU_ASSISTIR,
+    JA_ASSISTI,
+    SEM_INTERESSE
 }

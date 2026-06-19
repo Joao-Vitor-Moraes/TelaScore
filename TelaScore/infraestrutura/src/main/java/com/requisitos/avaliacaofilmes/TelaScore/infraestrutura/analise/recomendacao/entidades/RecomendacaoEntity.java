@@ -37,6 +37,9 @@ public class RecomendacaoEntity {
     @Column(nullable = false)
     private String status;
 
+    @Column(name = "comentario_resposta", length = 255)
+    private String comentarioResposta;
+
     public RecomendacaoEntity() {}
 
     public Integer getId() { return id; }
@@ -57,4 +60,6 @@ public class RecomendacaoEntity {
     public void setDataGeracao(LocalDateTime dataGeracao) { this.dataGeracao = dataGeracao; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getComentarioResposta() { return comentarioResposta; }
+    public void setComentarioResposta(String comentarioResposta) { this.comentarioResposta = comentarioResposta; }
 }
