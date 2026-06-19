@@ -170,6 +170,7 @@ export default function Recomendacoes() {
       )));
       try {
         await recomendacaoService.visualizar(id);
+        window.dispatchEvent(new Event('telascore:recomendacoes-atualizadas'));
       } catch (e) {
         setErro(e.message);
         carregar();

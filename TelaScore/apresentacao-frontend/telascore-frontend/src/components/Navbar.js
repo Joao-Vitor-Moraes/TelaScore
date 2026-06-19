@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiBell, FiChevronDown, FiFilm, FiLogOut, FiMenu, FiShield, FiUser, FiX } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
-import { usuarioService } from '../services/api';
+import { filmeService, recomendacaoService, usuarioService } from '../services/api';
 
 const links = [
   { label: 'Filmes', path: '/filmes' },
@@ -18,6 +18,8 @@ export default function Navbar() {
   const [perfilAberto, setPerfilAberto] = useState(false);
   const [mobileAberto, setMobileAberto] = useState(false);
   const [usuario, setUsuario] = useState(null);
+  const [notificacoes, setNotificacoes] = useState([]);
+  const [notificacoesAbertas, setNotificacoesAbertas] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { sessao, logout } = useAuth();
@@ -41,11 +43,54 @@ export default function Navbar() {
     };
   }, [sessao?.id]);
 
+  useEffect(() => {
+    let ativo = true;
+    async function carregarNotificacoes() {
+      try {
+        const [recebidas, filmes] = await Promise.all([
+          recomendacaoService.listar(),
+          filmeService.listar(),
+        ]);
+        if (!ativo) return;
+        const titulos = Object.fromEntries(filmes.map(filme => [String(filme.id), filme.titulo]));
+        setNotificacoes(recebidas
+          .filter(recomendacao => recomendacao.status === 'PENDENTE')
+          .map(recomendacao => ({
+            ...recomendacao,
+            titulo: titulos[String(recomendacao.conteudoId)] || 'Filme recomendado',
+          }))
+          .sort((a, b) => new Date(b.dataGeracao) - new Date(a.dataGeracao)));
+      } catch {
+        if (ativo) setNotificacoes([]);
+      }
+    }
+
+    carregarNotificacoes();
+    const intervalo = window.setInterval(carregarNotificacoes, 30000);
+    window.addEventListener('telascore:recomendacoes-atualizadas', carregarNotificacoes);
+    return () => {
+      ativo = false;
+      window.clearInterval(intervalo);
+      window.removeEventListener('telascore:recomendacoes-atualizadas', carregarNotificacoes);
+    };
+  }, [sessao?.id]);
+
   const navegar = path => {
     navigate(path);
     setPerfilAberto(false);
+    setNotificacoesAbertas(false);
     setMobileAberto(false);
   };
+
+  async function abrirNotificacao(notificacao) {
+    try {
+      await recomendacaoService.visualizar(notificacao.id);
+      setNotificacoes(atuais => atuais.filter(item => item.id !== notificacao.id));
+    } catch {
+      // A página de recomendações fará uma nova leitura do estado.
+    }
+    navegar('/recomendacoes');
+  }
 
   function handleLogout() {
     logout();
@@ -94,7 +139,54 @@ export default function Navbar() {
         </nav>
 
         <div className="site-header__actions">
-          <button className="header-icon" aria-label="Notificações"><FiBell size={18} /></button>
+          <div className="notification-wrap">
+            <button
+              className={`header-icon ${notificacoesAbertas ? 'is-active' : ''}`}
+              aria-label={`Notificações${notificacoes.length ? `: ${notificacoes.length} novas` : ''}`}
+              onClick={() => {
+                setNotificacoesAbertas(abertas => !abertas);
+                setPerfilAberto(false);
+              }}
+            >
+              <FiBell size={18} />
+              {notificacoes.length > 0 && (
+                <span className="notification-badge">{notificacoes.length > 9 ? '9+' : notificacoes.length}</span>
+              )}
+            </button>
+            {notificacoesAbertas && (
+              <div className="header-dropdown notification-dropdown">
+                <div className="notification-heading">
+                  <div>
+                    <strong>Recomendações</strong>
+                    <span>{notificacoes.length ? `${notificacoes.length} nova${notificacoes.length > 1 ? 's' : ''}` : 'Tudo em dia'}</span>
+                  </div>
+                  <FiBell />
+                </div>
+                <div className="notification-list">
+                  {notificacoes.length === 0 ? (
+                    <div className="notification-empty">Nenhuma recomendação nova por enquanto.</div>
+                  ) : notificacoes.slice(0, 5).map(notificacao => (
+                    <button
+                      key={notificacao.id}
+                      className="notification-item"
+                      onClick={() => abrirNotificacao(notificacao)}
+                    >
+                      <span className="notification-dot" />
+                      <span className="notification-content">
+                        <strong>{notificacao.titulo}</strong>
+                        <span>Recomendado por @{notificacao.remetenteApelido || 'usuário'}</span>
+                        {notificacao.mensagem && <small>“{notificacao.mensagem}”</small>}
+                        <time>{formatarDataNotificacao(notificacao.dataGeracao)}</time>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <button className="notification-all" onClick={() => navegar('/recomendacoes')}>
+                  Ver todas as recomendações
+                </button>
+              </div>
+            )}
+          </div>
           <div className="profile-wrap">
             <button className="profile-trigger" onClick={() => setPerfilAberto(v => !v)}>
               <span className="profile-avatar">
@@ -124,4 +216,16 @@ export default function Navbar() {
       </div>
     </header>
   );
+}
+
+function formatarDataNotificacao(valor) {
+  if (!valor) return '';
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return '';
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(data);
 }
