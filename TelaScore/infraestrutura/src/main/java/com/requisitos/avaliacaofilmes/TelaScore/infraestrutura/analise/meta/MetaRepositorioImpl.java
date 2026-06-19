@@ -7,6 +7,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.Meta;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.StatusMeta;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.TipoMeta;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.meta.entidades.MetaEntity;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.config.ConexaoBanco;
@@ -53,6 +54,7 @@ public class MetaRepositorioImpl implements MetaRepositorio {
             entity.setQuantidadeAtual(meta.getQuantidadeAtual());
             entity.setDataPrazo(meta.getDataPrazo());
             entity.setStatus(meta.getStatus().name());
+            entity.setTipo(meta.getTipo().name());
             entity.setMetaSistemaId(meta.getMetaSistemaId());
             entity.setPontosConcedidos(meta.isPontosConcedidos());
 
@@ -133,7 +135,19 @@ public class MetaRepositorioImpl implements MetaRepositorio {
             entity.getDataPrazo(),
             StatusMeta.valueOf(entity.getStatus()),
             entity.getMetaSistemaId(),
-            Boolean.TRUE.equals(entity.getPontosConcedidos())
+            Boolean.TRUE.equals(entity.getPontosConcedidos()),
+            converterTipo(entity.getTipo())
         );
+    }
+
+    private TipoMeta converterTipo(String tipo) {
+        if (tipo == null || tipo.isBlank()) {
+            return TipoMeta.FILMES;
+        }
+        try {
+            return TipoMeta.valueOf(tipo.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return TipoMeta.FILMES;
+        }
     }
 }

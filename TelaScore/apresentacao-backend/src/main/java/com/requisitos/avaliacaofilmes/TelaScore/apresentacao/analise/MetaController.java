@@ -68,7 +68,8 @@ public class MetaController {
             UsuarioLogado usuario = usuarioAtual();
             criarMeta.executar(new CriarMetaComando(
                     usuario.getId().getId(), request.titulo(),
-                    request.quantidadeAlvo(), request.dataPrazo()));
+                    request.quantidadeAlvo(), request.dataPrazo(),
+                    request.tipo() == null ? TipoMeta.FILMES : request.tipo()));
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -169,7 +170,7 @@ public class MetaController {
     }
 
     public record CriarMetaSistemaRequest(String titulo, int quantidadeAlvo, int duracaoDias) {}
-    public record CriarMetaRequest(String titulo, int quantidadeAlvo, java.time.LocalDate dataPrazo) {}
+    public record CriarMetaRequest(String titulo, int quantidadeAlvo, java.time.LocalDate dataPrazo, TipoMeta tipo) {}
     public record EditarMetaRequest(String titulo, int quantidadeAlvo, java.time.LocalDate dataPrazo) {}
     public record PontuacaoResumo(int totalPontos) {}
 }

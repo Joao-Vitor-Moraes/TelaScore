@@ -31,6 +31,9 @@ public class MetaEntity {
     @Column(nullable = false)
     private String status;
 
+    @Column(nullable = false)
+    private String tipo = "FILMES";
+
     @Column(name = "meta_sistema_id")
     private Integer metaSistemaId;
 
@@ -59,6 +62,8 @@ public class MetaEntity {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
     public Integer getMetaSistemaId() { return metaSistemaId; }
     public void setMetaSistemaId(Integer metaSistemaId) { this.metaSistemaId = metaSistemaId; }
     public Boolean getPontosConcedidos() { return pontosConcedidos; }

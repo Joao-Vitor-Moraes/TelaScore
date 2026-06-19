@@ -242,6 +242,16 @@
   z-index: 1;
 }
 
+.goal-card__type {
+  display: inline-flex;
+  margin-bottom: 8px;
+  color: var(--brand-light);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
 .goal-card__content h2 {
   margin: 0 0 28px;
   font-size: 20px;
@@ -399,6 +409,74 @@
 .analysis-modal--small {
   width: min(calc(100vw - 40px), 440px);
   max-width: 440px;
+}
+
+.goal-type-picker {
+  padding: 0;
+  border: 0;
+}
+
+.goal-type-picker legend {
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.goal-type-picker > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.goal-type-picker button {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, .025);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .18s, background .18s, color .18s, transform .18s;
+}
+
+.goal-type-picker button:hover {
+  border-color: rgba(255, 255, 255, .2);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.goal-type-picker button.is-selected {
+  border-color: rgba(229, 9, 20, .55);
+  color: #fff;
+  background: rgba(229, 9, 20, .1);
+}
+
+.goal-type-picker button > svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--brand-light);
+  font-size: 17px;
+}
+
+.goal-type-picker button span {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.goal-type-picker button strong {
+  font-size: 12px;
+}
+
+.goal-type-picker button small {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.35;
 }
 
 .analysis-page .analysis-modal {
@@ -1723,6 +1801,10 @@
 }
 
 @media (max-width: 760px) {
+  .goal-type-picker > div {
+    grid-template-columns: 1fr;
+  }
+
   .goals-heading {
     align-items: stretch;
     flex-direction: column;

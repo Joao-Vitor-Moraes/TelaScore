@@ -4,12 +4,26 @@ import { metaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import {
   FiActivity, FiAward, FiCalendar, FiCheckCircle, FiClock, FiMinus,
-  FiEdit2, FiPlus, FiTarget, FiTrash2, FiTrendingUp, FiUsers, FiX,
+  FiEdit2, FiFilm, FiFileText, FiPlus, FiStar, FiTarget, FiTrash2, FiTrendingUp, FiUsers, FiX,
 } from 'react-icons/fi';
 import './analise.css';
 
-const FORM_INICIAL = { titulo: '', quantidadeAlvo: 10, dataPrazo: '' };
+const TIPOS_META = {
+  FILMES: { titulo: 'Filmes assistidos', descricao: 'Crie um ritmo para descobrir e assistir filmes.', unidade: 'filmes', exemplo: 'Ex.: Assistir 12 filmes neste mês', icone: FiFilm },
+  AVALIACOES: { titulo: 'Avaliações', descricao: 'Transforme o que assistiu em notas e opiniões.', unidade: 'avaliações', exemplo: 'Ex.: Avaliar 8 filmes que assisti', icone: FiStar },
+  RESENHAS: { titulo: 'Resenhas', descricao: 'Desenvolva o hábito de escrever sobre cinema.', unidade: 'resenhas', exemplo: 'Ex.: Escrever 4 resenhas completas', icone: FiFileText },
+};
+
+const FORM_INICIAL = { titulo: '', quantidadeAlvo: 10, dataPrazo: '', tipo: 'FILMES' };
 const FORM_SISTEMA_INICIAL = { titulo: '', quantidadeAlvo: 10, duracaoDias: 30 };
+
+function inferirTipoMeta(meta) {
+  if (meta.tipo && TIPOS_META[meta.tipo]) return meta.tipo;
+  const texto = (meta.titulo || '').toLowerCase();
+  if (texto.includes('resenha') || texto.includes('escrever')) return 'RESENHAS';
+  if (texto.includes('avalia') || texto.includes('nota')) return 'AVALIACOES';
+  return 'FILMES';
+}
 
 function formatarData(data) {
   if (!data) return 'Sem prazo';
@@ -104,7 +118,9 @@ export default function Metas() {
     setSalvando(true);
     try {
       await metaService.criar({
-        ...form,
+        titulo: form.titulo,
+        dataPrazo: form.dataPrazo,
+        tipo: form.tipo,
         quantidadeAlvo: Number(form.quantidadeAlvo),
       });
       setForm(FORM_INICIAL);
@@ -280,10 +296,12 @@ export default function Metas() {
           {metas.map(meta => {
             const percentual = Math.min(100, Math.round(meta.quantidadeAtual * 100 / meta.quantidadeAlvo));
             const encerrada = meta.status === 'FALHADA' || meta.status === 'CANCELADA';
+            const tipoMeta = TIPOS_META[inferirTipoMeta(meta)];
+            const IconeTipo = tipoMeta.icone;
             return (
               <article key={meta.id} className={`goal-card goal-card--${meta.status.toLowerCase()}`}>
                 <div className="goal-card__top">
-                  <div className="goal-card__icon"><FiTarget /></div>
+                  <div className="goal-card__icon"><IconeTipo /></div>
                   <div className="goal-card__top-right">
                     {!meta.metaDoSistema && (
                       <div className="goal-card__manage">
@@ -302,9 +320,10 @@ export default function Metas() {
                 </div>
 
                 <div className="goal-card__content">
+                  <span className="goal-card__type">{tipoMeta.titulo}</span>
                   <h2>{meta.titulo}</h2>
                   <div className="goal-card__progress-label">
-                    <span><strong>{meta.quantidadeAtual}</strong> de {meta.quantidadeAlvo} filmes</span>
+                    <span><strong>{meta.quantidadeAtual}</strong> de {meta.quantidadeAlvo} {tipoMeta.unidade}</span>
                     <strong>{percentual}%</strong>
                   </div>
                   <div className="goal-card__track" aria-label={`${percentual}% concluído`}>
@@ -348,13 +367,28 @@ export default function Metas() {
               <div><p className="page-eyebrow">Novo desafio</p><h2 id="nova-meta-titulo">Criar uma meta</h2></div>
             </div>
             <form onSubmit={criar} className="analysis-modal__form">
+              <fieldset className="goal-type-picker">
+                <legend>O que você quer transformar em hábito?</legend>
+                <div>
+                  {Object.entries(TIPOS_META).map(([chave, tipo]) => {
+                    const Icone = tipo.icone;
+                    return (
+                      <button key={chave} type="button" className={form.tipo === chave ? 'is-selected' : ''}
+                        onClick={() => setForm({ ...form, tipo: chave })}>
+                        <Icone />
+                        <span><strong>{tipo.titulo}</strong><small>{tipo.descricao}</small></span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </fieldset>
               <label>
                 <span>Nome da meta</span>
-                <input placeholder="Ex.: Assistir 20 filmes brasileiros" value={form.titulo}
+                <input placeholder={TIPOS_META[form.tipo].exemplo} value={form.titulo}
                   onChange={e => setForm({ ...form, titulo: e.target.value })} required autoFocus />
               </label>
               <label>
-                <span>Quantidade de filmes</span>
+                <span>Quantidade de {TIPOS_META[form.tipo].unidade}</span>
                 <div className="number-stepper">
                   <button type="button" onClick={() => ajustarAlvo(-1)} disabled={Number(form.quantidadeAlvo) <= 1}><FiMinus /></button>
                   <input type="number" min="1" value={form.quantidadeAlvo}

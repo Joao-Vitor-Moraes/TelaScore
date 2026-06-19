@@ -17,10 +17,15 @@ public class Meta {
 	private int quantidadeAtual;
 	private LocalDate dataPrazo;
 	private StatusMeta status;
+	private TipoMeta tipo;
 	private Integer metaSistemaId;
 	private boolean pontosConcedidos;
 
 	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, LocalDate dataPrazo) {
+		this(id, usuarioId, titulo, quantidadeAlvo, dataPrazo, TipoMeta.FILMES);
+	}
+
+	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, LocalDate dataPrazo, TipoMeta tipo) {
 		notNull(id, "O id da meta não pode ser nulo");
 		notNull(usuarioId, "O id do utilizador não pode ser nulo");
 		notNull(dataPrazo, "A data de prazo não pode ser nula");
@@ -33,6 +38,7 @@ public class Meta {
 		this.dataPrazo = dataPrazo;
 		this.quantidadeAtual = 0;
 		this.status = StatusMeta.EM_ANDAMENTO;
+		this.tipo = tipo == null ? TipoMeta.FILMES : tipo;
 		this.metaSistemaId = null;
 		this.pontosConcedidos = false;
 
@@ -45,6 +51,7 @@ public class Meta {
 	public int getQuantidadeAtual() { return quantidadeAtual; }
 	public LocalDate getDataPrazo() { return dataPrazo; }
 	public StatusMeta getStatus() { return status; }
+	public TipoMeta getTipo() { return tipo; }
 	public Integer getMetaSistemaId() { return metaSistemaId; }
 	public boolean isPontosConcedidos() { return pontosConcedidos; }
 
@@ -145,6 +152,12 @@ public class Meta {
 	}
 	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, int quantidadeAtual,
 			LocalDate dataPrazo, StatusMeta status, Integer metaSistemaId, boolean pontosConcedidos) {
+		this(id, usuarioId, titulo, quantidadeAlvo, quantidadeAtual, dataPrazo, status,
+				metaSistemaId, pontosConcedidos, TipoMeta.FILMES);
+	}
+
+	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, int quantidadeAtual,
+			LocalDate dataPrazo, StatusMeta status, Integer metaSistemaId, boolean pontosConcedidos, TipoMeta tipo) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.titulo = titulo;
@@ -152,6 +165,7 @@ public class Meta {
         this.quantidadeAtual = quantidadeAtual;
         this.dataPrazo = dataPrazo;
         this.status = status;
+        this.tipo = tipo == null ? TipoMeta.FILMES : tipo;
         this.metaSistemaId = metaSistemaId;
         this.pontosConcedidos = pontosConcedidos;
     }

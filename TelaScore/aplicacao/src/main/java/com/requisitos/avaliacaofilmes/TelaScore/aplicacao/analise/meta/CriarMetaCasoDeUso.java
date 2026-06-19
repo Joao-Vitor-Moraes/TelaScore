@@ -24,7 +24,8 @@ public class CriarMetaCasoDeUso {
 		MetaId novaMetaId = new MetaId(geradorId.gerarProximoIdMeta());
 		
 		// 3. Cria a Meta (As regras de negócio, como "prazo não pode ser no passado", são garantidas aqui)
-		Meta meta = new Meta(novaMetaId, usuarioId, comando.titulo(), comando.quantidadeAlvo(), comando.dataPrazo());
+		Meta meta = new Meta(novaMetaId, usuarioId, comando.titulo(), comando.quantidadeAlvo(),
+				comando.dataPrazo(), comando.tipo());
 		
 		// 4. Salva no banco de dados
 		metaRepositorio.salvar(meta);
