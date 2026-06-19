@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiBell, FiChevronDown, FiFilm, FiLogOut, FiMenu, FiShield, FiUser, FiX } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
+import { usuarioService } from '../services/api';
 
 const links = [
   { label: 'Filmes', path: '/filmes' },
@@ -16,9 +17,29 @@ const links = [
 export default function Navbar() {
   const [perfilAberto, setPerfilAberto] = useState(false);
   const [mobileAberto, setMobileAberto] = useState(false);
+  const [usuario, setUsuario] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { sessao, logout } = useAuth();
+
+  useEffect(() => {
+    let ativo = true;
+    async function carregarPerfil() {
+      try {
+        const dados = await usuarioService.meuUsuario();
+        if (ativo) setUsuario(dados);
+      } catch {
+        if (ativo) setUsuario(null);
+      }
+    }
+
+    carregarPerfil();
+    window.addEventListener('telascore:perfil-atualizado', carregarPerfil);
+    return () => {
+      ativo = false;
+      window.removeEventListener('telascore:perfil-atualizado', carregarPerfil);
+    };
+  }, [sessao?.id]);
 
   const navegar = path => {
     navigate(path);
@@ -32,6 +53,9 @@ export default function Navbar() {
   }
 
   const rotaSolicitacoes = sessao?.papel === 'ADMIN' ? '/admin/solicitacoes' : '/solicitacoes';
+  const nomeExibicao = usuario?.nome || (sessao?.papel === 'ADMIN' ? 'Administrador' : 'Usuário');
+  const detalheExibicao = usuario?.apelido ? `@${usuario.apelido.replace(/^@/, '')}` : usuario?.papel;
+  const inicial = (usuario?.apelido || usuario?.nome || '?').trim().charAt(0).toUpperCase();
 
   return (
     <header className="site-header">
@@ -73,18 +97,20 @@ export default function Navbar() {
           <button className="header-icon" aria-label="Notificações"><FiBell size={18} /></button>
           <div className="profile-wrap">
             <button className="profile-trigger" onClick={() => setPerfilAberto(v => !v)}>
-              <span className="profile-avatar">{sessao?.papel === 'ADMIN' ? 'A' : 'C'}</span>
+              <span className="profile-avatar">
+                {usuario?.avatarUrl ? <img src={usuario.avatarUrl} alt="" /> : inicial}
+              </span>
               <span className="profile-meta">
-                <strong>{sessao?.papel === 'ADMIN' ? 'Administrador' : 'Cinéfilo'}</strong>
-                <span>Conta #{sessao?.id}</span>
+                <strong>{nomeExibicao}</strong>
+                {detalheExibicao && <span>{detalheExibicao}</span>}
               </span>
               <FiChevronDown size={14} />
             </button>
             {perfilAberto && (
               <div className="header-dropdown">
                 <div className="dropdown-user">
-                  <strong>{sessao?.papel === 'ADMIN' ? 'Painel administrativo' : 'Sua experiência'}</strong>
-                  <span>{sessao?.papel}</span>
+                  <strong>{nomeExibicao}</strong>
+                  {detalheExibicao && <span>{detalheExibicao}</span>}
                 </div>
                 <button className="dropdown-action" onClick={() => navegar('/meuusuario')}><FiUser /> Meu perfil</button>
                 {sessao?.papel === 'ADMIN' && (

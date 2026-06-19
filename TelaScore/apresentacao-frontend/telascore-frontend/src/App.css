@@ -134,6 +134,14 @@
   background: linear-gradient(145deg, #555565, #24242d);
   font-size: 12px;
   font-weight: 800;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .profile-meta {
@@ -144,7 +152,11 @@
 }
 
 .profile-meta strong {
+  max-width: 150px;
+  overflow: hidden;
   font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-meta span {

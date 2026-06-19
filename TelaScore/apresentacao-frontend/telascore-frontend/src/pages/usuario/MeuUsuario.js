@@ -112,6 +112,7 @@ export default function MeuUsuario() {
             setUsuario(usuarioAtualizado);
             setForm(formDeUsuario(usuarioAtualizado));
             setEditando(false);
+            window.dispatchEvent(new Event('telascore:perfil-atualizado'));
         } catch {
             setErroAcao('Erro ao salvar seu usuário.');
         } finally {
