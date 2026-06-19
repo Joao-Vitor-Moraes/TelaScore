@@ -143,6 +143,23 @@ public class RecomendacaoRepositorioImpl implements RecomendacaoRepositorio {
         }
     }
 
+    @Override
+    public List<Recomendacao> buscarEnviadasPorUsuario(UsuarioId remetenteId) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT r FROM RecomendacaoEntity r WHERE r.remetenteId = :uid ORDER BY r.dataGeracao DESC",
+                    RecomendacaoEntity.class)
+                    .setParameter("uid", remetenteId.getId())
+                    .getResultList()
+                    .stream()
+                    .map(this::mapearParaDominio)
+                    .toList();
+        } finally {
+            em.close();
+        }
+    }
+
     private Recomendacao mapearParaDominio(RecomendacaoEntity entity) {
         UsuarioId remetenteId = entity.getRemetenteId() != null ? new UsuarioId(entity.getRemetenteId()) : null;
 

@@ -1,11 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Navbar from '../../components/Navbar';
 import { filmeService, recomendacaoService, usuarioService } from '../../services/api';
-import { FiChevronDown, FiFilm, FiHeart, FiSearch, FiSend, FiUser, FiX, FiZap } from 'react-icons/fi';
+import {
+  FiCheckCircle, FiChevronDown, FiClock, FiFilm, FiHeart,
+  FiInbox, FiSearch, FiSend, FiUser, FiX, FiXCircle, FiZap,
+} from 'react-icons/fi';
 import './analise.css';
 
 export default function Recomendacoes() {
   const [recomendacoes, setRecomendacoes] = useState([]);
+  const [enviadas, setEnviadas] = useState([]);
+  const [aba, setAba] = useState('recebidas');
   const [filmes, setFilmes] = useState([]);
   const [form, setForm] = useState({ destinatarioId: '', conteudoId: '', mensagem: '' });
   const [buscaApelido, setBuscaApelido] = useState('');
@@ -15,9 +20,16 @@ export default function Recomendacoes() {
   const [filmeSelecionado, setFilmeSelecionado] = useState(null);
   const [listaFilmesAberta, setListaFilmesAberta] = useState(false);
   const [erro, setErro] = useState('');
+  const [feedback, setFeedback] = useState('');
 
   const carregar = useCallback(() => {
-    recomendacaoService.listar().then(setRecomendacoes).catch(e => setErro(e.message));
+    return Promise.all([
+      recomendacaoService.listar(),
+      recomendacaoService.listarEnviadas(),
+    ]).then(([recebidas, recomendacoesEnviadas]) => {
+      setRecomendacoes(recebidas);
+      setEnviadas(recomendacoesEnviadas);
+    }).catch(e => setErro(e.message));
   }, []);
 
   useEffect(() => {
@@ -38,6 +50,12 @@ export default function Recomendacoes() {
     return () => clearTimeout(timeout);
   }, [buscaApelido, destinatario]);
 
+  useEffect(() => {
+    if (!feedback) return undefined;
+    const timeout = setTimeout(() => setFeedback(''), 4200);
+    return () => clearTimeout(timeout);
+  }, [feedback]);
+
   const nomesFilmes = useMemo(
     () => Object.fromEntries(filmes.map(f => [String(f.id), f.titulo])),
     [filmes],
@@ -56,6 +74,7 @@ export default function Recomendacoes() {
     }
     try {
       setErro('');
+      setFeedback('');
       await recomendacaoService.enviar({
         destinatarioId: Number(form.destinatarioId),
         conteudoId: String(form.conteudoId),
@@ -69,7 +88,8 @@ export default function Recomendacoes() {
       setBuscaFilme('');
       setFilmeSelecionado(null);
       setListaFilmesAberta(false);
-      alert('Recomendação enviada.');
+      await carregar();
+      setFeedback(`Recomendação enviada para @${destinatario.apelido}.`);
     } catch (e) {
       setErro(e.message);
     }
@@ -109,6 +129,21 @@ export default function Recomendacoes() {
     } catch (e) {
       setErro(e.message);
     }
+  }
+
+  function textoStatus(status) {
+    return {
+      PENDENTE: 'Aguardando resposta',
+      VISUALIZADA: 'Visualizada',
+      ACEITA: 'Aceita',
+      REJEITADA: 'Rejeitada',
+    }[status] || status.replaceAll('_', ' ');
+  }
+
+  function iconeStatus(status) {
+    if (status === 'ACEITA') return <FiCheckCircle />;
+    if (status === 'REJEITADA') return <FiXCircle />;
+    return <FiClock />;
   }
 
   return (
@@ -206,16 +241,37 @@ export default function Recomendacoes() {
         </form>
 
         {erro && <div className="analysis-error">{erro}</div>}
+        {feedback && (
+          <div className="recommendation-feedback" role="status">
+            <span><FiCheckCircle /></span>
+            <div>
+              <strong>Recomendação enviada!</strong>
+              <p>{feedback}</p>
+            </div>
+            <button type="button" onClick={() => setFeedback('')} aria-label="Fechar mensagem"><FiX /></button>
+          </div>
+        )}
         <section className="recommendations-inbox">
           <div className="recommendations-inbox__heading">
             <div>
-              <p className="page-eyebrow">Sua caixa de entrada</p>
-              <h2>Recomendações recebidas</h2>
+              <p className="page-eyebrow">Cinema compartilhado</p>
+              <h2>{aba === 'recebidas' ? 'Recomendações recebidas' : 'Recomendações enviadas'}</h2>
             </div>
-            <span>{recomendacoes.length}</span>
+            <span>{aba === 'recebidas' ? recomendacoes.length : enviadas.length}</span>
+          </div>
+          <div className="recommendations-tabs" role="tablist">
+            <button type="button" className={aba === 'recebidas' ? 'is-active' : ''} onClick={() => setAba('recebidas')}>
+              <FiInbox /> Recebidas
+            </button>
+            <button type="button" className={aba === 'enviadas' ? 'is-active' : ''} onClick={() => setAba('enviadas')}>
+              <FiSend /> Enviadas
+              {!!enviadas.filter(r => r.status === 'ACEITA' || r.status === 'REJEITADA').length && (
+                <span>{enviadas.filter(r => r.status === 'ACEITA' || r.status === 'REJEITADA').length}</span>
+              )}
+            </button>
           </div>
           <div className="recommendations-list">
-          {recomendacoes.map(r => (
+          {aba === 'recebidas' && recomendacoes.map(r => (
             <article key={r.id} className="recommendation-card">
               <FiHeart className="recommendation-card__icon" />
               <div>
@@ -224,7 +280,7 @@ export default function Recomendacoes() {
                 {r.mensagem && <p>{r.mensagem}</p>}
               </div>
               <div className="recommendation-card__side">
-                <span className={`recommendation-status recommendation-status--${r.status.toLowerCase()}`}>{r.status.replaceAll('_', ' ')}</span>
+                <span className={`recommendation-status recommendation-status--${r.status.toLowerCase()}`}>{textoStatus(r.status)}</span>
                 {(r.status === 'PENDENTE' || r.status === 'VISUALIZADA') && (
                   <div className="recommendation-card__actions">
                     <button className="recommendation-accept" onClick={() => responder(r.id, true)}>Aceitar</button>
@@ -234,7 +290,30 @@ export default function Recomendacoes() {
               </div>
             </article>
           ))}
-          {!recomendacoes.length && <div className="recommendations-empty"><FiHeart /><p>Nenhuma recomendação recebida ainda.</p><span>Quando alguém separar um filme para você, ele aparecerá aqui.</span></div>}
+          {aba === 'enviadas' && enviadas.map(r => (
+            <article key={r.id} className={`recommendation-card recommendation-card--sent recommendation-card--${r.status.toLowerCase()}`}>
+              <div className="recommendation-card__result-icon">{iconeStatus(r.status)}</div>
+              <div>
+                <h3>{nomesFilmes[r.conteudoId] || `${r.tipoConteudo} #${r.conteudoId}`}</h3>
+                <span className="recommendation-card__sender">Enviada para @{r.destinatarioApelido}</span>
+                {r.mensagem && <p>{r.mensagem}</p>}
+              </div>
+              <div className="recommendation-card__side">
+                <span className={`recommendation-status recommendation-status--${r.status.toLowerCase()}`}>
+                  {textoStatus(r.status)}
+                </span>
+                {(r.status === 'ACEITA' || r.status === 'REJEITADA') && (
+                  <small className="recommendation-result-text">
+                    {r.status === 'ACEITA'
+                      ? `@${r.destinatarioApelido} aceitou sua indicação.`
+                      : `@${r.destinatarioApelido} não aceitou desta vez.`}
+                  </small>
+                )}
+              </div>
+            </article>
+          ))}
+          {aba === 'recebidas' && !recomendacoes.length && <div className="recommendations-empty"><FiHeart /><p>Nenhuma recomendação recebida ainda.</p><span>Quando alguém separar um filme para você, ele aparecerá aqui.</span></div>}
+          {aba === 'enviadas' && !enviadas.length && <div className="recommendations-empty"><FiSend /><p>Nenhuma recomendação enviada ainda.</p><span>As indicações enviadas aparecerão aqui com a resposta da pessoa.</span></div>}
           </div>
         </section>
       </main>

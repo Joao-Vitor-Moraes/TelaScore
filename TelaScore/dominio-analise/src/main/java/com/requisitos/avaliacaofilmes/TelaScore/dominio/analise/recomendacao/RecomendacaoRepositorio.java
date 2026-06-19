@@ -10,4 +10,5 @@ public interface RecomendacaoRepositorio {
     List<Recomendacao> buscarTopRecomendacoesPorUsuario(UsuarioId usuarioId, int limite);
     List<Recomendacao> buscarRecomendacoesSociaisPorUsuario(UsuarioId usuarioId);
     List<Recomendacao> buscarPendentesPorUsuario(UsuarioId usuarioId);
+    List<Recomendacao> buscarEnviadasPorUsuario(UsuarioId remetenteId);
 }

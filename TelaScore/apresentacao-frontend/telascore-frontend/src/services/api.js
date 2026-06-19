@@ -123,6 +123,7 @@ export const metaService = {
 
 export const recomendacaoService = {
   listar: () => request('GET', '/api/recomendacoes'),
+  listarEnviadas: () => request('GET', '/api/recomendacoes/enviadas'),
   enviar: (dados) => request('POST', '/api/recomendacoes', dados),
   responder: (recomendacaoId, aceitar) => request('PUT', '/api/recomendacoes/reagir', { recomendacaoId, aceitar }),
 };
