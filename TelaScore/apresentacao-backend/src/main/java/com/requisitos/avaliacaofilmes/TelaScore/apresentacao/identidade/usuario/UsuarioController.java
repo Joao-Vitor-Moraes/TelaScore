@@ -326,12 +326,13 @@ public class UsuarioController {
     public static record ErroLoginResponse(String mensagem) {
     }
 
-    public static record PerfilPublicoResponse(int id, String nome, String apelido, String biografia, String avatarUrl) {
+    public static record PerfilPublicoResponse(int id, String nome, String apelido, String papel, String biografia, String avatarUrl) {
         static PerfilPublicoResponse de(Usuario usuario) {
             return new PerfilPublicoResponse(
                     usuario.getId().getId(),
                     usuario.getNome(),
                     usuario.getApelido().getValor(),
+                    usuario.getPapel().name(),
                     usuario.getBiografia(),
                     usuario.getAvatarUrl());
         }

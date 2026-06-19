@@ -78,9 +78,10 @@ export default function Filmes() {
 
   useEffect(() => {
     if (!trailerKey || !trailerPronto) return undefined;
-    const inicio = window.setTimeout(() => setMostrarTrailer(true), 1800);
+    const inicio = window.setTimeout(() => setMostrarTrailer(true), 3200);
     return () => window.clearTimeout(inicio);
   }, [trailerKey, trailerPronto]);
+
   const filtrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     return filmes.filter(f =>
@@ -146,7 +147,7 @@ export default function Filmes() {
               {trailerKey && (
                 <iframe
                   className="catalog-hero__video"
-                  src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&mute=1&controls=0&loop=1&playlist=${trailerKey}&playsinline=1&rel=0&modestbranding=1&disablekb=1&start=4`}
+                  src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&mute=1&controls=0&loop=1&playlist=${trailerKey}&playsinline=1&rel=0&modestbranding=1&disablekb=1&fs=0&iv_load_policy=3&enablejsapi=1&start=4`}
                   title="Trailer de O Castelo Animado"
                   allow="autoplay; encrypted-media; picture-in-picture"
                   onLoad={() => setTrailerPronto(true)}

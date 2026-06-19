@@ -2,11 +2,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     FiUsers, FiPlus, FiSearch, FiMessageSquare, FiX, FiLogIn,
-    FiLogOut, FiSend, FiTrash2, FiShield, FiUserX, FiUserCheck
+    FiLogOut, FiSend, FiTrash2, FiShield, FiUserX, FiUserCheck, FiUser
 } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
 import { comunidadeService, usuarioService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import './comunidades.css';
 
 export default function Comunidades() {
     const { sessao } = useAuth();
@@ -22,6 +23,7 @@ export default function Comunidades() {
     const [mensagens, setMensagens] = useState([]);
     const [novaMensagem, setNovaMensagem] = useState('');
     const [membros, setMembros] = useState([]);
+    const [menuPerfilAberto, setMenuPerfilAberto] = useState('');
 
     const [modalCriarAberto, setModalCriarAberto] = useState(false);
     const [formCriar, setFormCriar] = useState({ nome: '', descricao: '' });
@@ -350,8 +352,26 @@ export default function Comunidades() {
                                             ? meuPerfil.apelido
                                             : usuariosMap[mIdStr] || m.usuarioApelido || m.apelido || `User #${mIdStr}`;
                                         return (
-                                            <div key={m.id} style={{ alignSelf: deSessao ? 'flex-end' : 'flex-start', background: deSessao ? 'rgba(229, 9, 20, 0.15)' : '#202025', padding: '10px 14px', borderRadius: '12px', maxWidth: '85%' }}>
-                                                <small style={{ color: 'var(--brand-light)', fontWeight: '800', display: 'block', marginBottom: '3px' }}>@{apelidoExibicao}</small>
+                                            <div key={m.id} style={{ position: 'relative', alignSelf: deSessao ? 'flex-end' : 'flex-start', background: deSessao ? 'rgba(229, 9, 20, 0.15)' : '#202025', padding: '10px 14px', borderRadius: '12px', maxWidth: '85%' }}>
+                                                <button
+                                                    type="button"
+                                                    className="community-profile-link"
+                                                    title={`Ver opções de @${apelidoExibicao}`}
+                                                    onClick={() => setMenuPerfilAberto(atual => atual === `mensagem-${m.id}` ? '' : `mensagem-${m.id}`)}
+                                                >
+                                                    @{apelidoExibicao}
+                                                </button>
+                                                {menuPerfilAberto === `mensagem-${m.id}` && (
+                                                    <div className={`community-profile-menu ${deSessao ? 'is-right' : ''}`}>
+                                                        <button
+                                                            type="button"
+                                                            className="community-profile-menu__action"
+                                                            onClick={() => navigate(`/usuario/${mIdStr}`)}
+                                                        >
+                                                            <FiUser /> Visualizar perfil
+                                                        </button>
+                                                    </div>
+                                                )}
                                                 <span style={{ fontSize: '13px', wordBreak: 'break-word' }}>{m.conteudo}</span>
                                             </div>
                                         );
@@ -371,12 +391,27 @@ export default function Comunidades() {
                                             : usuariosMap[idMembStr] || m.usuarioId?.apelido || m.usuarioApelido || m.apelido || `User #${idMembStr}`;
                                         const souEu = idMembStr === extrairIdString(sessao.id);
                                         return (
-                                            <div key={idMembStr} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)', padding: '6px 8px', borderRadius: '8px' }}>
+                                            <div key={idMembStr} style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)', padding: '6px 8px', borderRadius: '8px' }}>
                                                 <div style={{ display: 'grid', minWidth: 0 }}>
-                                                    <span
-                                                        onClick={() => navigate(`/usuario/${idMembStr}`)}
-                                                        style={{ fontSize: '12px', fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', cursor: 'pointer', color: 'var(--brand-light)' }}
-                                                    >@{apelidoMemb}</span>
+                                                    <button
+                                                        type="button"
+                                                        className="community-profile-link community-profile-link--member"
+                                                        title={`Ver opções de @${apelidoMemb}`}
+                                                        onClick={() => setMenuPerfilAberto(atual => atual === `membro-${idMembStr}` ? '' : `membro-${idMembStr}`)}
+                                                    >
+                                                        @{apelidoMemb}
+                                                    </button>
+                                                    {menuPerfilAberto === `membro-${idMembStr}` && (
+                                                        <div className="community-profile-menu">
+                                                            <button
+                                                                type="button"
+                                                                className="community-profile-menu__action"
+                                                                onClick={() => navigate(`/usuario/${idMembStr}`)}
+                                                            >
+                                                                <FiUser /> Visualizar perfil
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                     <small style={{ fontSize: '9px', color: m.papel === 'CRIADOR' ? '#f6c969' : m.papel === 'MODERADOR' ? '#93c5fd' : 'var(--muted)' }}>{m.papel}</small>
                                                 </div>
                                                 <div style={{ display: 'flex', gap: '4px' }}>

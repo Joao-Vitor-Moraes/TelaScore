@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiUser, FiTarget, FiList, FiArrowLeft, FiCheckCircle, FiClock, FiXCircle } from 'react-icons/fi';
+import { FiTarget, FiList, FiArrowLeft, FiCheckCircle, FiClock, FiXCircle } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
 import { usuarioService, metaService, listaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import './usuario.css';
 
 export default function PerfilMembro() {
     const { usuarioId } = useParams();
@@ -66,6 +67,7 @@ export default function PerfilMembro() {
     }
 
     const inicial = (perfil.apelido || perfil.nome || '?')[0].toUpperCase();
+    const papelDescricao = perfil.papel === 'ADMIN' ? 'Administrador' : 'Cinéfilo';
 
     return (
         <div className="cinema-page">
@@ -89,7 +91,12 @@ export default function PerfilMembro() {
                         {!perfil.avatarUrl && inicial}
                     </div>
                     <div>
-                        <h1 style={{ fontSize: '22px', marginBottom: '4px' }}>{perfil.nome}</h1>
+                        <div className="public-profile-name">
+                            <h1 style={{ fontSize: '22px', marginBottom: '4px' }}>{perfil.nome}</h1>
+                            <span className={`user-badge ${perfil.papel === 'ADMIN' ? 'is-admin' : 'is-user'}`}>
+                                {papelDescricao}
+                            </span>
+                        </div>
                         <p style={{ color: 'var(--brand-light)', fontSize: '14px', marginBottom: '6px' }}>@{perfil.apelido}</p>
                         {perfil.biografia && (
                             <p style={{ color: 'var(--muted)', fontSize: '13px' }}>{perfil.biografia}</p>
@@ -97,7 +104,7 @@ export default function PerfilMembro() {
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'start' }}>
+                <div className="public-profile-grid">
                     {/* Metas */}
                     <section>
                         <div className="goals-heading" style={{ marginBottom: '16px' }}>

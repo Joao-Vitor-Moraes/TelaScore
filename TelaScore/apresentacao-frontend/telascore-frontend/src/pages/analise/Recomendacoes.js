@@ -74,6 +74,10 @@ export default function Recomendacoes() {
     () => Object.fromEntries(filmes.map(f => [String(f.id), f.titulo])),
     [filmes],
   );
+  const filmesPorId = useMemo(
+    () => Object.fromEntries(filmes.map(f => [String(f.id), f])),
+    [filmes],
+  );
   const filmesFiltrados = useMemo(() => {
     const termo = buscaFilme.trim().toLocaleLowerCase('pt-BR');
     if (!termo) return filmes;
@@ -452,7 +456,12 @@ export default function Recomendacoes() {
           <div className="recommendations-list">
           {aba === 'recebidas' && recomendacoesVisiveis.map(r => (
             <article key={r.id} className={`recommendation-card ${r.status === 'PENDENTE' ? 'recommendation-card--unread' : ''}`}>
-              <FiHeart className="recommendation-card__icon" />
+              <div className="recommendation-card__poster">
+                {filmesPorId[String(r.conteudoId)]?.imagemUrl
+                  ? <img src={filmesPorId[String(r.conteudoId)].imagemUrl} alt="" loading="lazy" />
+                  : <span><FiFilm /></span>}
+                <i><FiHeart /></i>
+              </div>
               <div>
                 <h3>{nomesFilmes[r.conteudoId] || `${r.tipoConteudo} #${r.conteudoId}`}</h3>
                 <span className="recommendation-card__sender">{r.remetenteApelido ? `Enviada por @${r.remetenteApelido}` : 'Sugestão da plataforma'}</span>
@@ -522,7 +531,14 @@ export default function Recomendacoes() {
           ))}
           {aba === 'enviadas' && recomendacoesVisiveis.map(r => (
             <article key={r.id} className={`recommendation-card recommendation-card--sent recommendation-card--${r.status.toLowerCase()}`}>
-              <div className="recommendation-card__result-icon">{iconeStatus(r.status)}</div>
+              <div className="recommendation-card__poster">
+                {filmesPorId[String(r.conteudoId)]?.imagemUrl
+                  ? <img src={filmesPorId[String(r.conteudoId)].imagemUrl} alt="" loading="lazy" />
+                  : <span><FiFilm /></span>}
+                <i className={`recommendation-card__poster-status recommendation-card__poster-status--${r.status.toLowerCase()}`}>
+                  {iconeStatus(r.status)}
+                </i>
+              </div>
               <div>
                 <h3>{nomesFilmes[r.conteudoId] || `${r.tipoConteudo} #${r.conteudoId}`}</h3>
                 <span className="recommendation-card__sender">Enviada para @{r.destinatarioApelido}</span>
