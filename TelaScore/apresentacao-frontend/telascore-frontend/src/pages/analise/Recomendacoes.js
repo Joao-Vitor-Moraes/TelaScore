@@ -257,16 +257,18 @@ export default function Recomendacoes() {
               <p className="page-eyebrow">Cinema compartilhado</p>
               <h2>{aba === 'recebidas' ? 'Recomendações recebidas' : 'Recomendações enviadas'}</h2>
             </div>
-            <span>{aba === 'recebidas' ? recomendacoes.length : enviadas.length}</span>
           </div>
           <div className="recommendations-tabs" role="tablist">
             <button type="button" className={aba === 'recebidas' ? 'is-active' : ''} onClick={() => setAba('recebidas')}>
               <FiInbox /> Recebidas
+              {!!recomendacoes.length && (
+                <span>{recomendacoes.length}</span>
+              )}
             </button>
             <button type="button" className={aba === 'enviadas' ? 'is-active' : ''} onClick={() => setAba('enviadas')}>
               <FiSend /> Enviadas
-              {!!enviadas.filter(r => r.status === 'ACEITA' || r.status === 'REJEITADA').length && (
-                <span>{enviadas.filter(r => r.status === 'ACEITA' || r.status === 'REJEITADA').length}</span>
+              {!!enviadas.length && (
+                <span>{enviadas.length}</span>
               )}
             </button>
           </div>
