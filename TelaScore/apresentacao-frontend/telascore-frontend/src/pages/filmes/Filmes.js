@@ -38,12 +38,17 @@ const TITULOS_FORA_DA_VITRINE = new Set([
   'O Espetacular Homem-Aranha 2', 'Homem-Aranha: Longe de Casa',
 ]);
 
+const TRAILER_CASTELO_ANIMADO = 'ARCQf2CEr8k';
+
 export default function Filmes() {
   const { sessao } = useAuth();
   const isAdmin = sessao.papel === 'ADMIN';
   const [filmes, setFilmes] = useState([]);
   const [erro, setErro] = useState(null);
   const [busca, setBusca] = useState('');
+  const [trailerKey, setTrailerKey] = useState(null);
+  const [trailerPronto, setTrailerPronto] = useState(false);
+  const [mostrarTrailer, setMostrarTrailer] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,6 +66,20 @@ export default function Filmes() {
     || destaque?.titulo === "Howl's Moving Castle"
     ? '/howls-moving-castle-hero.jpg'
     : destaque?.imagemUrl;
+
+  useEffect(() => {
+    const ehCastelo = destaque
+      && ['O Castelo Animado', "Howl's Moving Castle"].includes(destaque.titulo);
+    setTrailerKey(ehCastelo ? TRAILER_CASTELO_ANIMADO : null);
+    setTrailerPronto(false);
+    setMostrarTrailer(false);
+  }, [destaque]);
+
+  useEffect(() => {
+    if (!trailerKey || !trailerPronto) return undefined;
+    const inicio = window.setTimeout(() => setMostrarTrailer(true), 1800);
+    return () => window.clearTimeout(inicio);
+  }, [trailerKey, trailerPronto]);
   const filtrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     return filmes.filter(f =>
@@ -106,8 +125,18 @@ export default function Filmes() {
       {destaque && (
         <section className="catalog-hero">
           {imagemDestaque && (
-            <div className="catalog-hero__art" aria-hidden="true">
-              <img src={imagemDestaque} alt="" />
+            <div className={`catalog-hero__art ${mostrarTrailer ? 'is-playing' : ''}`} aria-hidden="true">
+              <img className="catalog-hero__image" src={imagemDestaque} alt="" />
+              {trailerKey && (
+                <iframe
+                  className="catalog-hero__video"
+                  src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&mute=1&controls=0&loop=1&playlist=${trailerKey}&playsinline=1&rel=0&modestbranding=1&disablekb=1&start=4`}
+                  title="Trailer de O Castelo Animado"
+                  allow="autoplay; encrypted-media; picture-in-picture"
+                  onLoad={() => setTrailerPronto(true)}
+                  tabIndex="-1"
+                />
+              )}
             </div>
           )}
           <div className="catalog-hero__content">

@@ -23,23 +23,49 @@
 
 .catalog-hero__art {
   position: absolute;
-  inset: 18px max(4vw, calc((100vw - 1340px) / 2)) 40px auto;
+  inset: 0;
   z-index: -3;
-  width: min(46vw, 530px);
   overflow: hidden;
-  border-radius: 24px;
-  opacity: .82;
+  opacity: .88;
   filter: saturate(.9);
-  box-shadow: 0 20px 80px rgba(0, 0, 0, .55);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 24%, #000 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 24%, #000 100%);
 }
 
-.catalog-hero__art img {
+.catalog-hero__image,
+.catalog-hero__video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
+  transition: opacity 1.15s ease, transform 7s ease;
+}
+
+.catalog-hero__image {
+  opacity: 1;
+  transform: scale(1.01);
+}
+
+.catalog-hero__video {
+  width: 100%;
+  height: 56.25vw;
+  min-width: 177.78vh;
+  min-height: 100%;
+  top: 50%;
+  left: 50%;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(1.12);
+}
+
+.catalog-hero__art.is-playing .catalog-hero__image {
+  opacity: 0;
+  transform: scale(1.06);
+}
+
+.catalog-hero__art.is-playing .catalog-hero__video {
+  opacity: 1;
 }
 
 .catalog-hero::after {
@@ -387,6 +413,10 @@
 
   .catalog-hero__art img {
     object-fit: cover;
+  }
+
+  .catalog-hero__video {
+    display: none;
   }
 
   .catalog-toolbar, .catalog-toolbar__actions {
