@@ -17,6 +17,23 @@ import jakarta.persistence.EntityTransaction;
 public class MetaRepositorioImpl implements MetaRepositorio {
 
     @Override
+    public void remover(MetaId id) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            MetaEntity entity = em.find(MetaEntity.class, id.getId());
+            if (entity != null) em.remove(entity);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw new RuntimeException("Erro ao remover meta do banco.", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public void salvar(Meta meta) {
         EntityManager em = ConexaoBanco.obterEntityManager();
         EntityTransaction tx = em.getTransaction();

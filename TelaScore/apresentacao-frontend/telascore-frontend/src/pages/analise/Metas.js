@@ -4,7 +4,7 @@ import { metaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import {
   FiActivity, FiAward, FiCalendar, FiCheckCircle, FiClock, FiMinus,
-  FiPlus, FiTarget, FiTrendingUp, FiUsers, FiX,
+  FiEdit2, FiPlus, FiTarget, FiTrash2, FiTrendingUp, FiUsers, FiX,
 } from 'react-icons/fi';
 import './analise.css';
 
@@ -47,6 +47,9 @@ export default function Metas() {
   const [modalAberto, setModalAberto] = useState(false);
   const [modalSistemaAberto, setModalSistemaAberto] = useState(false);
   const [metaPrazo, setMetaPrazo] = useState(null);
+  const [metaEditando, setMetaEditando] = useState(null);
+  const [metaExcluindo, setMetaExcluindo] = useState(null);
+  const [formEdicao, setFormEdicao] = useState(FORM_INICIAL);
   const [novoPrazo, setNovoPrazo] = useState('');
   const [totalPontos, setTotalPontos] = useState(0);
   const [feedback, setFeedback] = useState('');
@@ -66,17 +69,19 @@ export default function Metas() {
   useEffect(() => { carregar(); }, [carregar]);
 
   useEffect(() => {
-    if (!modalAberto && !modalSistemaAberto && !metaPrazo) return undefined;
+    if (!modalAberto && !modalSistemaAberto && !metaPrazo && !metaEditando && !metaExcluindo) return undefined;
     const fecharComEsc = (e) => {
       if (e.key === 'Escape') {
         setModalAberto(false);
         setModalSistemaAberto(false);
         setMetaPrazo(null);
+        setMetaEditando(null);
+        setMetaExcluindo(null);
       }
     };
     document.addEventListener('keydown', fecharComEsc);
     return () => document.removeEventListener('keydown', fecharComEsc);
-  }, [modalAberto, modalSistemaAberto, metaPrazo]);
+  }, [modalAberto, modalSistemaAberto, metaPrazo, metaEditando, metaExcluindo]);
 
   useEffect(() => {
     if (!feedback) return undefined;
@@ -169,6 +174,50 @@ export default function Metas() {
     }
   }
 
+  function abrirEdicao(meta) {
+    setMetaEditando(meta);
+    setFormEdicao({
+      titulo: meta.titulo,
+      quantidadeAlvo: meta.quantidadeAlvo,
+      dataPrazo: meta.dataPrazo,
+    });
+    setErro('');
+  }
+
+  async function editarMeta(e) {
+    e.preventDefault();
+    setSalvando(true);
+    setErro('');
+    try {
+      await metaService.editar(metaEditando.id, {
+        ...formEdicao,
+        quantidadeAlvo: Number(formEdicao.quantidadeAlvo),
+      });
+      setMetaEditando(null);
+      setFeedback('Meta atualizada com sucesso.');
+      await carregar();
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setSalvando(false);
+    }
+  }
+
+  async function excluirMeta() {
+    setSalvando(true);
+    setErro('');
+    try {
+      await metaService.remover(metaExcluindo.id);
+      setMetaExcluindo(null);
+      setFeedback('Meta excluída.');
+      await carregar();
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setSalvando(false);
+    }
+  }
+
   function ajustarAlvo(delta) {
     setForm(atual => ({
       ...atual,
@@ -235,11 +284,20 @@ export default function Metas() {
               <article key={meta.id} className={`goal-card goal-card--${meta.status.toLowerCase()}`}>
                 <div className="goal-card__top">
                   <div className="goal-card__icon"><FiTarget /></div>
-                  <div className="goal-card__badges">
-                    {meta.metaDoSistema && <span className="system-goal-pill"><FiUsers /> Meta do sistema</span>}
-                    <span className={`status-pill status-pill--${meta.status.toLowerCase()}`}>
-                      {meta.statusDescricao || meta.status.replaceAll('_', ' ').toLowerCase()}
-                    </span>
+                  <div className="goal-card__top-right">
+                    {!meta.metaDoSistema && (
+                      <div className="goal-card__manage">
+                        <button onClick={() => abrirEdicao(meta)} title="Editar meta" aria-label="Editar meta"><FiEdit2 /></button>
+                        <button className="is-danger" onClick={() => setMetaExcluindo(meta)}
+                          title="Excluir meta" aria-label="Excluir meta"><FiTrash2 /></button>
+                      </div>
+                    )}
+                    <div className="goal-card__badges">
+                      {meta.metaDoSistema && <span className="system-goal-pill"><FiUsers /> Meta do sistema</span>}
+                      <span className={`status-pill status-pill--${meta.status.toLowerCase()}`}>
+                        {meta.statusDescricao || meta.status.replaceAll('_', ' ').toLowerCase()}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -388,6 +446,64 @@ export default function Metas() {
                 <button className="btn-primary" disabled={salvando}>{salvando ? 'Salvando...' : 'Salvar prazo'}</button>
               </div>
             </form>
+          </section>
+        </div>
+      )}
+
+      {metaEditando && (
+        <div className="analysis-modal-backdrop" onMouseDown={() => setMetaEditando(null)}>
+          <section className="analysis-modal" role="dialog" aria-modal="true" aria-labelledby="editar-meta-titulo"
+            onMouseDown={e => e.stopPropagation()}>
+            <button className="analysis-modal__close" onClick={() => setMetaEditando(null)} aria-label="Fechar"><FiX /></button>
+            <div className="analysis-modal__header">
+              <span><FiEdit2 /></span>
+              <div><p className="page-eyebrow">Ajustar desafio</p><h2 id="editar-meta-titulo">Editar meta</h2></div>
+            </div>
+            <form onSubmit={editarMeta} className="analysis-modal__form">
+              <label>
+                <span>Nome da meta</span>
+                <input value={formEdicao.titulo}
+                  onChange={e => setFormEdicao({ ...formEdicao, titulo: e.target.value })} required autoFocus />
+              </label>
+              <label>
+                <span>Quantidade de filmes</span>
+                <input type="number" min="1" value={formEdicao.quantidadeAlvo}
+                  onChange={e => setFormEdicao({ ...formEdicao, quantidadeAlvo: e.target.value })} required />
+              </label>
+              <label>
+                <span>Quero concluir até</span>
+                <input type="date" min={dataMinima()} value={formEdicao.dataPrazo}
+                  onChange={e => setFormEdicao({ ...formEdicao, dataPrazo: e.target.value })} required />
+              </label>
+              <div className="analysis-modal__footer">
+                <button type="button" className="btn-secondary" onClick={() => setMetaEditando(null)}>Cancelar</button>
+                <button className="btn-primary" disabled={salvando}>
+                  <FiEdit2 /> {salvando ? 'Salvando...' : 'Salvar alterações'}
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
+
+      {metaExcluindo && (
+        <div className="analysis-modal-backdrop" onMouseDown={() => setMetaExcluindo(null)}>
+          <section className="analysis-modal analysis-modal--small" role="dialog" aria-modal="true"
+            aria-labelledby="excluir-meta-titulo" onMouseDown={e => e.stopPropagation()}>
+            <button className="analysis-modal__close" onClick={() => setMetaExcluindo(null)} aria-label="Fechar"><FiX /></button>
+            <div className="analysis-modal__header analysis-modal__header--danger">
+              <span><FiTrash2 /></span>
+              <div><p className="page-eyebrow">Excluir desafio</p><h2 id="excluir-meta-titulo">Excluir meta?</h2></div>
+            </div>
+            <p className="analysis-modal__hint">
+              A meta “{metaExcluindo.titulo}” e todo o progresso registrado nela serão removidos.
+            </p>
+            <div className="analysis-modal__footer">
+              <button type="button" className="btn-secondary" onClick={() => setMetaExcluindo(null)}>Manter meta</button>
+              <button type="button" className="goal-delete-confirm" onClick={excluirMeta} disabled={salvando}>
+                <FiTrash2 /> {salvando ? 'Excluindo...' : 'Excluir definitivamente'}
+              </button>
+            </div>
           </section>
         </div>
       )}

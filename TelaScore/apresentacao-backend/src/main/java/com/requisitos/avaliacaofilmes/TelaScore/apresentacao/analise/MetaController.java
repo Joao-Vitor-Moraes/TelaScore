@@ -56,16 +56,31 @@ public class MetaController {
     }
 
     @PostMapping
-    public ResponseEntity<?> criar(@RequestBody CriarMetaComando comando) {
+    public ResponseEntity<?> criar(@RequestBody CriarMetaRequest request) {
         try {
             UsuarioLogado usuario = usuarioAtual();
             criarMeta.executar(new CriarMetaComando(
-                    usuario.getId().getId(), comando.titulo(),
-                    comando.quantidadeAlvo(), comando.dataPrazo()));
+                    usuario.getId().getId(), request.titulo(),
+                    request.quantidadeAlvo(), request.dataPrazo()));
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MetaResumo> editar(@PathVariable int id, @RequestBody EditarMetaRequest request) {
+        Meta meta = exigirMetaPessoalDoDono(id);
+        meta.editar(request.titulo(), request.quantidadeAlvo(), request.dataPrazo());
+        metas.salvar(meta);
+        return ResponseEntity.ok(MetaResumo.de(meta));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> remover(@PathVariable int id) {
+        Meta meta = exigirMetaPessoalDoDono(id);
+        metas.remover(meta.getId());
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/progresso")
@@ -137,6 +152,17 @@ public class MetaController {
         return meta;
     }
 
+    private Meta exigirMetaPessoalDoDono(int metaId) {
+        Meta meta = exigirDono(metaId);
+        if (meta.getMetaSistemaId() != null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Metas do sistema não podem ser editadas ou excluídas.");
+        }
+        return meta;
+    }
+
     public record CriarMetaSistemaRequest(String titulo, int quantidadeAlvo, int duracaoDias) {}
+    public record CriarMetaRequest(String titulo, int quantidadeAlvo, java.time.LocalDate dataPrazo) {}
+    public record EditarMetaRequest(String titulo, int quantidadeAlvo, java.time.LocalDate dataPrazo) {}
     public record PontuacaoResumo(int totalPontos) {}
 }

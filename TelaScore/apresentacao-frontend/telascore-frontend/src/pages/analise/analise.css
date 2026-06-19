@@ -163,6 +163,41 @@
   gap: 7px;
 }
 
+.goal-card__top-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.goal-card__manage {
+  display: flex;
+  gap: 5px;
+}
+
+.goal-card__manage button {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, .04);
+  cursor: pointer;
+}
+
+.goal-card__manage button:hover {
+  color: white;
+  background: rgba(255, 255, 255, .09);
+}
+
+.goal-card__manage button.is-danger:hover {
+  border-color: rgba(255, 77, 94, .32);
+  color: #ff6975;
+  background: rgba(255, 77, 94, .09);
+}
+
 .system-goal-pill {
   display: flex;
   align-items: center;
@@ -493,6 +528,30 @@
 
 .analysis-modal__footer button {
   min-height: 43px;
+}
+
+.analysis-modal__header--danger > span {
+  color: #ff6975;
+  background: rgba(255, 77, 94, .1);
+}
+
+.goal-delete-confirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 43px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 77, 94, .38);
+  border-radius: 11px;
+  color: white;
+  background: #c81828;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.goal-delete-confirm:hover {
+  background: #e21d30;
 }
 
 @keyframes modal-fade {

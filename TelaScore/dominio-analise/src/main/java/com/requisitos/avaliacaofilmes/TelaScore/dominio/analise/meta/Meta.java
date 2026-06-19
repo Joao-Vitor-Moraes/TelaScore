@@ -77,6 +77,15 @@ public class Meta {
 	}
 	public int getQuantidadeAlvo() { return quantidadeAlvo; }
 
+	public void editar(String titulo, int quantidadeAlvo, LocalDate dataPrazo) {
+		notNull(dataPrazo, "A data de prazo não pode ser nula");
+		isTrue(dataPrazo.isAfter(LocalDate.now()) || dataPrazo.isEqual(LocalDate.now()),
+				"O prazo deve ser uma data futura ou o dia de hoje");
+		setTitulo(titulo);
+		this.dataPrazo = dataPrazo;
+		setQuantidadeAlvo(quantidadeAlvo);
+	}
+
 	public void adicionarProgresso(int quantidade) {
 		if (this.status != StatusMeta.EM_ANDAMENTO) {
 			throw new IllegalStateException("Apenas metas em andamento podem receber progresso.");

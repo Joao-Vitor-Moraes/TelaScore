@@ -68,7 +68,7 @@ export const listaService = {
   removerFilme: (listaId, filmeId, usuarioId) => request('DELETE', `/api/listas/${listaId}/filmes/${filmeId}?usuarioId=${usuarioId}`),
   reordenarFilme: (listaId, filmeId, body) => request('PATCH', `/api/listas/${listaId}/filmes/${filmeId}/posicao`, body),
   tornarColaborativa: (listaId, usuarioId) => request('PATCH', `/api/listas/${listaId}/colaborativa`, { usuarioId }),
-  adicionarColaborador: (listaId, body) => request('POST', '/api/listas/${listaId}/colaboradores', body),
+  adicionarColaborador: (listaId, body) => request('POST', `/api/listas/${listaId}/colaboradores`, body),
   removerColaborador: (listaId, colaboradorId, donoId) => request('DELETE', `/api/listas/${listaId}/colaboradores/${colaboradorId}?donoId=${donoId}`),
   registrarAssistido: (listaId, filmeId, usuarioId) => request('PATCH', `/api/listas/${listaId}/filmes/${filmeId}/assistido`, { usuarioId }),
 };
@@ -137,6 +137,8 @@ export const denunciaService = {
 export const metaService = {
   listar: () => request('GET', '/api/metas'),
   criar: (dados) => request('POST', '/api/metas', dados),
+  editar: (id, dados) => request('PUT', `/api/metas/${id}`, dados),
+  remover: (id) => request('DELETE', `/api/metas/${id}`),
   adicionarProgresso: (id, quantity) => request('PUT', `/api/metas/${id}/progresso?quantidade=${quantity}`),
   removerProgresso: (id, quantity) => request('PUT', `/api/metas/${id}/progresso/remover?quantidade=${quantity}`),
   estenderPrazo: (metaId, novoPrazo) => request('PUT', '/api/metas/prazo', { metaId, novoPrazo }),
