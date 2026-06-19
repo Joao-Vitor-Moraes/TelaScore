@@ -3,17 +3,17 @@ services:
     image: mysql:8.4
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: telascore_db
-      MYSQL_ROOT_PASSWORD: telascore
-      MYSQL_USER: telascore
-      MYSQL_PASSWORD: telascore
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3307:3306"
+      - "${MYSQL_PORT:-3307}:3306"
     volumes:
       - telascore_mysql:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-utelascore", "-ptelascore"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u$${MYSQL_USER} -p$${MYSQL_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -24,15 +24,15 @@ services:
       dockerfile: apresentacao-backend/Dockerfile
     restart: unless-stopped
     environment:
-      DB_URL: jdbc:mysql://db:3306/telascore_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      DB_USER: telascore
-      DB_PASSWORD: telascore
-      TELASCORE_TOKEN_SECRET: troque-este-segredo-em-producao
+      DB_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      TELASCORE_TOKEN_SECRET: ${TELASCORE_TOKEN_SECRET}
       TELASCORE_UPLOAD_DIR: /app/uploads/avatars
-      TMDB_API_KEY: ${TMDB_API_KEY:-65683c0b3525f96ddbf4fcba6a7b4a57}
+      TMDB_API_KEY: ${TMDB_API_KEY}
       TMDB_CATALOG_PAGES: ${TMDB_CATALOG_PAGES:-20}
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT:-8080}:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -43,11 +43,11 @@ services:
     build:
       context: ./TelaScore/apresentacao-frontend/telascore-frontend
       args:
-        REACT_APP_API_URL: ""
-        REACT_APP_TMDB_API_KEY: ${TMDB_API_KEY:-65683c0b3525f96ddbf4fcba6a7b4a57}
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-}
+        REACT_APP_TMDB_API_KEY: ${TMDB_API_KEY}
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "${FRONTEND_PORT:-3000}:80"
     depends_on:
       - backend
 
