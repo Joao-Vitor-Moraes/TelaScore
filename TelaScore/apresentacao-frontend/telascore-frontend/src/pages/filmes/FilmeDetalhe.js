@@ -4,6 +4,9 @@ import Navbar from '../../components/Navbar';
 import { filmeService, avaliacaoService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
+const PREFIXO_ID_TMDB = 2000000;
+const TMDB_API_KEY = process.env.REACT_APP_TMDB_API_KEY || '65683c0b3525f96ddbf4fcba6a7b4a57';
+
 export default function FilmeDetalhe() {
   const { sessao } = useAuth();
   const USUARIO_ID = sessao.id;
@@ -24,20 +27,23 @@ export default function FilmeDetalhe() {
       
       // Buscar trailer do TMDB
       try {
-        const apiKey = '65683c0b3525f96ddbf4fcba6a7b4a57';
-        const searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(dadosFilme.titulo)}&year=${dadosFilme.anoLancamento}&language=pt-BR`;
-        const searchRes = await fetch(searchUrl);
-        const searchData = await searchRes.json();
-        
-        if (searchData.results && searchData.results.length > 0) {
-          const tmdbId = searchData.results[0].id;
-          
-          let videosRes = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${apiKey}&language=pt-BR`);
+        const idLocal = Number(dadosFilme.id ?? id);
+        let tmdbId = idLocal >= PREFIXO_ID_TMDB ? idLocal - PREFIXO_ID_TMDB : null;
+
+        if (!tmdbId) {
+          const searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(dadosFilme.titulo)}&year=${dadosFilme.anoLancamento}&language=pt-BR`;
+          const searchRes = await fetch(searchUrl);
+          const searchData = await searchRes.json();
+          tmdbId = searchData.results?.[0]?.id || null;
+        }
+
+        if (tmdbId) {
+          let videosRes = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${TMDB_API_KEY}&language=pt-BR`);
           let videosData = await videosRes.json();
           let trailer = videosData.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
           
           if (!trailer) {
-            videosRes = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${apiKey}&language=en-US`);
+            videosRes = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${TMDB_API_KEY}&language=en-US`);
             videosData = await videosRes.json();
             trailer = videosData.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
           }

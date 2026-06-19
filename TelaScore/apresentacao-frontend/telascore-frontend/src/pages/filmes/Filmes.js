@@ -39,6 +39,7 @@ const TITULOS_FORA_DA_VITRINE = new Set([
 ]);
 
 const TRAILER_CASTELO_ANIMADO = 'ARCQf2CEr8k';
+const PREFIXO_ID_TMDB = 2000000;
 
 export default function Filmes() {
   const { sessao } = useAuth();
@@ -95,12 +96,27 @@ export default function Filmes() {
     const aranha = filtrados.filter(f => f.titulo.includes('Homem-Aranha'));
     const nerd = filtrados.filter(f => TITULOS_NERD.has(f.titulo));
     const romance = filtrados.filter(f => TITULOS_ROMANCE.has(f.titulo));
-    const usados = new Set([...recentes, ...ghibli, ...aranha, ...nerd, ...romance].map(f => f.id));
+    const usadosCuradoria = new Set([...recentes, ...ghibli, ...aranha, ...nerd, ...romance].map(f => f.id));
+    const catalogoTmdb = filtrados.filter(f =>
+      Number(f.id) >= PREFIXO_ID_TMDB && !usadosCuradoria.has(f.id)
+    );
+    const sucessosRecentes = catalogoTmdb.filter(f => Number(f.anoLancamento) >= 2020);
+    const anos2010 = catalogoTmdb.filter(f => Number(f.anoLancamento) >= 2010 && Number(f.anoLancamento) < 2020);
+    const anos2000 = catalogoTmdb.filter(f => Number(f.anoLancamento) >= 2000 && Number(f.anoLancamento) < 2010);
+    const classicos = catalogoTmdb.filter(f => Number(f.anoLancamento) < 2000);
+    const usados = new Set([
+      ...usadosCuradoria,
+      ...catalogoTmdb.map(f => f.id),
+    ]);
     const outros = filtrados.filter(f => !usados.has(f.id));
 
     return [
       { titulo: 'Novidades que estão dando o que falar', subtitulo: 'Música, animação e grandes lançamentos de 2025 e 2026', filmes: recentes },
       { titulo: 'Mundos do Studio Ghibli', subtitulo: 'Fantasia, delicadeza e aventuras inesquecíveis', filmes: ghibli },
+      { titulo: 'Sucessos recentes', subtitulo: 'Filmes populares lançados a partir de 2020', filmes: sucessosRecentes },
+      { titulo: 'Favoritos dos anos 2010', subtitulo: 'Grandes títulos que marcaram a década', filmes: anos2010 },
+      { titulo: 'Cinema dos anos 2000', subtitulo: 'Histórias que atravessaram os anos e continuam em alta', filmes: anos2000 },
+      { titulo: 'Clássicos para descobrir', subtitulo: 'Filmes populares lançados antes dos anos 2000', filmes: classicos },
       { titulo: 'O seu amigo da vizinhança', subtitulo: 'Todas as eras do Homem-Aranha', filmes: aranha },
       { titulo: 'Uma dose de ficção e aventura', subtitulo: 'Só alguns favoritos para equilibrar a seleção', filmes: nerd },
       { titulo: 'Histórias para se apaixonar', subtitulo: 'Uma seleção menor de romances marcantes', filmes: romance },
@@ -215,6 +231,9 @@ export default function Filmes() {
         </div>
 
         {filmes.length > 0 && filtrados.length === 0 && <div className="empty-state">Nenhum título combina com sua busca.</div>}
+        <p className="tmdb-attribution">
+          Este produto usa a API do TMDB, mas não é endossado nem certificado pelo TMDB.
+        </p>
       </main>
     </div>
   );

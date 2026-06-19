@@ -21,6 +21,7 @@ public class FilmeEntity {
     @Column(nullable = false)
     private String titulo;
 
+    @Column(columnDefinition = "TEXT")
     private String sinopse;
 
     @Column(name = "ano_lancamento", nullable = false)

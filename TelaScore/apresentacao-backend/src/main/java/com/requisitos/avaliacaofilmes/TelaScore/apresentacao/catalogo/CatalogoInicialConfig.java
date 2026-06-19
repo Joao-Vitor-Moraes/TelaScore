@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,6 +20,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeRepo
 public class CatalogoInicialConfig {
 
     @Bean
+    @Order(1)
     public ApplicationRunner catalogoInicial(
             FilmeRepositorio filmeRepositorio,
             DiretorRepositorio diretorRepositorio) {

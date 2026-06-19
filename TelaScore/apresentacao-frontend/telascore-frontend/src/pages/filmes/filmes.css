@@ -201,6 +201,15 @@
   gap: 46px;
 }
 
+.tmdb-attribution {
+  margin: 46px 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: .72;
+  text-align: center;
+}
+
 .catalog-section__heading {
   display: flex;
   align-items: flex-end;

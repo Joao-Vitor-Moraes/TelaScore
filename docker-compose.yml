@@ -29,6 +29,8 @@ services:
       DB_PASSWORD: telascore
       TELASCORE_TOKEN_SECRET: troque-este-segredo-em-producao
       TELASCORE_UPLOAD_DIR: /app/uploads/avatars
+      TMDB_API_KEY: ${TMDB_API_KEY:-65683c0b3525f96ddbf4fcba6a7b4a57}
+      TMDB_CATALOG_PAGES: ${TMDB_CATALOG_PAGES:-20}
     ports:
       - "8080:8080"
     depends_on:
@@ -42,6 +44,7 @@ services:
       context: ./TelaScore/apresentacao-frontend/telascore-frontend
       args:
         REACT_APP_API_URL: ""
+        REACT_APP_TMDB_API_KEY: ${TMDB_API_KEY:-65683c0b3525f96ddbf4fcba6a7b4a57}
     restart: unless-stopped
     ports:
       - "3000:80"
