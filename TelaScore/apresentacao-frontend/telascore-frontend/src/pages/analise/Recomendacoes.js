@@ -112,9 +112,9 @@ export default function Recomendacoes() {
   }
 
   return (
-    <div style={styles.pagina} className="cinema-page">
+    <div className="cinema-page analysis-page">
       <Navbar />
-      <main style={styles.conteudo} className="cinema-container">
+      <main className="cinema-container recommendations-container">
         <div className="page-heading">
           <div>
             <p className="page-eyebrow">Cinema compartilhado</p>
@@ -124,8 +124,14 @@ export default function Recomendacoes() {
           <FiZap className="heading-icon" />
         </div>
 
-        <form onSubmit={enviar} style={styles.form} className="glass-panel recommendation-form">
-          <h3 style={{ marginTop: 0 }}>Recomendar um filme</h3>
+        <form onSubmit={enviar} className="recommendation-compose">
+          <div className="recommendation-compose__heading">
+            <span><FiSend /></span>
+            <div>
+              <p className="page-eyebrow">Nova indicação</p>
+              <h2>Recomendar um filme</h2>
+            </div>
+          </div>
           <div className="recipient-picker">
             <div className={`recipient-picker__input ${destinatario ? 'is-selected' : ''}`}>
               {destinatario ? <FiUser /> : <FiSearch />}
@@ -191,52 +197,47 @@ export default function Recomendacoes() {
               </div>
             )}
           </div>
-          <textarea style={styles.input} maxLength="255" placeholder="Por que essa pessoa deveria assistir?"
+          <textarea className="recommendation-message" maxLength="255" placeholder="Por que essa pessoa deveria assistir?"
             value={form.mensagem} onChange={e => setForm({ ...form, mensagem: e.target.value })} />
-          <button style={styles.primario} className="btn-primary"><FiSend /> Enviar recomendação</button>
+          <div className="recommendation-compose__footer">
+            <span>{form.mensagem.length}/255</span>
+            <button className="btn-primary"><FiSend /> Enviar recomendação</button>
+          </div>
         </form>
 
-        {erro && <p style={styles.erro}>{erro}</p>}
-        <div style={styles.lista}>
+        {erro && <div className="analysis-error">{erro}</div>}
+        <section className="recommendations-inbox">
+          <div className="recommendations-inbox__heading">
+            <div>
+              <p className="page-eyebrow">Sua caixa de entrada</p>
+              <h2>Recomendações recebidas</h2>
+            </div>
+            <span>{recomendacoes.length}</span>
+          </div>
+          <div className="recommendations-list">
           {recomendacoes.map(r => (
-            <article key={r.id} style={styles.card} className="recommendation-card">
+            <article key={r.id} className="recommendation-card">
               <FiHeart className="recommendation-card__icon" />
               <div>
-                <h3 style={{ margin: '0 0 6px' }}>{nomesFilmes[r.conteudoId] || `${r.tipoConteudo} #${r.conteudoId}`}</h3>
-                <span style={styles.muted}>{r.remetenteId ? `Enviada pelo usuário #${r.remetenteId}` : 'Sugestão da plataforma'}</span>
+                <h3>{nomesFilmes[r.conteudoId] || `${r.tipoConteudo} #${r.conteudoId}`}</h3>
+                <span className="recommendation-card__sender">{r.remetenteId ? `Enviada pelo usuário #${r.remetenteId}` : 'Sugestão da plataforma'}</span>
                 {r.mensagem && <p>{r.mensagem}</p>}
               </div>
-              <div style={styles.lateral}>
-                <span style={styles.status}>{r.status}</span>
+              <div className="recommendation-card__side">
+                <span className={`recommendation-status recommendation-status--${r.status.toLowerCase()}`}>{r.status.replaceAll('_', ' ')}</span>
                 {(r.status === 'PENDENTE' || r.status === 'VISUALIZADA') && (
-                  <div style={styles.acoes}>
-                    <button style={styles.aceitar} onClick={() => responder(r.id, true)}>Aceitar</button>
-                    <button style={styles.rejeitar} onClick={() => responder(r.id, false)}>Rejeitar</button>
+                  <div className="recommendation-card__actions">
+                    <button className="recommendation-accept" onClick={() => responder(r.id, true)}>Aceitar</button>
+                    <button className="recommendation-reject" onClick={() => responder(r.id, false)}>Rejeitar</button>
                   </div>
                 )}
               </div>
             </article>
           ))}
-          {!recomendacoes.length && <p style={styles.muted}>Nenhuma recomendação recebida.</p>}
-        </div>
+          {!recomendacoes.length && <div className="recommendations-empty"><FiHeart /><p>Nenhuma recomendação recebida ainda.</p><span>Quando alguém separar um filme para você, ele aparecerá aqui.</span></div>}
+          </div>
+        </section>
       </main>
     </div>
   );
 }
-
-const styles = {
-  pagina: { minHeight: '100vh', background: '#0f3460', color: 'white' },
-  conteudo: { maxWidth: 850, margin: '0 auto', padding: 32 },
-  form: { background: '#16213e', padding: 20, borderRadius: 12, display: 'grid', gap: 10, marginBottom: 24 },
-  input: { padding: 11, borderRadius: 7, border: '1px solid #334', background: '#0f3460', color: 'white' },
-  lista: { display: 'grid', gap: 12 },
-  card: { display: 'flex', justifyContent: 'space-between', gap: 18, background: '#16213e', padding: 18, borderRadius: 12 },
-  lateral: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 12 },
-  status: { color: '#f0a500', fontSize: 12 },
-  muted: { color: '#aaa', fontSize: 13 },
-  acoes: { display: 'flex', gap: 8 },
-  primario: { border: 0, borderRadius: 7, padding: 10, background: '#e94560', color: 'white', cursor: 'pointer' },
-  aceitar: { border: 0, borderRadius: 6, padding: '7px 12px', background: '#10b981', color: 'white', cursor: 'pointer' },
-  rejeitar: { border: '1px solid #e94560', borderRadius: 6, padding: '7px 12px', background: 'transparent', color: '#e94560', cursor: 'pointer' },
-  erro: { color: '#ff8095' },
-};
