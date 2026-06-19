@@ -384,7 +384,8 @@
 
 .analysis-modal {
   position: relative;
-  width: min(100%, 520px);
+  width: min(calc(100vw - 40px), 520px);
+  max-width: 520px;
   padding: 28px;
   border: 1px solid var(--line);
   border-radius: 20px;
@@ -394,7 +395,18 @@
 }
 
 .analysis-modal--small {
-  width: min(100%, 470px);
+  width: min(calc(100vw - 40px), 440px);
+  max-width: 440px;
+}
+
+.analysis-page .analysis-modal {
+  width: min(calc(100vw - 40px), 520px);
+  max-width: 520px;
+}
+
+.analysis-page .analysis-modal--small {
+  width: min(calc(100vw - 40px), 440px);
+  max-width: 440px;
 }
 
 .analysis-modal__close {
