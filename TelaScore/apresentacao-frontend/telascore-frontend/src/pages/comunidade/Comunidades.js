@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     FiUsers, FiPlus, FiSearch, FiMessageSquare, FiX, FiLogIn,
     FiLogOut, FiSend, FiTrash2, FiShield, FiUserX, FiUserCheck
@@ -9,6 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function Comunidades() {
     const { sessao } = useAuth();
+    const navigate = useNavigate();
     const [comunidades, setComunidades] = useState([]);
     const [minhasComunidades, setMinhasComunidades] = useState([]);
     const [usuariosMap, setUsuariosMap] = useState({});
@@ -371,7 +373,10 @@ export default function Comunidades() {
                                         return (
                                             <div key={idMembStr} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)', padding: '6px 8px', borderRadius: '8px' }}>
                                                 <div style={{ display: 'grid', minWidth: 0 }}>
-                                                    <span style={{ fontSize: '12px', fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>@{apelidoMemb}</span>
+                                                    <span
+                                                        onClick={() => navigate(`/usuario/${idMembStr}`)}
+                                                        style={{ fontSize: '12px', fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', cursor: 'pointer', color: 'var(--brand-light)' }}
+                                                    >@{apelidoMemb}</span>
                                                     <small style={{ fontSize: '9px', color: m.papel === 'CRIADOR' ? '#f6c969' : m.papel === 'MODERADOR' ? '#93c5fd' : 'var(--muted)' }}>{m.papel}</small>
                                                 </div>
                                                 <div style={{ display: 'flex', gap: '4px' }}>

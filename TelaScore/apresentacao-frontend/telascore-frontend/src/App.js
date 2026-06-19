@@ -18,6 +18,7 @@ import FilmeDetalhe from './pages/filmes/FilmeDetalhe';
 import EditarFilme from './pages/filmes/EditarFilme';
 import AdminUsuarios from './pages/usuario/AdminUsuarios';
 import MeuUsuario from './pages/usuario/MeuUsuario';
+import PerfilMembro from './pages/usuario/PerfilMembro';
 import Metas from './pages/analise/Metas';
 import Recomendacoes from './pages/analise/Recomendacoes';
 import './App.css';
@@ -61,6 +62,7 @@ function App() {
 
             {/* usuario*/}
             <Route path="/meuusuario" element={<RotaProtegida><MeuUsuario /></RotaProtegida>} />
+            <Route path="/usuario/:usuarioId" element={<RotaProtegida><PerfilMembro /></RotaProtegida>} />
             <Route path="/admin/usuarios" element={<RotaProtegida><AdminUsuarios /></RotaProtegida>} />
 
             {/* Watchlist */}

@@ -117,6 +117,7 @@ export const usuarioService = {
   editarMeuUsuario: (dados) => request('PUT', '/api/identidade/usuario/meu-usuario', dados),
   enviarAvatar: (arquivo) => upload('/api/identidade/usuario/meu-usuario/avatar', arquivo),
   listar: () => request('GET', '/api/identidade/usuario'),
+  obterPorId: (id) => request('GET', `/api/identidade/usuario/${id}`),
   editar: (id, dados) => request('PUT', `/api/identidade/usuario/${id}`, dados),
   remover: (id) => request('DELETE', `/api/identidade/usuario/${id}`),
   buscarPorApelido: (apelido) =>
@@ -154,6 +155,7 @@ export const denunciaService = {
 // Metas
 export const metaService = {
   listar: () => request('GET', '/api/metas'),
+  listarPorUsuario: (usuarioId) => request('GET', `/api/metas/usuario/${usuarioId}`),
   criar: (dados) => request('POST', '/api/metas', dados),
   editar: (id, dados) => request('PUT', `/api/metas/${id}`, dados),
   remover: (id) => request('DELETE', `/api/metas/${id}`),

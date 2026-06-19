@@ -50,9 +50,9 @@ O projeto está organizado em diferentes contextos de domínio:
 
 ## ▶️ Como executar
 
-### Pré-requisito
+### Opção 1 — Docker (recomendado)
 
-Tenha o Docker Desktop instalado e em execução.
+Pré-requisito: Docker Desktop instalado e em execução.
 
 Na pasta onde está o arquivo `docker-compose.yml`, rode:
 
@@ -69,15 +69,13 @@ Acesse:
 O Docker inicia automaticamente frontend, backend e MySQL. O banco
 `telascore_db` e suas tabelas são criados na primeira execução.
 
-### Parar
+#### Parar
 
 ```powershell
 docker compose down
 ```
 
-### Recriar o banco
-
-O comando abaixo remove todos os dados e executa novamente os scripts SQL:
+#### Recriar o banco
 
 ```powershell
 docker compose down -v
@@ -89,6 +87,61 @@ Os scripts de inicialização ficam em:
 ```text
 docker/mysql/init
 ```
+
+---
+
+### Opção 2 — Sem Docker (local)
+
+Pré-requisitos: Java 17, Maven, Node.js e MySQL 8 instalados localmente.
+
+#### 1. Banco de dados
+
+Crie o banco e as tabelas via MySQL (ou MySQL Workbench):
+
+```sql
+CREATE DATABASE IF NOT EXISTS telascore_db;
+```
+
+> As tabelas são criadas automaticamente pelo Hibernate na primeira
+> inicialização do backend (`hibernate.hbm2ddl.auto=update`).
+
+#### 2. Backend
+
+Abra um terminal na raiz do projeto e defina as variáveis de ambiente:
+
+```powershell
+# PowerShell
+$env:DB_URL      = "jdbc:mysql://localhost:3306/telascore_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+$env:DB_USER     = "root"
+$env:DB_PASSWORD = "sua_senha_aqui"
+$env:TELASCORE_TOKEN_SECRET = "TelaScore-token-dev-secret"
+```
+
+Em seguida, faça o build e suba o servidor:
+
+```powershell
+# Build completo (apenas na primeira vez ou após mudanças nos módulos)
+cd TelaScore
+mvn clean install "-Dmaven.test.skip=true"
+
+# Subir o backend
+cd apresentacao-backend
+mvn spring-boot:run "-Dmaven.test.skip=true"
+```
+
+A API estará disponível em `http://localhost:8080`.
+
+#### 3. Frontend
+
+Em outro terminal:
+
+```powershell
+cd TelaScore\apresentacao-frontend\telascore-frontend
+npm install   # apenas na primeira vez
+npm start
+```
+
+A aplicação abrirá em `http://localhost:3000`.
 
 ## Acesso inicial
 

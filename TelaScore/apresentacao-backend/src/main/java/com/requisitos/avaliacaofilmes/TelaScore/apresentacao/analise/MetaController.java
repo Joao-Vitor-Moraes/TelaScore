@@ -55,6 +55,13 @@ public class MetaController {
         return listarMetas.executar(usuarioAtual().getId().getId());
     }
 
+    @GetMapping("/usuario/{usuarioId}")
+    public List<MetaResumo> listarPorUsuario(@PathVariable int usuarioId) {
+        usuarioAtual();
+        return metas.buscarPorUsuario(new com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId(usuarioId))
+                .stream().map(MetaResumo::de).toList();
+    }
+
     @PostMapping
     public ResponseEntity<?> criar(@RequestBody CriarMetaRequest request) {
         try {

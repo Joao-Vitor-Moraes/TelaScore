@@ -168,6 +168,19 @@ public class UsuarioController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> obterPorId(@PathVariable int id) {
+        UsuarioLogado atual = sessaoUsuario.obterUsuarioLogado();
+        if (atual == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return usuarioServico.listarTodos().stream()
+                .filter(u -> u.getId().getId() == id)
+                .findFirst()
+                .<ResponseEntity<?>>map(u -> ResponseEntity.ok(PerfilPublicoResponse.de(u)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/buscar")
     public List<UsuarioPublicoResponse> buscarPorApelido(@RequestParam(defaultValue = "") String apelido) {
         UsuarioLogado atual = sessaoUsuario.obterUsuarioLogado();
@@ -311,6 +324,17 @@ public class UsuarioController {
     }
 
     public static record ErroLoginResponse(String mensagem) {
+    }
+
+    public static record PerfilPublicoResponse(int id, String nome, String apelido, String biografia, String avatarUrl) {
+        static PerfilPublicoResponse de(Usuario usuario) {
+            return new PerfilPublicoResponse(
+                    usuario.getId().getId(),
+                    usuario.getNome(),
+                    usuario.getApelido().getValor(),
+                    usuario.getBiografia(),
+                    usuario.getAvatarUrl());
+        }
     }
 
     private ResponseEntity<ErroLoginResponse> tratarErroDePermissao(IllegalStateException e) {

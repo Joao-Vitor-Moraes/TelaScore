@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FiArrowLeft, FiEdit2, FiShare2, FiMoreVertical, FiPlusCircle } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
-import { listaService } from '../../services/api';
+import { listaService, avaliacaoService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 export default function ListaAberta() {
@@ -13,6 +13,8 @@ export default function ListaAberta() {
   const [itens, setItens] = useState([]);
   const [erro, setErro] = useState(null);
   const [dragSobre, setDragSobre] = useState(null);
+  const [hoveredFilmeId, setHoveredFilmeId] = useState(null);
+  const [notasCache, setNotasCache] = useState({});
   const [menuAberto, setMenuAberto] = useState(false);
   const [modalColaborador, setModalColaborador] = useState(false);
   const [colaboradorId, setColaboradorId] = useState('');
@@ -99,6 +101,20 @@ export default function ListaAberta() {
     }
   }
 
+  async function handleMouseEnter(filmeId) {
+    setHoveredFilmeId(filmeId);
+    if (notasCache[filmeId] !== undefined) return;
+    try {
+      const avaliacoes = await avaliacaoService.listarPorFilme(filmeId, USUARIO_ID);
+      const minha = Array.isArray(avaliacoes)
+        ? avaliacoes.find(a => a.usuarioId === USUARIO_ID)
+        : null;
+      setNotasCache(prev => ({ ...prev, [filmeId]: minha?.valorNota ?? null }));
+    } catch {
+      setNotasCache(prev => ({ ...prev, [filmeId]: null }));
+    }
+  }
+
   if (erro) return <div style={styles.pagina}><Navbar /><p style={styles.erro}>{erro}</p></div>;
   if (!lista) return <div style={styles.pagina}><Navbar /><p style={styles.carregando}>Carregando...</p></div>;
 
@@ -180,6 +196,8 @@ export default function ListaAberta() {
                 onDragOver={e => lista.rankeada && handleDragOver(e, item.filmeId)}
                 onDragLeave={handleDragLeave}
                 onDrop={e => lista.rankeada && handleDrop(e, index)}
+                onMouseEnter={() => handleMouseEnter(item.filmeId)}
+                onMouseLeave={() => setHoveredFilmeId(null)}
               >
                 <div style={styles.capaFilme}>
                   {item.imagemUrl
@@ -191,6 +209,13 @@ export default function ListaAberta() {
                     onClick={e => { e.stopPropagation(); handleRemover(item.filmeId); }}
                     title="Remover da lista"
                   >×</button>
+                  {hoveredFilmeId === item.filmeId && notasCache[item.filmeId] != null && (
+                    <div style={styles.overlayEstrelas}>
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <span key={i} style={{ color: i < notasCache[item.filmeId] ? '#f6c969' : 'rgba(255,255,255,0.25)', fontSize: '16px' }}>★</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 {item.titulo && <span style={styles.tituloCard}>{item.titulo}</span>}
                 <span style={styles.posicao}>
@@ -345,6 +370,19 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
+  },
+  overlayEstrelas: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    background: 'linear-gradient(transparent, rgba(0,0,0,0.75))',
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '2px',
+    padding: '20px 4px 8px',
+    borderRadius: '0 0 8px 8px',
+    animation: 'fadeIn 0.15s ease',
   },
   btnRemover: {
     position: 'absolute',
