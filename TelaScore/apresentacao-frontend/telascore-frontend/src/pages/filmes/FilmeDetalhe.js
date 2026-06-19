@@ -16,9 +16,40 @@ export default function FilmeDetalhe() {
   const [erro, setErro] = useState(null);
   const [editandoId, setEditandoId] = useState(null);
   const [edicao, setEdicao] = useState({ valorNota: 5, resenha: '' });
+  const [trailerKey, setTrailerKey] = useState(null);
 
   useEffect(() => {
-    filmeService.obter(id).then(setFilme).catch(() => setErro('Filme não encontrado.'));
+    filmeService.obter(id).then(async (dadosFilme) => {
+      setFilme(dadosFilme);
+      
+      // Buscar trailer do TMDB
+      try {
+        const apiKey = '65683c0b3525f96ddbf4fcba6a7b4a57';
+        const searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(dadosFilme.titulo)}&year=${dadosFilme.anoLancamento}&language=pt-BR`;
+        const searchRes = await fetch(searchUrl);
+        const searchData = await searchRes.json();
+        
+        if (searchData.results && searchData.results.length > 0) {
+          const tmdbId = searchData.results[0].id;
+          
+          let videosRes = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${apiKey}&language=pt-BR`);
+          let videosData = await videosRes.json();
+          let trailer = videosData.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+          
+          if (!trailer) {
+            videosRes = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${apiKey}&language=en-US`);
+            videosData = await videosRes.json();
+            trailer = videosData.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+          }
+          
+          if (trailer) {
+            setTrailerKey(trailer.key);
+          }
+        }
+      } catch (err) {
+        console.error("Erro ao buscar trailer", err);
+      }
+    }).catch(() => setErro('Filme não encontrado.'));
     avaliacaoService.listarPorFilme(id, USUARIO_ID).then(setAvaliacoes).catch(() => {});
   }, [id, USUARIO_ID]);
 
@@ -103,6 +134,23 @@ export default function FilmeDetalhe() {
             )}
           </div>
         </div>
+
+        {/* Trailer */}
+        {trailerKey && (
+          <div style={styles.secao}>
+            <h2 style={styles.secaoTitulo}>Trailer Oficial</h2>
+            <div style={styles.trailerContainer}>
+              <iframe
+                style={styles.trailerIframe}
+                src={`https://www.youtube.com/embed/${trailerKey}`}
+                title="Trailer do Filme"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        )}
 
         {/* Minha avaliação */}
         <div style={styles.secao}>
@@ -448,5 +496,20 @@ const styles = {
     color: '#e94560',
     textAlign: 'center',
     marginTop: '60px',
+  },
+  trailerContainer: {
+    position: 'relative',
+    paddingBottom: '56.25%', // 16:9 ratio
+    height: 0,
+    overflow: 'hidden',
+    borderRadius: '8px',
+    backgroundColor: '#000',
+  },
+  trailerIframe: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
   },
 };
