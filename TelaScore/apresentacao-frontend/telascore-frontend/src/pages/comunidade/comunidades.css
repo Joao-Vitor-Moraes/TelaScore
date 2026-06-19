@@ -125,6 +125,101 @@
     transform: scale(1.2);
 }
 
+.community-profile-link {
+    display: block;
+    max-width: 100%;
+    margin: 0 0 3px;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    outline: 0;
+    color: var(--brand-light);
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.community-profile-link:hover {
+    color: #fff;
+}
+
+.community-profile-link:focus-visible {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.community-profile-link--member {
+    margin-bottom: 0;
+    font-size: 12px;
+}
+
+.community-profile-menu {
+    position: absolute;
+    z-index: 20;
+    top: 28px;
+    left: 8px;
+    width: max-content;
+    min-width: 154px;
+    padding: 5px;
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 10px;
+    background: #242429;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, .48);
+    animation: community-profile-pop .16s ease-out;
+}
+
+.community-profile-menu.is-right {
+    right: 8px;
+    left: auto;
+}
+
+.community-profile-menu .community-profile-menu__action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 7px;
+    width: 100%;
+    min-height: 36px;
+    padding: 9px 11px;
+    border: 0;
+    outline: 0;
+    border-radius: 9px;
+    color: #fff;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    transition: color .16s ease, background .16s ease, transform .16s ease;
+}
+
+.community-profile-menu .community-profile-menu__action:hover {
+    color: #fff;
+    background: var(--brand);
+    transform: translateY(-1px);
+}
+
+.community-profile-menu .community-profile-menu__action:focus-visible {
+    box-shadow: 0 0 0 2px rgba(229, 9, 20, .35);
+}
+
+@keyframes community-profile-pop {
+    from {
+        opacity: 0;
+        transform: translateY(-5px) scale(.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 .chat-input-area {
     width: 100%;
     min-height: 44px;
