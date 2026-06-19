@@ -126,6 +126,8 @@ export const recomendacaoService = {
   listarEnviadas: () => request('GET', '/api/recomendacoes/enviadas'),
   enviar: (dados) => request('POST', '/api/recomendacoes', dados),
   visualizar: (recomendacaoId) => request('PUT', `/api/recomendacoes/${recomendacaoId}/visualizar`),
+  avaliarPosteriormente: (recomendacaoId, dados) =>
+    request('POST', `/api/recomendacoes/${recomendacaoId}/avaliacao`, dados),
   responder: (recomendacaoId, resposta, comentario) =>
     request('PUT', '/api/recomendacoes/reagir', { recomendacaoId, resposta, comentario: comentario || null }),
 };

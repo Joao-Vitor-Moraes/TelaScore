@@ -21,6 +21,8 @@ public class Recomendacao {
     private final LocalDateTime dataGeracao;
     private StatusRecomendacao status;
     private String comentarioResposta;
+    private Integer notaPosterior;
+    private String avaliacaoPosterior;
 
     public Recomendacao(RecomendacaoId id, UsuarioId usuarioId, String conteudoId, TipoConteudo tipoConteudo, double pontuacaoCompatibilidade, UsuarioId remetenteId, String mensagem) {
         notNull(id, "O id da recomendação não pode ser nulo");
@@ -50,7 +52,7 @@ public class Recomendacao {
 
     public Recomendacao(RecomendacaoId id, UsuarioId usuarioId, String conteudoId, TipoConteudo tipoConteudo,
                         Double pontuacaoCompatibilidade, UsuarioId remetenteId, String mensagem, LocalDateTime dataGeracao,
-                        StatusRecomendacao status, String comentarioResposta) {
+                        StatusRecomendacao status, String comentarioResposta, Integer notaPosterior, String avaliacaoPosterior) {
         notNull(id, "O id da recomendação não pode ser nulo");
         notNull(usuarioId, "O id do utilizador não pode ser nulo");
         notNull(conteudoId, "O id do conteúdo não pode ser nulo");
@@ -68,6 +70,8 @@ public class Recomendacao {
         this.dataGeracao = dataGeracao;
         this.status = status;
         setComentarioResposta(comentarioResposta);
+        this.notaPosterior = notaPosterior;
+        this.avaliacaoPosterior = avaliacaoPosterior;
     }
 
 	public void marcarComoVisualizada() {
@@ -112,6 +116,17 @@ public class Recomendacao {
     public String getMensagem() { return mensagem; }
     public StatusRecomendacao getStatus() { return status; }
     public String getComentarioResposta() { return comentarioResposta; }
+    public Integer getNotaPosterior() { return notaPosterior; }
+    public String getAvaliacaoPosterior() { return avaliacaoPosterior; }
+
+    public void registrarAvaliacaoPosterior(int nota, String comentario) {
+        inclusiveBetween(1, 5, nota, "A nota deve estar entre 1 e 5 estrelas");
+        if (comentario != null) {
+            inclusiveBetween(0, 500, comentario.length(), "A avaliação deve ter no máximo 500 caracteres");
+        }
+        this.notaPosterior = nota;
+        this.avaliacaoPosterior = comentario == null || comentario.isBlank() ? null : comentario.trim();
+    }
     public double getPontuacaoCompatibilidade() { return pontuacaoCompatibilidade; }
 
     public void setPontuacaoCompatibilidade(double pontuacaoCompatibilidade) {

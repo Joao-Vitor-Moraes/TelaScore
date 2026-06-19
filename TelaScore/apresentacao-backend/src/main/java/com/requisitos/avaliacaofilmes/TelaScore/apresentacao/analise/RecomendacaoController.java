@@ -10,6 +10,8 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.R
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.ListarRecomendacoesPorUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.RecomendacaoResumo;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.SessaoUsuario;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarFilmeComando;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.Recomendacao;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
@@ -31,19 +33,22 @@ public class RecomendacaoController {
     private final RecomendacaoRepositorio recomendacoes;
     private final SessaoUsuario sessao;
     private final UsuarioRepositorio usuarios;
+    private final AvaliarFilmeCasoDeUso avaliarFilme;
 
     public RecomendacaoController(EnviarRecomendacaoCasoDeUso enviarRecomendacaoCasoDeUso,
                                   ResponderRecomendacaoCasoDeUso responderRecomendacaoCasoDeUso,
                                   ListarRecomendacoesPorUsuarioCasoDeUso listarRecomendacoesCasoDeUso,
                                   RecomendacaoRepositorio recomendacoes,
                                   SessaoUsuario sessao,
-                                  UsuarioRepositorio usuarios) {
+                                  UsuarioRepositorio usuarios,
+                                  AvaliarFilmeCasoDeUso avaliarFilme) {
         this.enviarRecomendacaoCasoDeUso = enviarRecomendacaoCasoDeUso;
         this.responderRecomendacaoCasoDeUso = responderRecomendacaoCasoDeUso;
         this.listarRecomendacoesCasoDeUso = listarRecomendacoesCasoDeUso;
         this.recomendacoes = recomendacoes;
         this.sessao = sessao;
         this.usuarios = usuarios;
+        this.avaliarFilme = avaliarFilme;
     }
 
     @GetMapping
@@ -112,6 +117,31 @@ public class RecomendacaoController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/avaliacao")
+    public ResponseEntity<Void> avaliarPosteriormente(@PathVariable int id,
+                                                       @RequestBody AvaliacaoPosteriorRequest request) {
+        Recomendacao recomendacao = recomendacoes.obter(new RecomendacaoId(id));
+        if (recomendacao == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recomendação não encontrada.");
+        }
+        UsuarioLogado usuario = usuarioAtual();
+        if (!usuario.isMesmoUsuario(recomendacao.getUsuarioId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Esta recomendação pertence a outro usuário.");
+        }
+        if (!recomendacao.getStatus().name().equals("JA_ASSISTI")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Marque a recomendação como Já assisti antes de avaliar.");
+        }
+        avaliarFilme.executar(new AvaliarFilmeComando(
+                Integer.parseInt(recomendacao.getConteudoId()),
+                usuario.getId().getId(),
+                request.nota(),
+                request.comentario(),
+                request.visibilidade()));
+        recomendacao.registrarAvaliacaoPosterior(request.nota(), request.comentario());
+        recomendacoes.salvar(recomendacao);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
     private UsuarioLogado usuarioAtual() {
         UsuarioLogado usuario = sessao.obterUsuarioLogado();
         if (usuario == null) {
@@ -130,7 +160,9 @@ public class RecomendacaoController {
                 recomendacao.getMensagem(),
                 recomendacao.getDataGeracao(),
                 recomendacao.getStatus().name(),
-                recomendacao.getComentarioResposta());
+                recomendacao.getComentarioResposta(),
+                recomendacao.getNotaPosterior(),
+                recomendacao.getAvaliacaoPosterior());
     }
 
     private RecomendacaoRecebidaResponse resumirRecebida(RecomendacaoResumo recomendacao) {
@@ -147,7 +179,9 @@ public class RecomendacaoController {
                 recomendacao.mensagem(),
                 recomendacao.dataGeracao(),
                 recomendacao.status(),
-                recomendacao.comentarioResposta());
+                recomendacao.comentarioResposta(),
+                recomendacao.notaPosterior(),
+                recomendacao.avaliacaoPosterior());
     }
 
     public record EnviarRecomendacaoRequest(
@@ -165,7 +199,9 @@ public class RecomendacaoController {
             String mensagem,
             java.time.LocalDateTime dataGeracao,
             String status,
-            String comentarioResposta) {
+            String comentarioResposta,
+            Integer notaPosterior,
+            String avaliacaoPosterior) {
     }
 
     public record RecomendacaoRecebidaResponse(
@@ -177,6 +213,11 @@ public class RecomendacaoController {
             String mensagem,
             java.time.LocalDateTime dataGeracao,
             String status,
-            String comentarioResposta) {
+            String comentarioResposta,
+            Integer notaPosterior,
+            String avaliacaoPosterior) {
+    }
+
+    public record AvaliacaoPosteriorRequest(int nota, String comentario, String visibilidade) {
     }
 }

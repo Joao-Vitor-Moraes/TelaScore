@@ -1260,6 +1260,146 @@
   font-weight: 800;
 }
 
+.recommendation-review {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border: 1px solid rgba(246, 201, 105, .3);
+  border-radius: 8px;
+  color: #f6c969;
+  background: rgba(246, 201, 105, .07);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.recommendation-later-review {
+  grid-column: 2 / -1;
+  padding: 13px 14px;
+  margin-top: 13px;
+  border: 1px solid rgba(246, 201, 105, .16);
+  border-radius: 10px;
+  background: rgba(246, 201, 105, .045);
+}
+
+.recommendation-later-review > strong {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.recommendation-later-review__stars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 7px;
+  color: #56565d;
+}
+
+.recommendation-later-review__stars svg.is-filled {
+  color: #f6c969;
+  fill: #f6c969;
+}
+
+.recommendation-later-review__stars span {
+  margin-left: 5px;
+  color: #f6c969;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.recommendation-later-review p {
+  margin-top: 9px;
+}
+
+.recommendation-review-modal__stars {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 25px 0 17px;
+}
+
+.recommendation-review-modal__stars button {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  color: #4d4d55;
+  background: transparent;
+  cursor: pointer;
+  font-size: 29px;
+}
+
+.recommendation-review-modal__stars button.is-selected {
+  color: #f6c969;
+}
+
+.recommendation-review-modal__stars button.is-selected svg {
+  fill: #f6c969;
+}
+
+.recommendation-review-modal__stars span {
+  margin-left: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.recommendation-review-modal > textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 110px;
+  padding: 13px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  outline: none;
+  color: white;
+  background: rgba(255, 255, 255, .03);
+  font: inherit;
+  font-size: 12px;
+}
+
+.recommendation-review-modal__footer {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-top: 13px;
+}
+
+.recommendation-review-modal__footer label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.recommendation-review-modal__footer select {
+  padding: 8px 25px 8px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: white;
+  background: #17171b;
+}
+
+.recommendation-review-modal__footer > span {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.recommendation-review-modal__footer > button {
+  padding: 10px 13px;
+  border: 0;
+  border-radius: 8px;
+  color: #111;
+  background: #f6c969;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 900;
+}
+
 .recommendation-list-modal {
   position: fixed;
   z-index: 1000;

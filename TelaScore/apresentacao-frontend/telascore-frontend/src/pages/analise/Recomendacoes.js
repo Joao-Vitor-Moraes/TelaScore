@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
   FiBookmark, FiCheckCircle, FiChevronDown, FiClock, FiFilm, FiHeart,
   FiInbox, FiPlus, FiSearch, FiSend, FiUser, FiX, FiXCircle, FiZap,
+  FiStar,
 } from 'react-icons/fi';
 import './analise.css';
 
@@ -31,6 +32,8 @@ export default function Recomendacoes() {
   const [novaListaNome, setNovaListaNome] = useState('');
   const [buscaHistorico, setBuscaHistorico] = useState('');
   const [filtroStatus, setFiltroStatus] = useState('TODAS');
+  const [avaliandoRecomendacao, setAvaliandoRecomendacao] = useState(null);
+  const [avaliacaoPosterior, setAvaliacaoPosterior] = useState({ nota: 0, comentario: '', visibilidade: 'PUBLICA' });
 
   const carregar = useCallback(() => {
     return Promise.all([
@@ -252,6 +255,33 @@ export default function Recomendacoes() {
     }
   }
 
+  function abrirAvaliacao(recomendacao) {
+    setAvaliandoRecomendacao(recomendacao);
+    setAvaliacaoPosterior({ nota: 0, comentario: '', visibilidade: 'PUBLICA' });
+    setErro('');
+  }
+
+  function fecharAvaliacao() {
+    setAvaliandoRecomendacao(null);
+    setAvaliacaoPosterior({ nota: 0, comentario: '', visibilidade: 'PUBLICA' });
+  }
+
+  async function enviarAvaliacaoPosterior() {
+    if (!avaliacaoPosterior.nota) {
+      setErro('Escolha uma nota de 1 a 5 estrelas.');
+      return;
+    }
+    try {
+      setErro('');
+      await recomendacaoService.avaliarPosteriormente(avaliandoRecomendacao.id, avaliacaoPosterior);
+      await carregar();
+      setFeedback('Avaliação publicada e enviada como retorno da recomendação.');
+      fecharAvaliacao();
+    } catch (e) {
+      setErro(e.message);
+    }
+  }
+
   function textoStatus(status) {
     return {
       PENDENTE: 'Nova',
@@ -439,6 +469,11 @@ export default function Recomendacoes() {
                     <FiBookmark /> Salvar em lista
                   </button>
                 )}
+                {r.status === 'JA_ASSISTI' && !r.notaPosterior && (
+                  <button type="button" className="recommendation-review" onClick={() => abrirAvaliacao(r)}>
+                    <FiStar /> Avaliar filme
+                  </button>
+                )}
               </div>
               {respondendoId === r.id && (
                 <div className="recommendation-response">
@@ -472,6 +507,16 @@ export default function Recomendacoes() {
                   <p>{r.comentarioResposta}</p>
                 </div>
               )}
+              {r.notaPosterior && (
+                <div className="recommendation-later-review">
+                  <strong>Sua avaliação posterior</strong>
+                  <div className="recommendation-later-review__stars">
+                    {[1, 2, 3, 4, 5].map(estrela => <FiStar key={estrela} className={estrela <= r.notaPosterior ? 'is-filled' : ''} />)}
+                    <span>{r.notaPosterior}/5</span>
+                  </div>
+                  {r.avaliacaoPosterior && <p>{r.avaliacaoPosterior}</p>}
+                </div>
+              )}
             </article>
           ))}
           {aba === 'enviadas' && recomendacoesVisiveis.map(r => (
@@ -496,6 +541,16 @@ export default function Recomendacoes() {
                 <div className="recommendation-response-comment recommendation-response-comment--sent">
                   <strong>Comentário de @{r.destinatarioApelido}</strong>
                   <p>{r.comentarioResposta}</p>
+                </div>
+              )}
+              {r.notaPosterior && (
+                <div className="recommendation-later-review">
+                  <strong>Avaliação de @{r.destinatarioApelido}</strong>
+                  <div className="recommendation-later-review__stars">
+                    {[1, 2, 3, 4, 5].map(estrela => <FiStar key={estrela} className={estrela <= r.notaPosterior ? 'is-filled' : ''} />)}
+                    <span>{r.notaPosterior}/5</span>
+                  </div>
+                  {r.avaliacaoPosterior && <p>{r.avaliacaoPosterior}</p>}
                 </div>
               )}
             </article>
@@ -539,6 +594,45 @@ export default function Recomendacoes() {
                     placeholder="Nome da nova Watchlist" />
                   <button type="button" onClick={criarWatchlistEAdicionar}>Criar e adicionar</button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {avaliandoRecomendacao && (
+          <div className="recommendation-list-modal" role="dialog" aria-modal="true" aria-label="Avaliar filme recomendado">
+            <button type="button" className="recommendation-list-modal__backdrop" onClick={fecharAvaliacao} aria-label="Fechar" />
+            <div className="recommendation-list-modal__content recommendation-review-modal">
+              <div className="recommendation-list-modal__heading">
+                <div>
+                  <p className="page-eyebrow">Depois da sessão</p>
+                  <h2>Como foi o filme?</h2>
+                  <span>{nomesFilmes[avaliandoRecomendacao.conteudoId]}</span>
+                </div>
+                <button type="button" onClick={fecharAvaliacao} aria-label="Fechar"><FiX /></button>
+              </div>
+              <div className="recommendation-review-modal__stars" aria-label="Nota">
+                {[1, 2, 3, 4, 5].map(estrela => (
+                  <button type="button" key={estrela} onClick={() => setAvaliacaoPosterior(atual => ({ ...atual, nota: estrela }))}
+                    className={estrela <= avaliacaoPosterior.nota ? 'is-selected' : ''} aria-label={`${estrela} estrelas`}>
+                    <FiStar />
+                  </button>
+                ))}
+                <span>{avaliacaoPosterior.nota ? `${avaliacaoPosterior.nota}/5` : 'Escolha sua nota'}</span>
+              </div>
+              <textarea maxLength="500" value={avaliacaoPosterior.comentario}
+                onChange={e => setAvaliacaoPosterior(atual => ({ ...atual, comentario: e.target.value }))}
+                placeholder="Conte o que achou do filme (opcional)" />
+              <div className="recommendation-review-modal__footer">
+                <label>
+                  Visibilidade
+                  <select value={avaliacaoPosterior.visibilidade}
+                    onChange={e => setAvaliacaoPosterior(atual => ({ ...atual, visibilidade: e.target.value }))}>
+                    <option value="PUBLICA">Pública</option>
+                    <option value="PRIVADA">Privada</option>
+                  </select>
+                </label>
+                <span>{avaliacaoPosterior.comentario.length}/500</span>
+                <button type="button" onClick={enviarAvaliacaoPosterior}>Publicar avaliação</button>
               </div>
             </div>
           </div>

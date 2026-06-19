@@ -14,7 +14,9 @@ public record RecomendacaoResumo(
         double pontuacaoCompatibilidade,
         LocalDateTime dataGeracao,
         String status,
-        String comentarioResposta) {
+        String comentarioResposta,
+        Integer notaPosterior,
+        String avaliacaoPosterior) {
 
     public static RecomendacaoResumo de(Recomendacao recomendacao) {
         return new RecomendacaoResumo(
@@ -27,6 +29,8 @@ public record RecomendacaoResumo(
                 recomendacao.getPontuacaoCompatibilidade(),
                 recomendacao.getDataGeracao(),
                 recomendacao.getStatus().name(),
-                recomendacao.getComentarioResposta());
+                recomendacao.getComentarioResposta(),
+                recomendacao.getNotaPosterior(),
+                recomendacao.getAvaliacaoPosterior());
     }
 }

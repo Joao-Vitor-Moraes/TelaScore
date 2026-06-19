@@ -39,6 +39,8 @@ public class RecomendacaoRepositorioImpl implements RecomendacaoRepositorio {
             entity.setDataGeracao(recomendacao.getDataGeracao());
             entity.setStatus(recomendacao.getStatus().name());
             entity.setComentarioResposta(recomendacao.getComentarioResposta());
+            entity.setNotaPosterior(recomendacao.getNotaPosterior());
+            entity.setAvaliacaoPosterior(recomendacao.getAvaliacaoPosterior());
 
             if (!em.contains(entity)) {
                 em.persist(entity);
@@ -178,7 +180,9 @@ public class RecomendacaoRepositorioImpl implements RecomendacaoRepositorio {
             entity.getMensagem(),
             entity.getDataGeracao(),
             StatusRecomendacao.valueOf(entity.getStatus()),
-            entity.getComentarioResposta()
+            entity.getComentarioResposta(),
+            entity.getNotaPosterior(),
+            entity.getAvaliacaoPosterior()
         );
     }
 }

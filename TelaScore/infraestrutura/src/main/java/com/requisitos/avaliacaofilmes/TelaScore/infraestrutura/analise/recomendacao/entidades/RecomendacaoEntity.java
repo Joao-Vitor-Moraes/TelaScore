@@ -40,6 +40,12 @@ public class RecomendacaoEntity {
     @Column(name = "comentario_resposta", length = 255)
     private String comentarioResposta;
 
+    @Column(name = "nota_posterior")
+    private Integer notaPosterior;
+
+    @Column(name = "avaliacao_posterior", length = 500)
+    private String avaliacaoPosterior;
+
     public RecomendacaoEntity() {}
 
     public Integer getId() { return id; }
@@ -62,4 +68,8 @@ public class RecomendacaoEntity {
     public void setStatus(String status) { this.status = status; }
     public String getComentarioResposta() { return comentarioResposta; }
     public void setComentarioResposta(String comentarioResposta) { this.comentarioResposta = comentarioResposta; }
+    public Integer getNotaPosterior() { return notaPosterior; }
+    public void setNotaPosterior(Integer notaPosterior) { this.notaPosterior = notaPosterior; }
+    public String getAvaliacaoPosterior() { return avaliacaoPosterior; }
+    public void setAvaliacaoPosterior(String avaliacaoPosterior) { this.avaliacaoPosterior = avaliacaoPosterior; }
 }
