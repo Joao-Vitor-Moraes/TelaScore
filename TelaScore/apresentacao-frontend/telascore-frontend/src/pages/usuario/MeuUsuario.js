@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { FiAtSign, FiEdit2, FiFileText, FiImage, FiMail, FiSave, FiShield, FiUpload, FiUser, FiX } from 'react-icons/fi';
+import { FiAtSign, FiAward, FiEdit2, FiFileText, FiImage, FiMail, FiSave, FiShield, FiUpload, FiUser, FiX } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
-import { usuarioService } from '../../services/api';
+import { metaService, usuarioService } from '../../services/api';
 import './usuario.css';
 
 const camposOcultos = new Set(['id', 'senha', 'token', 'tipoToken', 'expiraEmSegundos']);
@@ -39,6 +39,7 @@ export default function MeuUsuario() {
     const [salvando, setSalvando] = useState(false);
     const [enviandoFoto, setEnviandoFoto] = useState(false);
     const [form, setForm] = useState(formInicial);
+    const [totalPontos, setTotalPontos] = useState(0);
 
     useEffect(() => {
         carregarUsuario();
@@ -49,8 +50,12 @@ export default function MeuUsuario() {
         setErro(null);
 
         try {
-            const dados = await usuarioService.meuUsuario();
+            const [dados, pontuacao] = await Promise.all([
+                usuarioService.meuUsuario(),
+                metaService.pontuacao(),
+            ]);
             setUsuario(dados);
+            setTotalPontos(pontuacao.totalPontos || 0);
             setForm(formDeUsuario(dados));
         } catch {
             setUsuario(null);
@@ -189,6 +194,10 @@ export default function MeuUsuario() {
                                         {usuario.apelido}
                                     </span>
                                 )}
+                                <span className="user-points">
+                                    <FiAward />
+                                    {totalPontos} pontos
+                                </span>
                             </div>
                         </section>
 

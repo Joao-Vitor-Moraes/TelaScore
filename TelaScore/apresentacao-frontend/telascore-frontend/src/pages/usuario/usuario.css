@@ -53,7 +53,8 @@
 }
 
 .user-identity p,
-.user-nickname {
+.user-nickname,
+.user-points {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -183,6 +184,11 @@
   border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
+}
+
+.user-points {
+  color: #ffd166;
+  font-weight: 800;
 }
 
 .user-avatar-options {

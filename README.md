@@ -155,7 +155,7 @@ Senha: admin123
 | João Vitor Moraes | Iterator | Lista | `IteradorDeItens`, `IteradorSequencialDeItens`, `IteradorRanqueadoDeItens`, `Lista` (dominio-catalogo) · `ConsultarItensListaCasoDeUso` (aplicacao) |
 | Ester Carvalho | — | — | — |
 | Célio Pereira | — | — | — |
-| Guilherme Vinicius | — | — | — |
+| Guilherme Vinicius | Template Method | Metas | `AtualizadorMetaTemplate`, `AtualizadorMetaComNotificacao`, `AtualizadorMetaSilencioso` (aplicacao) · `AdicionarProgressoMetaCasoDeUso` (aplicacao) · atualização do progresso, pontuação e notificação de conclusão |
 | Fátima Beatriz Moraes | — | — | — |
 | Caio Almeida | Decorator | Quiz | `QuizDecorator`, `QuizBase`, `QuizComRestricao` (dominio-analise) , `ResponderQuizCasoDeUso` (aplicacao) |
 | Gabriel Reis | Iterator | Denúncia | `MapeadorDesnunciasComIterador`, `iteradorDeDenuncias`,`iteradorSequencialDeDenuncias` |
