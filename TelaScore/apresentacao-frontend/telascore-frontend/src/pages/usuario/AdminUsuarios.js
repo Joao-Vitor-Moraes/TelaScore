@@ -201,7 +201,7 @@ export default function AdminUsuarios() {
                 {!carregando && !erro && listagem.length > 0 && (
                     <div className="admin-list">
                         {listagem.map(usuario => (
-                            <article key={usuario.id} className={`admin-card ${editandoId === usuario.id ? 'is-editing' : ''}`}>
+                            <article key={usuario.id} className={`admin-card admin-user-card ${editandoId === usuario.id ? 'is-editing' : ''}`}>
                                 <div className="admin-card__main">
                                     <div className="admin-avatar">
                                         {usuario.avatarUrl
