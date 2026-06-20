@@ -33,6 +33,7 @@
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.ComunidadeEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.MembroComunidadeEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.comunidade.entidades.MensagemComunidadeEntity</class>
+        <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.conexao.entidades.ConexaoEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.denuncia.entidades.DenunciaEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.mensagem.entidades.MensagemEntity</class>
         <class>com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.social.mensagem.entidades.FigurinhaEntity</class>
