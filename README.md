@@ -157,6 +157,6 @@ Senha: admin123
 | Célio Pereira | — | — | — |
 | Guilherme Vinicius | — | — | — |
 | Fátima Beatriz Moraes | — | — | — |
-| Caio Almeida | — | — | — |
+| Caio Almeida | Decorator | Quiz | `QuizDecorator`, `QuizBase`, `QuizComRestricao (dominio-analise)` , `ResponderQuizCasoDeUso (aplicacao)` |
 | Gabriel Reis | — | — | — |
 | Rodrigo Souza | — | — | — |
