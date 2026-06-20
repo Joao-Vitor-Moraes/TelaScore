@@ -9,7 +9,6 @@ public record SolicitacaoResumo(
 		String justificativa,
 		String pais,
 		Integer ano,
-		String genero,
 		String fotoUrl,
 		String status,
 		LocalDateTime dataCriacao,

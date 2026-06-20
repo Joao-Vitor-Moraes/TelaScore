@@ -7,6 +7,5 @@ public record EditarSolicitacaoComando(
         String justificativa,
         String pais,
         Integer ano,
-        String genero,
         String fotoUrl
 ) {}

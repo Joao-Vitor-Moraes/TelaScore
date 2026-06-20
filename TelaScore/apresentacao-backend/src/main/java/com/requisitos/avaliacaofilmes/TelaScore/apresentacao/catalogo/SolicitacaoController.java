@@ -45,7 +45,7 @@ public class SolicitacaoController {
     public ResponseEntity<Void> editar(@PathVariable int solicitacaoId, @RequestBody EditarSolicitacaoRequest body) {
         editarSolicitacao.executar(new EditarSolicitacaoComando(
                 solicitacaoId, body.solicitanteId(), body.tituloSugerido(),
-                body.justificativa(), body.pais(), body.ano(), body.genero(), body.fotoUrl()));
+                body.justificativa(), body.pais(), body.ano(), body.fotoUrl()));
         return ResponseEntity.noContent().build();
     }
 
@@ -93,5 +93,5 @@ public class SolicitacaoController {
         throw new com.requisitos.avaliacaofilmes.TelaScore.aplicacao.EntradaInvalidaException("Informe 'solicitanteId' ou 'status' como parâmetro.");
     }
 
-    record EditarSolicitacaoRequest(int solicitanteId, String tituloSugerido, String justificativa, String pais, Integer ano, String genero, String fotoUrl) {}
+    record EditarSolicitacaoRequest(int solicitanteId, String tituloSugerido, String justificativa, String pais, Integer ano, String fotoUrl) {}
 }

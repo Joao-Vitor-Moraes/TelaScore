@@ -26,7 +26,6 @@ public class SolicitarFilmeCasoDeUso {
 		}
 		solicitacao.setPais(comando.pais());
 		solicitacao.setAno(comando.ano());
-		solicitacao.setGenero(comando.genero());
 		solicitacao.setFotoUrl(comando.fotoUrl());
 
 		solicitacaoServico.enviarSolicitacao(solicitacao);
@@ -38,7 +37,6 @@ public class SolicitarFilmeCasoDeUso {
 				solicitacao.getJustificativa(),
 				solicitacao.getPais(),
 				solicitacao.getAno(),
-				solicitacao.getGenero(),
 				solicitacao.getFotoUrl(),
 				solicitacao.getStatus().name(),
 				solicitacao.getDataCriacao(),

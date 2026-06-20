@@ -179,7 +179,7 @@ public class SolicitacaoSteps {
         SolicitacaoId id = new SolicitacaoId(555);
         UsuarioId solicitante = new UsuarioId(2);
         solicitacaoCriada = SolicitacaoFilme.restaurar(
-            id, solicitante, titulo, null, null, null, null, null,
+            id, solicitante, titulo, null, null, null, null,
             StatusSolicitacao.AGUARDANDO_AJUSTES, java.time.LocalDateTime.now(), "Precisa de mais informações"
         );
         solicitacaoRepositorioMock = mock(SolicitacaoRepositorio.class);
@@ -190,7 +190,7 @@ public class SolicitacaoSteps {
     @Quando("o solicitante edita a solicitação com o novo título {string}")
     public void o_solicitante_edita_a_solicitacao_com_o_novo_titulo(String novoTitulo) {
         try {
-            solicitacaoCriada.editar(novoTitulo, null, null, null, null, null);
+            solicitacaoCriada.editar(novoTitulo, null, null, null, null);
         } catch (Exception e) {
             excecaoCapturada = e;
         }
@@ -205,7 +205,7 @@ public class SolicitacaoSteps {
     @Quando("o solicitante tenta editar a solicitação")
     public void o_solicitante_tenta_editar_a_solicitacao() {
         try {
-            solicitacaoCriada.editar("Título qualquer", null, null, null, null, null);
+            solicitacaoCriada.editar("Título qualquer", null, null, null, null);
         } catch (Exception e) {
             excecaoCapturada = e;
         }
@@ -216,7 +216,7 @@ public class SolicitacaoSteps {
         SolicitacaoId id = new SolicitacaoId(555);
         UsuarioId solicitante = new UsuarioId(2);
         solicitacaoCriada = SolicitacaoFilme.restaurar(
-            id, solicitante, titulo, null, null, null, null, null,
+            id, solicitante, titulo, null, null, null, null,
             StatusSolicitacao.APROVADA, java.time.LocalDateTime.now(), null
         );
         solicitacaoRepositorioMock = mock(SolicitacaoRepositorio.class);

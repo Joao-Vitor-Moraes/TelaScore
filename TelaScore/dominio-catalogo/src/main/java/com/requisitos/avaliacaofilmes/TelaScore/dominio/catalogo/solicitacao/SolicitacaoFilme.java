@@ -15,7 +15,6 @@ public class SolicitacaoFilme {
     private String justificativa;
     private String pais;
     private Integer ano;
-    private String genero;
     private String fotoUrl;
     private StatusSolicitacao status;
     private final LocalDateTime dataCriacao;
@@ -57,9 +56,6 @@ public class SolicitacaoFilme {
     public void setAno(Integer ano) { this.ano = ano; }
     public Integer getAno() { return ano; }
 
-    public void setGenero(String genero) { this.genero = genero; }
-    public String getGenero() { return genero; }
-
     public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
     public String getFotoUrl() { return fotoUrl; }
 
@@ -81,7 +77,7 @@ public class SolicitacaoFilme {
         this.status = StatusSolicitacao.CANCELADA;
     }
 
-    public void editar(String novoTitulo, String novaJustificativa, String novoPais, Integer novoAno, String novoGenero, String novaFotoUrl) {
+    public void editar(String novoTitulo, String novaJustificativa, String novoPais, Integer novoAno, String novaFotoUrl) {
         if (this.status != StatusSolicitacao.AGUARDANDO_AJUSTES) {
             throw new IllegalStateException("Apenas solicitações aguardando ajustes podem ser editadas.");
         }
@@ -90,7 +86,6 @@ public class SolicitacaoFilme {
         this.justificativa = novaJustificativa;
         this.pais = novoPais;
         this.ano = novoAno;
-        this.genero = novoGenero;
         this.fotoUrl = novaFotoUrl;
         this.feedbackAdmin = null;
         this.status = StatusSolicitacao.PENDENTE;
@@ -106,7 +101,7 @@ public class SolicitacaoFilme {
     }
 
     private SolicitacaoFilme(SolicitacaoId id, UsuarioId solicitanteId, String tituloSugerido, String justificativa,
-            String pais, Integer ano, String genero, String fotoUrl,
+            String pais, Integer ano, String fotoUrl,
             StatusSolicitacao status, LocalDateTime dataCriacao, String feedbackAdmin) {
         this.id = id;
         this.solicitanteId = solicitanteId;
@@ -114,7 +109,6 @@ public class SolicitacaoFilme {
         this.justificativa = justificativa;
         this.pais = pais;
         this.ano = ano;
-        this.genero = genero;
         this.fotoUrl = fotoUrl;
         this.status = status;
         this.dataCriacao = dataCriacao;
@@ -122,9 +116,9 @@ public class SolicitacaoFilme {
     }
 
     public static SolicitacaoFilme restaurar(SolicitacaoId id, UsuarioId solicitanteId, String tituloSugerido, String justificativa,
-            String pais, Integer ano, String genero, String fotoUrl,
+            String pais, Integer ano, String fotoUrl,
             StatusSolicitacao status, LocalDateTime dataCriacao, String feedbackAdmin) {
-        return new SolicitacaoFilme(id, solicitanteId, tituloSugerido, justificativa, pais, ano, genero, fotoUrl, status, dataCriacao, feedbackAdmin);
+        return new SolicitacaoFilme(id, solicitanteId, tituloSugerido, justificativa, pais, ano, fotoUrl, status, dataCriacao, feedbackAdmin);
     }
 
 }

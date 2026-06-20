@@ -25,7 +25,6 @@ public class EditarSolicitacaoCasoDeUso {
                 comando.justificativa(),
                 comando.pais(),
                 comando.ano(),
-                comando.genero(),
                 comando.fotoUrl()
         );
         solicitacaoRepositorio.salvar(solicitacao);

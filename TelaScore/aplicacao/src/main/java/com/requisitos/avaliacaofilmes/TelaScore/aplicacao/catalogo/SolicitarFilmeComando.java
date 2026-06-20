@@ -6,6 +6,5 @@ public record SolicitarFilmeComando(
 		String justificativa,
 		String pais,
 		Integer ano,
-		String genero,
 		String fotoUrl
 ) {}

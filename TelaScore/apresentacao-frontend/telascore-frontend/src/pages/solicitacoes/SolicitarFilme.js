@@ -4,17 +4,11 @@ import Navbar from '../../components/Navbar';
 import { solicitacaoService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
-const GENEROS = [
-  'Ação', 'Aventura', 'Animação', 'Biografia', 'Comédia', 'Crime',
-  'Documentário', 'Drama', 'Fantasia', 'Ficção Científica', 'Musical',
-  'Romance', 'Suspense', 'Terror',
-];
-
 export default function SolicitarFilme() {
   const { sessao } = useAuth();
   const USUARIO_ID = sessao.id;
   const [form, setForm] = useState({
-    nome: '', pais: '', ano: '', genero: '', fotoUrl: '', descricao: '',
+    nome: '', pais: '', ano: '', fotoUrl: '', descricao: '',
   });
   const [erro, setErro] = useState(null);
   const [enviando, setEnviando] = useState(false);
@@ -36,7 +30,6 @@ export default function SolicitarFilme() {
         justificativa: form.descricao || null,
         pais: form.pais || null,
         ano: form.ano ? parseInt(form.ano) : null,
-        genero: form.genero || null,
         fotoUrl: form.fotoUrl || null,
       });
       navigate('/solicitacoes', { state: { sucesso: form.nome } });
@@ -80,20 +73,11 @@ export default function SolicitarFilme() {
                     onChange={handleChange} placeholder="Ex: EUA" />
                 </div>
 
-                <div style={styles.linhaDouble}>
-                  <div style={styles.campo}>
-                    <label style={styles.label}>ANO</label>
-                    <input style={styles.input} name="ano" value={form.ano}
-                      onChange={handleChange} placeholder="Ex: 2014"
-                      type="number" min="1888" max="2099" />
-                  </div>
-                  <div style={styles.campo}>
-                    <label style={styles.label}>GÊNERO</label>
-                    <select style={styles.input} name="genero" value={form.genero} onChange={handleChange}>
-                      <option value="">Selecione</option>
-                      {GENEROS.map(g => <option key={g} value={g}>{g}</option>)}
-                    </select>
-                  </div>
+                <div style={styles.campo}>
+                  <label style={styles.label}>ANO</label>
+                  <input style={styles.input} name="ano" value={form.ano}
+                    onChange={handleChange} placeholder="Ex: 2014"
+                    type="number" min="1888" max="2099" />
                 </div>
               </div>
 
@@ -149,7 +133,6 @@ const styles = {
   grade: { display: 'grid', gridTemplateColumns: '1fr auto', gap: '24px', marginBottom: '16px' },
   colunaEsq: { display: 'flex', flexDirection: 'column', gap: '14px' },
   colunaDireita: { display: 'flex', flexDirection: 'column', alignItems: 'center', width: '120px' },
-  linhaDouble: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' },
   campo: { display: 'flex', flexDirection: 'column', gap: '6px' },
   label: { fontSize: '11px', fontWeight: 'bold', color: '#aaa', letterSpacing: '1px' },
   input: {

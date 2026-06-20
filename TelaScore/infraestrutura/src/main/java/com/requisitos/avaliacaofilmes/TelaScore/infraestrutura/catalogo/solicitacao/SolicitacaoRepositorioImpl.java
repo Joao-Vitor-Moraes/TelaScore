@@ -36,7 +36,6 @@ public class SolicitacaoRepositorioImpl implements SolicitacaoRepositorio {
             entity.setJustificativa(solicitacao.getJustificativa());
             entity.setPais(solicitacao.getPais());
             entity.setAno(solicitacao.getAno());
-            entity.setGenero(solicitacao.getGenero());
             entity.setFotoUrl(solicitacao.getFotoUrl());
             entity.setStatus(solicitacao.getStatus().name());
             entity.setFeedbackAdmin(solicitacao.getFeedbackAdmin());
@@ -110,7 +109,7 @@ public class SolicitacaoRepositorioImpl implements SolicitacaoRepositorio {
         StatusSolicitacao status = StatusSolicitacao.valueOf(entity.getStatus());
         
         return SolicitacaoFilme.restaurar(id, solicitanteId, entity.getTituloSugerido(),
-                entity.getJustificativa(), entity.getPais(), entity.getAno(), entity.getGenero(), entity.getFotoUrl(),
+                entity.getJustificativa(), entity.getPais(), entity.getAno(), entity.getFotoUrl(),
                 status, entity.getDataCriacao(), entity.getFeedbackAdmin());
     }
 }

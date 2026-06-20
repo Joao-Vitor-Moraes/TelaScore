@@ -25,8 +25,6 @@ public class SolicitacaoFilmeEntity {
 
     private Integer ano;
 
-    private String genero;
-
     @Column(name = "foto_url")
     private String fotoUrl;
 
@@ -100,9 +98,6 @@ public class SolicitacaoFilmeEntity {
 
     public Integer getAno() { return ano; }
     public void setAno(Integer ano) { this.ano = ano; }
-
-    public String getGenero() { return genero; }
-    public void setGenero(String genero) { this.genero = genero; }
 
     public String getFotoUrl() { return fotoUrl; }
     public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }

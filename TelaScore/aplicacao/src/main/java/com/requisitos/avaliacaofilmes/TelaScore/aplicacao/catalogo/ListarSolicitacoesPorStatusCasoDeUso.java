@@ -32,7 +32,6 @@ public class ListarSolicitacoesPorStatusCasoDeUso {
                         s.getJustificativa(),
                         s.getPais(),
                         s.getAno(),
-                        s.getGenero(),
                         s.getFotoUrl(),
                         s.getStatus().name(),
                         s.getDataCriacao(),

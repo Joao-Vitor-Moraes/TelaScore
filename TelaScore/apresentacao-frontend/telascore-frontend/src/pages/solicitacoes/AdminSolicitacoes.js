@@ -108,7 +108,11 @@ export default function AdminSolicitacoes() {
 
               <div style={styles.cardInfo}>
                 <span style={styles.cardTitulo}>{s.tituloSugerido}</span>
-                {s.genero && <span style={styles.cardSub}>{s.genero}{s.ano ? ` · ${s.ano}` : ''}{s.pais ? ` · ${s.pais}` : ''}</span>}
+                {(s.ano || s.pais) && (
+                  <span style={styles.cardSub}>
+                    {[s.ano, s.pais].filter(Boolean).join(' · ')}
+                  </span>
+                )}
                 {s.justificativa && (
                   <span style={styles.cardDesc}>
                     {s.justificativa.length > 80 ? s.justificativa.slice(0, 80) + '…' : s.justificativa}
