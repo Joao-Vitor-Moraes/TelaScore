@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
     FiFileText, FiPlus, FiSearch, FiX, FiClock, FiTag, FiTrash2, FiUser
 } from 'react-icons/fi';
@@ -8,6 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function Noticias() {
     const { sessao } = useAuth();
+    const location = useLocation();
     const [noticias, setNoticias] = useState([]);
     const [aba, setAba] = useState('TODAS');
     const [busca, setBusca] = useState('');
@@ -41,12 +43,15 @@ export default function Noticias() {
             setErro('');
             const categoriaFiltro = aba === 'TODAS' ? '' : aba;
             const data = await noticiaService.pesquisar(busca, categoriaFiltro);
-            setNoticias(Array.isArray(data) ? data : []);
+            const recebidas = Array.isArray(data) ? data : [];
+            setNoticias(recebidas);
+            const recomendada = recebidas.find(item => Number(item.id) === Number(location.state?.conteudoRecomendadoId));
+            if (recomendada) setNoticiaAtiva(recomendada);
         } catch (e) {
             setNoticias([]);
             setErro('Não foi possível carregar o mural de notícias.');
         }
-    }, [aba, busca]);
+    }, [aba, busca, location.state?.conteudoRecomendadoId]);
 
     useEffect(() => {
         carregarNoticias();

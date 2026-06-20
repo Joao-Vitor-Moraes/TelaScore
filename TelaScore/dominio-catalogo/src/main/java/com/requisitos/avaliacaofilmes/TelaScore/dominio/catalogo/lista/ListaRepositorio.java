@@ -10,4 +10,5 @@ public interface ListaRepositorio {
 	
 	List<Lista> pesquisarPorDono(UsuarioId donoId);
 	List<Lista> pesquisarPorColaborador(UsuarioId colaboradorId);
+	List<Lista> listarPublicas();
 }

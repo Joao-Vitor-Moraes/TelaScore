@@ -58,6 +58,7 @@ async function upload(path, file) {
 
 // Listas
 export const listaService = {
+  listarPublicas: () => request('GET', '/api/listas/publicas'),
   listarPorUsuario: (usuarioId, quemPedeId) => request('GET', `/api/listas?usuarioId=${usuarioId}${quemPedeId != null ? `&quemPedeId=${quemPedeId}` : ''}`),
   obter: (listaId, quemPedeId) => request('GET', `/api/listas/${listaId}${quemPedeId != null ? `?quemPedeId=${quemPedeId}` : ''}`),
   criar: (comando) => request('POST', '/api/listas', comando),

@@ -132,6 +132,10 @@ public class RecomendacaoController {
         if (!recomendacao.getStatus().name().equals("JA_ASSISTI")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Marque a recomendação como Já assisti antes de avaliar.");
         }
+        if (recomendacao.getTipoConteudo() != TipoConteudo.FILME) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Apenas recomendações de filmes podem receber uma avaliação.");
+        }
         avaliarFilme.executar(new AvaliarFilmeComando(
                 Integer.parseInt(recomendacao.getConteudoId()),
                 usuario.getId().getId(),

@@ -149,6 +149,23 @@ public class ListaRepositorioImpl implements ListaRepositorio {
         }
     }
 
+    @Override
+    public List<Lista> listarPublicas() {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT l FROM ListaEntity l WHERE l.visibilidade <> :privada ORDER BY l.titulo",
+                    ListaEntity.class)
+                    .setParameter("privada", Visibilidade.PRIVADA.name())
+                    .getResultList()
+                    .stream()
+                    .map(this::mapearParaDominio)
+                    .toList();
+        } finally {
+            em.close();
+        }
+    }
+
     private Lista mapearParaDominio(ListaEntity entity) {
         ListaId listaId = new ListaId(entity.getId());
         UsuarioId donoId = new UsuarioId(entity.getDonoId());

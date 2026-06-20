@@ -30,6 +30,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CriarListaCas
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.CriarListaComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ItemListaDetalhe;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarListasPorUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarListasPublicasCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListaResumo;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverFilmeDaListaCasoDeUso;
@@ -49,6 +50,7 @@ public class ListaController {
     private final CriarListaCasoDeUso criarLista;
     private final ObterListaCasoDeUso obterLista;
     private final ListarListasPorUsuarioCasoDeUso listarPorUsuario;
+    private final ListarListasPublicasCasoDeUso listarPublicas;
     private final RemoverListaCasoDeUso removerLista;
     private final ConsultarItensListaCasoDeUso consultarItens;
     private final AdicionarFilmeNaListaCasoDeUso adicionarFilme;
@@ -63,6 +65,7 @@ public class ListaController {
             CriarListaCasoDeUso criarLista,
             ObterListaCasoDeUso obterLista,
             ListarListasPorUsuarioCasoDeUso listarPorUsuario,
+            ListarListasPublicasCasoDeUso listarPublicas,
             RemoverListaCasoDeUso removerLista,
             ConsultarItensListaCasoDeUso consultarItens,
             AdicionarFilmeNaListaCasoDeUso adicionarFilme,
@@ -76,6 +79,7 @@ public class ListaController {
         this.criarLista = criarLista;
         this.obterLista = obterLista;
         this.listarPorUsuario = listarPorUsuario;
+        this.listarPublicas = listarPublicas;
         this.removerLista = removerLista;
         this.consultarItens = consultarItens;
         this.adicionarFilme = adicionarFilme;
@@ -111,6 +115,11 @@ public class ListaController {
     public List<ListaResumo> listarPorUsuario(@RequestParam int usuarioId,
             @RequestParam(required = false) Integer quemPedeId) {
         return listarPorUsuario.executar(usuarioId, quemPedeId);
+    }
+
+    @GetMapping("/publicas")
+    public List<ListaResumo> listarPublicas() {
+        return listarPublicas.executar();
     }
 
     @DeleteMapping("/{listaId}")

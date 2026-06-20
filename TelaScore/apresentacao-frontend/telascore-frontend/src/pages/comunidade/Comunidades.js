@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
     FiUsers, FiPlus, FiSearch, FiMessageSquare, FiX, FiLogIn,
     FiLogOut, FiSend, FiTrash2, FiShield, FiUserX, FiUserCheck, FiUser
@@ -12,6 +12,7 @@ import './comunidades.css';
 export default function Comunidades() {
     const { sessao } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [comunidades, setComunidades] = useState([]);
     const [minhasComunidades, setMinhasComunidades] = useState([]);
     const [usuariosMap, setUsuariosMap] = useState({});
@@ -53,6 +54,9 @@ export default function Comunidades() {
             setComunidades(Array.isArray(todas) ? todas : []);
             setMinhasComunidades(Array.isArray(doUsuario) ? doUsuario : []);
             setMeuPerfil(dadosMeuUsuario);
+            const comunidadeRecomendada = (Array.isArray(todas) ? todas : [])
+                .find(item => Number(extrairIdString(item.id)) === Number(location.state?.conteudoRecomendadoId));
+            if (comunidadeRecomendada) setComunidadeAtiva(comunidadeRecomendada);
 
             let usersArray = [];
             if (Array.isArray(listaUsers)) {
@@ -74,7 +78,7 @@ export default function Comunidades() {
         } catch (e) {
             setErro('Erro ao carregar dados do ecossistema de comunidades.');
         }
-    }, [sessao.id]);
+    }, [location.state?.conteudoRecomendadoId, sessao.id]);
 
     useEffect(() => {
         carregarDados();
