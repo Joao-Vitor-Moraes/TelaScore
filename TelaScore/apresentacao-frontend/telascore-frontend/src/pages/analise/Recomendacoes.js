@@ -1,27 +1,43 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
-import { filmeService, listaService, recomendacaoService, usuarioService } from '../../services/api';
+import {
+  comunidadeService, eventoService, filmeService, listaService, metaService,
+  noticiaService, recomendacaoService, usuarioService,
+} from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import {
   FiBookmark, FiCheckCircle, FiChevronDown, FiClock, FiFilm, FiHeart,
-  FiInbox, FiPlus, FiSearch, FiSend, FiUser, FiX, FiXCircle, FiZap,
-  FiStar,
+  FiCalendar, FiFileText, FiInbox, FiList, FiPlus, FiSearch, FiSend,
+  FiTarget, FiUser, FiUsers, FiX, FiXCircle, FiZap, FiStar,
 } from 'react-icons/fi';
 import './analise.css';
 
+const TIPOS_CONTEUDO = {
+  FILME: { rotulo: 'Filme', plural: 'filmes', icone: FiFilm, placeholder: 'Digite o nome ou abra a lista de filmes' },
+  LISTA: { rotulo: 'Lista', plural: 'listas públicas', icone: FiList, placeholder: 'Busque uma lista pública' },
+  COMUNIDADE: { rotulo: 'Comunidade', plural: 'comunidades', icone: FiUsers, placeholder: 'Busque uma comunidade' },
+  EVENTO: { rotulo: 'Evento', plural: 'eventos', icone: FiCalendar, placeholder: 'Busque um evento futuro' },
+  NOTICIA: { rotulo: 'Notícia', plural: 'notícias', icone: FiFileText, placeholder: 'Busque uma notícia' },
+  META_MODELO: { rotulo: 'Meta-modelo', plural: 'metas-modelo', icone: FiTarget, placeholder: 'Busque um desafio do sistema' },
+};
+
 export default function Recomendacoes() {
   const { sessao } = useAuth();
+  const navigate = useNavigate();
   const [recomendacoes, setRecomendacoes] = useState([]);
   const [enviadas, setEnviadas] = useState([]);
   const [aba, setAba] = useState('recebidas');
   const [filmes, setFilmes] = useState([]);
+  const [conteudos, setConteudos] = useState({ LISTA: [], COMUNIDADE: [], EVENTO: [], NOTICIA: [], META_MODELO: [] });
+  const [tipoConteudo, setTipoConteudo] = useState('FILME');
   const [form, setForm] = useState({ destinatarioId: '', conteudoId: '', mensagem: '' });
   const [buscaApelido, setBuscaApelido] = useState('');
   const [usuarios, setUsuarios] = useState([]);
   const [destinatario, setDestinatario] = useState(null);
-  const [buscaFilme, setBuscaFilme] = useState('');
-  const [filmeSelecionado, setFilmeSelecionado] = useState(null);
-  const [listaFilmesAberta, setListaFilmesAberta] = useState(false);
+  const [buscaConteudo, setBuscaConteudo] = useState('');
+  const [conteudoSelecionado, setConteudoSelecionado] = useState(null);
+  const [listaConteudosAberta, setListaConteudosAberta] = useState(false);
   const [erro, setErro] = useState('');
   const [feedback, setFeedback] = useState('');
   const [respondendoId, setRespondendoId] = useState(null);
@@ -47,7 +63,23 @@ export default function Recomendacoes() {
 
   useEffect(() => {
     carregar();
-    filmeService.listar().then(setFilmes).catch(() => setFilmes([]));
+    Promise.all([
+      filmeService.listar(),
+      listaService.listarPublicas().catch(() => []),
+      comunidadeService.listarTodas().catch(() => []),
+      eventoService.listarFuturos().catch(() => []),
+      noticiaService.pesquisar('', '').catch(() => []),
+      metaService.listarSistema().catch(() => []),
+    ]).then(([dadosFilmes, listasPublicas, comunidades, eventos, noticias, metasModelo]) => {
+      setFilmes(Array.isArray(dadosFilmes) ? dadosFilmes : []);
+      setConteudos({
+        LISTA: Array.isArray(listasPublicas) ? listasPublicas : [],
+        COMUNIDADE: Array.isArray(comunidades) ? comunidades : [],
+        EVENTO: Array.isArray(eventos) ? eventos : [],
+        NOTICIA: Array.isArray(noticias) ? noticias : [],
+        META_MODELO: Array.isArray(metasModelo) ? metasModelo : [],
+      });
+    }).catch(() => setFilmes([]));
     listaService.listarPorUsuario(sessao.id, sessao.id).then(setListas).catch(() => setListas([]));
   }, [carregar, sessao.id]);
 
@@ -78,11 +110,47 @@ export default function Recomendacoes() {
     () => Object.fromEntries(filmes.map(f => [String(f.id), f])),
     [filmes],
   );
-  const filmesFiltrados = useMemo(() => {
-    const termo = buscaFilme.trim().toLocaleLowerCase('pt-BR');
-    if (!termo) return filmes;
-    return filmes.filter(filme => filme.titulo.toLocaleLowerCase('pt-BR').includes(termo));
-  }, [buscaFilme, filmes]);
+  const todosConteudos = useMemo(() => ({ FILME: filmes, ...conteudos }), [conteudos, filmes]);
+  const tituloConteudo = useCallback((tipo, item) => {
+    if (!item) return '';
+    if (tipo === 'LISTA' || tipo === 'COMUNIDADE') return item.nome;
+    return item.titulo;
+  }, []);
+  const descricaoConteudo = useCallback((tipo, item) => {
+    if (!item) return '';
+    if (tipo === 'FILME') return item.anoLancamento || '';
+    if (tipo === 'EVENTO') return item.dataHora ? new Date(item.dataHora).toLocaleString('pt-BR') : '';
+    if (tipo === 'NOTICIA') return item.categoria || '';
+    if (tipo === 'META_MODELO') return `${item.quantidadeAlvo} em ${item.duracaoDias} dias`;
+    return item.descricao || '';
+  }, []);
+  const conteudosPorChave = useMemo(() => {
+    const mapa = {};
+    Object.entries(todosConteudos).forEach(([tipo, itens]) => {
+      (itens || []).forEach(item => {
+        mapa[`${tipo}:${item.id}`] = item;
+      });
+    });
+    return mapa;
+  }, [todosConteudos]);
+  const conteudosFiltrados = useMemo(() => {
+    const itens = todosConteudos[tipoConteudo] || [];
+    const termo = buscaConteudo.trim().toLocaleLowerCase('pt-BR');
+    if (!termo) return itens;
+    return itens.filter(item => [
+      tituloConteudo(tipoConteudo, item),
+      descricaoConteudo(tipoConteudo, item),
+    ].join(' ').toLocaleLowerCase('pt-BR').includes(termo));
+  }, [buscaConteudo, descricaoConteudo, tipoConteudo, tituloConteudo, todosConteudos]);
+  const obterConteudo = useCallback(
+    recomendacao => conteudosPorChave[`${recomendacao.tipoConteudo}:${recomendacao.conteudoId}`],
+    [conteudosPorChave],
+  );
+  const obterTitulo = useCallback(recomendacao => {
+    const item = obterConteudo(recomendacao);
+    return tituloConteudo(recomendacao.tipoConteudo, item)
+      || `${TIPOS_CONTEUDO[recomendacao.tipoConteudo]?.rotulo || recomendacao.tipoConteudo} #${recomendacao.conteudoId}`;
+  }, [obterConteudo, tituloConteudo]);
   const naoLidas = useMemo(
     () => recomendacoes.filter(recomendacao => recomendacao.status === 'PENDENTE').length,
     [recomendacoes],
@@ -97,14 +165,14 @@ export default function Recomendacoes() {
         || (filtroStatus === 'RECUSADAS' && ['REJEITADA', 'SEM_INTERESSE'].includes(recomendacao.status));
       const pessoa = aba === 'recebidas' ? recomendacao.remetenteApelido : recomendacao.destinatarioApelido;
       const texto = [
-        nomesFilmes[recomendacao.conteudoId],
+        obterTitulo(recomendacao),
         pessoa,
         recomendacao.mensagem,
         recomendacao.comentarioResposta,
       ].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR');
       return statusCorresponde && (!termo || texto.includes(termo));
     });
-  }, [aba, buscaHistorico, enviadas, filtroStatus, nomesFilmes, recomendacoes]);
+  }, [aba, buscaHistorico, enviadas, filtroStatus, obterTitulo, recomendacoes]);
 
   async function enviar(e) {
     e.preventDefault();
@@ -118,16 +186,16 @@ export default function Recomendacoes() {
       await recomendacaoService.enviar({
         destinatarioId: Number(form.destinatarioId),
         conteudoId: String(form.conteudoId),
-        tipoConteudo: 'FILME',
+        tipoConteudo,
         mensagem: form.mensagem || null,
       });
       setForm({ destinatarioId: '', conteudoId: '', mensagem: '' });
       setBuscaApelido('');
       setDestinatario(null);
       setUsuarios([]);
-      setBuscaFilme('');
-      setFilmeSelecionado(null);
-      setListaFilmesAberta(false);
+      setBuscaConteudo('');
+      setConteudoSelecionado(null);
+      setListaConteudosAberta(false);
       await carregar();
       setFeedback(`Recomendação enviada para @${destinatario.apelido}.`);
     } catch (e) {
@@ -148,18 +216,40 @@ export default function Recomendacoes() {
     setForm(atual => ({ ...atual, destinatarioId: '' }));
   }
 
-  function selecionarFilme(filme) {
-    setFilmeSelecionado(filme);
-    setBuscaFilme(filme.titulo);
-    setListaFilmesAberta(false);
-    setForm(atual => ({ ...atual, conteudoId: filme.id }));
+  function selecionarConteudo(item) {
+    setConteudoSelecionado(item);
+    setBuscaConteudo(tituloConteudo(tipoConteudo, item));
+    setListaConteudosAberta(false);
+    setForm(atual => ({ ...atual, conteudoId: item.id }));
   }
 
-  function limparFilme() {
-    setFilmeSelecionado(null);
-    setBuscaFilme('');
-    setListaFilmesAberta(true);
+  function limparConteudo() {
+    setConteudoSelecionado(null);
+    setBuscaConteudo('');
+    setListaConteudosAberta(true);
     setForm(atual => ({ ...atual, conteudoId: '' }));
+  }
+
+  function trocarTipoConteudo(novoTipo) {
+    setTipoConteudo(novoTipo);
+    setConteudoSelecionado(null);
+    setBuscaConteudo('');
+    setListaConteudosAberta(false);
+    setForm(atual => ({ ...atual, conteudoId: '' }));
+  }
+
+  function abrirConteudo(recomendacao) {
+    const rotas = {
+      FILME: `/filmes/${recomendacao.conteudoId}`,
+      LISTA: `/listas/${recomendacao.conteudoId}`,
+      COMUNIDADE: '/comunidades',
+      EVENTO: '/eventos',
+      NOTICIA: '/noticias',
+      META_MODELO: '/metas',
+    };
+    navigate(rotas[recomendacao.tipoConteudo] || '/recomendacoes', {
+      state: { conteudoRecomendadoId: Number(recomendacao.conteudoId) },
+    });
   }
 
   async function abrirResposta(id) {
@@ -287,14 +377,14 @@ export default function Recomendacoes() {
     }
   }
 
-  function textoStatus(status) {
+  function textoStatus(status, tipo = 'FILME') {
     return {
       PENDENTE: 'Nova',
       VISUALIZADA: 'Visualizada',
       ACEITA: 'Aceita',
       REJEITADA: 'Rejeitada',
-      VOU_ASSISTIR: 'Vou assistir',
-      JA_ASSISTI: 'Já assisti',
+      VOU_ASSISTIR: tipo === 'FILME' ? 'Vou assistir' : 'Tenho interesse',
+      JA_ASSISTI: tipo === 'FILME' ? 'Já assisti' : 'Já conheço',
       SEM_INTERESSE: 'Não tenho interesse',
     }[status] || status.replaceAll('_', ' ');
   }
@@ -303,6 +393,11 @@ export default function Recomendacoes() {
     if (status === 'ACEITA' || status === 'VOU_ASSISTIR' || status === 'JA_ASSISTI') return <FiCheckCircle />;
     if (status === 'REJEITADA' || status === 'SEM_INTERESSE') return <FiXCircle />;
     return <FiClock />;
+  }
+
+  function iconeConteudo(tipo) {
+    const Icone = TIPOS_CONTEUDO[tipo]?.icone || FiZap;
+    return <Icone />;
   }
 
   return (
@@ -323,7 +418,7 @@ export default function Recomendacoes() {
             <span><FiSend /></span>
             <div>
               <p className="page-eyebrow">Nova indicação</p>
-              <h2>Recomendar um filme</h2>
+              <h2>Compartilhar uma descoberta</h2>
             </div>
           </div>
           <div className="recipient-picker">
@@ -360,38 +455,53 @@ export default function Recomendacoes() {
             )}
           </div>
 
+          <div className="recommendation-content-types" role="tablist" aria-label="Tipo de conteúdo">
+            {Object.entries(TIPOS_CONTEUDO).map(([tipo, config]) => {
+              const Icone = config.icone;
+              return (
+                <button key={tipo} type="button" className={tipoConteudo === tipo ? 'is-selected' : ''}
+                  onClick={() => trocarTipoConteudo(tipo)}>
+                  <Icone /> {config.rotulo}
+                </button>
+              );
+            })}
+          </div>
+
           <div className="movie-picker">
-            <div className={`movie-picker__input ${filmeSelecionado ? 'is-selected' : ''}`}>
-              <FiFilm />
-              <input type="text" placeholder="Digite o nome ou abra a lista de filmes"
-                value={buscaFilme}
-                onFocus={() => setListaFilmesAberta(true)}
+            <div className={`movie-picker__input ${conteudoSelecionado ? 'is-selected' : ''}`}>
+              {(() => { const Icone = TIPOS_CONTEUDO[tipoConteudo].icone; return <Icone />; })()}
+              <input type="text" placeholder={TIPOS_CONTEUDO[tipoConteudo].placeholder}
+                value={buscaConteudo}
+                onFocus={() => setListaConteudosAberta(true)}
                 onChange={e => {
-                  setBuscaFilme(e.target.value);
-                  setFilmeSelecionado(null);
-                  setListaFilmesAberta(true);
+                  setBuscaConteudo(e.target.value);
+                  setConteudoSelecionado(null);
+                  setListaConteudosAberta(true);
                   setForm(atual => ({ ...atual, conteudoId: '' }));
                 }}
                 autoComplete="off" required />
-              {filmeSelecionado
-                ? <button type="button" onClick={limparFilme} aria-label="Trocar filme"><FiX /></button>
-                : <button type="button" onClick={() => setListaFilmesAberta(aberta => !aberta)}
-                    aria-label="Abrir lista de filmes"><FiChevronDown /></button>}
+              {conteudoSelecionado
+                ? <button type="button" onClick={limparConteudo} aria-label="Trocar conteúdo"><FiX /></button>
+                : <button type="button" onClick={() => setListaConteudosAberta(aberta => !aberta)}
+                    aria-label="Abrir lista de conteúdos"><FiChevronDown /></button>}
             </div>
-            {listaFilmesAberta && (
+            {listaConteudosAberta && (
               <div className="movie-picker__results">
-                {filmesFiltrados.map(filme => (
-                  <button type="button" key={filme.id} onClick={() => selecionarFilme(filme)}>
-                    <FiFilm />
-                    <span>{filme.titulo}</span>
-                    {filme.anoLancamento && <small>{filme.anoLancamento}</small>}
-                  </button>
-                ))}
-                {!filmesFiltrados.length && <p>Nenhum filme encontrado.</p>}
+                {conteudosFiltrados.map(item => {
+                  const Icone = TIPOS_CONTEUDO[tipoConteudo].icone;
+                  return (
+                    <button type="button" key={item.id} onClick={() => selecionarConteudo(item)}>
+                      <Icone />
+                      <span>{tituloConteudo(tipoConteudo, item)}</span>
+                      {descricaoConteudo(tipoConteudo, item) && <small>{descricaoConteudo(tipoConteudo, item)}</small>}
+                    </button>
+                  );
+                })}
+                {!conteudosFiltrados.length && <p>Nenhum conteúdo encontrado.</p>}
               </div>
             )}
           </div>
-          <textarea className="recommendation-message" maxLength="255" placeholder="Por que essa pessoa deveria assistir?"
+          <textarea className="recommendation-message" maxLength="255" placeholder="Por que você está recomendando isso?"
             value={form.mensagem} onChange={e => setForm({ ...form, mensagem: e.target.value })} />
           <div className="recommendation-compose__footer">
             <span>{form.mensagem.length}/255</span>
@@ -440,7 +550,7 @@ export default function Recomendacoes() {
             <label>
               <FiSearch />
               <input value={buscaHistorico} onChange={e => setBuscaHistorico(e.target.value)}
-                placeholder={aba === 'recebidas' ? 'Buscar por filme ou remetente' : 'Buscar por filme ou destinatário'} />
+                placeholder={aba === 'recebidas' ? 'Buscar por conteúdo ou remetente' : 'Buscar por conteúdo ou destinatário'} />
               {buscaHistorico && <button type="button" onClick={() => setBuscaHistorico('')} aria-label="Limpar busca"><FiX /></button>}
             </label>
             <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value)}>
@@ -457,41 +567,45 @@ export default function Recomendacoes() {
           {aba === 'recebidas' && recomendacoesVisiveis.map(r => (
             <article key={r.id} className={`recommendation-card ${r.status === 'PENDENTE' ? 'recommendation-card--unread' : ''}`}>
               <div className="recommendation-card__poster">
-                {filmesPorId[String(r.conteudoId)]?.imagemUrl
+                {r.tipoConteudo === 'FILME' && filmesPorId[String(r.conteudoId)]?.imagemUrl
                   ? <img src={filmesPorId[String(r.conteudoId)].imagemUrl} alt="" loading="lazy" />
-                  : <span><FiFilm /></span>}
+                  : <span>{iconeConteudo(r.tipoConteudo)}</span>}
                 <i><FiHeart /></i>
               </div>
               <div>
-                <h3>{nomesFilmes[r.conteudoId] || `${r.tipoConteudo} #${r.conteudoId}`}</h3>
+                <span className="recommendation-content-badge">{TIPOS_CONTEUDO[r.tipoConteudo]?.rotulo || r.tipoConteudo}</span>
+                <h3>{obterTitulo(r)}</h3>
                 <span className="recommendation-card__sender">{r.remetenteApelido ? `Enviada por @${r.remetenteApelido}` : 'Sugestão da plataforma'}</span>
                 {r.mensagem && <p>{r.mensagem}</p>}
               </div>
               <div className="recommendation-card__side">
-                <span className={`recommendation-status recommendation-status--${r.status.toLowerCase()}`}>{textoStatus(r.status)}</span>
+                <span className={`recommendation-status recommendation-status--${r.status.toLowerCase()}`}>{textoStatus(r.status, r.tipoConteudo)}</span>
                 {(r.status === 'PENDENTE' || r.status === 'VISUALIZADA') && (
                   <div className="recommendation-card__actions">
                     <button className="recommendation-accept" onClick={() => abrirResposta(r.id)}>Responder</button>
                   </div>
                 )}
-                {!['PENDENTE', 'VISUALIZADA', 'SEM_INTERESSE', 'REJEITADA'].includes(r.status) && (
+                {!['PENDENTE', 'VISUALIZADA', 'SEM_INTERESSE', 'REJEITADA'].includes(r.status) && r.tipoConteudo === 'FILME' && (
                   <button type="button" className="recommendation-save" onClick={() => abrirSalvar(r)}>
                     <FiBookmark /> Salvar em lista
                   </button>
                 )}
-                {r.status === 'JA_ASSISTI' && !r.notaPosterior && (
+                {r.status === 'JA_ASSISTI' && !r.notaPosterior && r.tipoConteudo === 'FILME' && (
                   <button type="button" className="recommendation-review" onClick={() => abrirAvaliacao(r)}>
                     <FiStar /> Avaliar filme
                   </button>
                 )}
+                <button type="button" className="recommendation-open" onClick={() => abrirConteudo(r)}>
+                  Abrir {TIPOS_CONTEUDO[r.tipoConteudo]?.rotulo.toLowerCase() || 'conteúdo'}
+                </button>
               </div>
               {respondendoId === r.id && (
                 <div className="recommendation-response">
                   <strong>O que você achou da indicação?</strong>
                   <div className="recommendation-response__options">
                     {[
-                      ['VOU_ASSISTIR', 'Vou assistir'],
-                      ['JA_ASSISTI', 'Já assisti'],
+                      ['VOU_ASSISTIR', r.tipoConteudo === 'FILME' ? 'Vou assistir' : 'Tenho interesse'],
+                      ['JA_ASSISTI', r.tipoConteudo === 'FILME' ? 'Já assisti' : 'Já conheço'],
                       ['SEM_INTERESSE', 'Não tenho interesse'],
                     ].map(([valor, rotulo]) => (
                       <button type="button" key={valor}
@@ -532,27 +646,31 @@ export default function Recomendacoes() {
           {aba === 'enviadas' && recomendacoesVisiveis.map(r => (
             <article key={r.id} className={`recommendation-card recommendation-card--sent recommendation-card--${r.status.toLowerCase()}`}>
               <div className="recommendation-card__poster">
-                {filmesPorId[String(r.conteudoId)]?.imagemUrl
+                {r.tipoConteudo === 'FILME' && filmesPorId[String(r.conteudoId)]?.imagemUrl
                   ? <img src={filmesPorId[String(r.conteudoId)].imagemUrl} alt="" loading="lazy" />
-                  : <span><FiFilm /></span>}
+                  : <span>{iconeConteudo(r.tipoConteudo)}</span>}
                 <i className={`recommendation-card__poster-status recommendation-card__poster-status--${r.status.toLowerCase()}`}>
                   {iconeStatus(r.status)}
                 </i>
               </div>
               <div>
-                <h3>{nomesFilmes[r.conteudoId] || `${r.tipoConteudo} #${r.conteudoId}`}</h3>
+                <span className="recommendation-content-badge">{TIPOS_CONTEUDO[r.tipoConteudo]?.rotulo || r.tipoConteudo}</span>
+                <h3>{obterTitulo(r)}</h3>
                 <span className="recommendation-card__sender">Enviada para @{r.destinatarioApelido}</span>
                 {r.mensagem && <p>{r.mensagem}</p>}
               </div>
               <div className="recommendation-card__side">
                 <span className={`recommendation-status recommendation-status--${r.status.toLowerCase()}`}>
-                  {textoStatus(r.status)}
+                  {textoStatus(r.status, r.tipoConteudo)}
                 </span>
                 {!['PENDENTE', 'VISUALIZADA'].includes(r.status) && (
                   <small className="recommendation-result-text">
-                    @{r.destinatarioApelido}: {textoStatus(r.status)}
+                    @{r.destinatarioApelido}: {textoStatus(r.status, r.tipoConteudo)}
                   </small>
                 )}
+                <button type="button" className="recommendation-open" onClick={() => abrirConteudo(r)}>
+                  Abrir {TIPOS_CONTEUDO[r.tipoConteudo]?.rotulo.toLowerCase() || 'conteúdo'}
+                </button>
               </div>
               {r.comentarioResposta && (
                 <div className="recommendation-response-comment recommendation-response-comment--sent">
@@ -572,7 +690,7 @@ export default function Recomendacoes() {
               )}
             </article>
           ))}
-          {aba === 'recebidas' && !recomendacoes.length && <div className="recommendations-empty"><FiHeart /><p>Nenhuma recomendação recebida ainda.</p><span>Quando alguém separar um filme para você, ele aparecerá aqui.</span></div>}
+          {aba === 'recebidas' && !recomendacoes.length && <div className="recommendations-empty"><FiHeart /><p>Nenhuma recomendação recebida ainda.</p><span>Quando alguém compartilhar uma descoberta com você, ela aparecerá aqui.</span></div>}
           {aba === 'enviadas' && !enviadas.length && <div className="recommendations-empty"><FiSend /><p>Nenhuma recomendação enviada ainda.</p><span>As indicações enviadas aparecerão aqui com a resposta da pessoa.</span></div>}
           {!!(aba === 'recebidas' ? recomendacoes.length : enviadas.length) && !recomendacoesVisiveis.length && (
             <div className="recommendations-empty">
