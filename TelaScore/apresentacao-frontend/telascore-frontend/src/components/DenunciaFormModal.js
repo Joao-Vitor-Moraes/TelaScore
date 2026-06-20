@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { FiFileText, FiFlag, FiHash, FiLink, FiSend, FiTag, FiTarget, FiX } from 'react-icons/fi';
 import { denunciaService } from '../services/api';
 
-const TIPOS_ALVO = [ 'MENSAGEM', 'COMUNIDADE', 'AVALIACAO'];
+const TIPOS_ALVO = ['USUARIO', 'MENSAGEM', 'COMUNIDADE', 'AVALIACAO'];
 const MOTIVOS = ['OFENSIVO', 'SPAM', 'ASSEDIO', 'CONTEUDO_INADEQUADO', 'OUTRO'];
 
 const formPadrao = {
@@ -43,22 +43,34 @@ export default function DenunciaFormModal({
   async function enviar(e) {
     e.preventDefault();
     setErro(null);
+
+    const alvoId = Number.parseInt(form.alvoId, 10);
+    if (!Number.isInteger(alvoId) || alvoId <= 0) {
+      setErro('Informe um ID de alvo valido.');
+      return;
+    }
+
+    if (!form.descricao.trim()) {
+      setErro('Informe uma descricao para a denuncia.');
+      return;
+    }
+
     setEnviando(true);
 
     try {
       const denuncia = await denunciaService.registrar({
         denuncianteId,
-        alvoId: parseInt(form.alvoId, 10),
+        alvoId,
         tipoAlvo: form.tipoAlvo,
         motivo: form.motivo,
-        descricao: form.descricao,
-        linkOcorrencia: form.linkOcorrencia || null,
+        descricao: form.descricao.trim(),
+        linkOcorrencia: form.linkOcorrencia.trim() || null,
       });
 
       onRegistrada?.(denuncia);
       onFechar?.();
-    } catch {
-      setErro('Erro ao registrar denuncia.');
+    } catch (erro) {
+      setErro(erro?.message || 'Erro ao registrar denuncia.');
     } finally {
       setEnviando(false);
     }
@@ -159,7 +171,7 @@ export default function DenunciaFormModal({
 
 function rotuloTipo(tipo) {
   const rotulos = {
-    // USUARIO: 'Usuário',
+    USUARIO: 'Usuário',
     MENSAGEM: 'Mensagem',
     COMUNIDADE: 'Comunidade',
     AVALIACAO: 'Avaliação',

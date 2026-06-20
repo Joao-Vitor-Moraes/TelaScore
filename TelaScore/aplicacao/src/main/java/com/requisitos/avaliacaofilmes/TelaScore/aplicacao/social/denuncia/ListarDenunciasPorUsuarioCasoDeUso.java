@@ -13,9 +13,7 @@ public class ListarDenunciasPorUsuarioCasoDeUso {
 	}
 
 	public List<DenunciaResumo> executar(int denuncianteId) {
-		return repositorio.listarPorUsuario(new UsuarioId(denuncianteId))
-			.stream()
-			.map(DenunciaResumo::de)
-			.toList();
+		return MapeadorDenunciasComIterador.paraResumo(
+			repositorio.listarPorUsuario(new UsuarioId(denuncianteId)));
 	}
 }

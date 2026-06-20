@@ -13,9 +13,7 @@ public class ListarDenunciasPorStatusCasoDeUso {
 	}
 
 	public List<DenunciaResumo> executar(String status) {
-		return repositorio.listarPorStatus(StatusDenuncia.valueOf(status.trim().toUpperCase()))
-			.stream()
-			.map(DenunciaResumo::de)
-			.toList();
+		return MapeadorDenunciasComIterador.paraResumo(
+			repositorio.listarPorStatus(StatusDenuncia.valueOf(status.trim().toUpperCase())));
 	}
 }

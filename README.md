@@ -158,5 +158,5 @@ Senha: admin123
 | Guilherme Vinicius | — | — | — |
 | Fátima Beatriz Moraes | — | — | — |
 | Caio Almeida | Decorator | Quiz | `QuizDecorator`, `QuizBase`, `QuizComRestricao` (dominio-analise) , `ResponderQuizCasoDeUso` (aplicacao) |
-| Gabriel Reis | — | — | — |
+| Gabriel Reis | Iterator | Denúncia | `MapeadorDesnunciasComIterador`, `iteradorDeDenuncias`,`iteradorSequencialDeDenuncias` |
 | Rodrigo Souza | Proxy | Comunidades | `EntrarComunidade`, `EntrarComunidadeProxy` (aplicacao) · `ErroProxyHandler` (apresentacao-backend) |

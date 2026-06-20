@@ -13,9 +13,7 @@ public class ListarDenunciasPendentesCasoDeUso {
 	}
 
 	public List<DenunciaResumo> executar() {
-		return repositorio.listarPorStatus(StatusDenuncia.PENDENTE)
-			.stream()
-			.map(DenunciaResumo::de)
-			.toList();
+		return MapeadorDenunciasComIterador.paraResumo(
+			repositorio.listarPorStatus(StatusDenuncia.PENDENTE));
 	}
 }

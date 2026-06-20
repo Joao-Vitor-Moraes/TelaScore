@@ -12,9 +12,6 @@ public class ListarTodasDenunciasCasoDeUso {
 	}
 
 	public List<DenunciaResumo> executar() {
-		return repositorio.listarTodas()
-			.stream()
-			.map(DenunciaResumo::de)
-			.toList();
+		return MapeadorDenunciasComIterador.paraResumo(repositorio.listarTodas());
 	}
 }
