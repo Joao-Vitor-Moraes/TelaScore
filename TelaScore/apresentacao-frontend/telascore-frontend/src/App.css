@@ -894,3 +894,30 @@
     display: none;
   }
 }
+
+/*novo /*
+/* Transforma a Navbar em um carrossel horizontal sem quebrar o layout */
+.desktop-nav {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: thin; /* Para Firefox */
+    scrollbar-color: rgba(229, 9, 20, 0.6) transparent;
+}
+
+/* Evita que os botões sejam esmagados */
+.desktop-nav .nav-link {
+    flex-shrink: 0;
+}
+
+/* Estiliza a barra no Chrome/Edge/Safari */
+.desktop-nav::-webkit-scrollbar {
+    height: 6px;
+}
+.desktop-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+.desktop-nav::-webkit-scrollbar-thumb {
+    background: rgba(229, 9, 20, 0.6);
+    border-radius: 10px;
+}

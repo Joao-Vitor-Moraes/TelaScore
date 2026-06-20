@@ -29,6 +29,8 @@ import Noticias from './pages/noticias/Noticias';
 import Eventos from './pages/eventos/Eventos';
 import CriarEvento from './pages/eventos/CriarEvento';
 import Calendario from './pages/calendario/Calendario';
+import Quiz from './pages/analise/Quiz';
+import Mensagens from './pages/comunidade/Mensagens';
 
 function App() {
   return (
@@ -87,6 +89,13 @@ function App() {
 
             {/* Raiz */}
             <Route path="/" element={<RotaProtegida><Filmes /></RotaProtegida>} />
+
+            {/* Quiz */}
+
+            <Route path="/quiz" element={<RotaProtegida><Quiz /></RotaProtegida>} />
+
+            {/* Mensagens */}
+            <Route path="/mensagens" element={<RotaProtegida><Mensagens /></RotaProtegida>} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

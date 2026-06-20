@@ -206,3 +206,27 @@ export const noticiaService = {
   criar: (dados) => request('POST', '/noticias', dados),
   remover: (id) => request('DELETE', `/noticias/${id}`),
 };
+
+// Quizzes
+export const quizService = {
+  listar: () => request('GET', '/api/quizzes'),
+  obter: (id) => request('GET', `/api/quizzes/${id}`),
+  criar: (dados) => request('POST', '/api/quizzes', dados),
+  remover: (id) => request('DELETE', `/api/quizzes/${id}`)
+};
+
+// Mensagens Privadas
+export const mensagemPrivadaService = {
+  // Busca o histórico de conversa com um usuário específico
+  listarPorDestinatario: (destinatarioId) => request('GET', `/api/mensagens/privadas/${destinatarioId}`),
+  enviar: (dados) => request('POST', '/api/mensagens/privadas', dados),
+  editar: (id, dados) => request('PUT', `/api/mensagens/privadas/${id}`, dados),
+  remover: (id) => request('DELETE', `/api/mensagens/privadas/${id}`)
+};
+
+// Figurinhas
+export const figurinhaService = {
+  listar: () => request('GET', '/api/figurinhas'),
+  criar: (dados) => request('POST', '/api/figurinhas', dados),
+  remover: (id) => request('DELETE', `/api/figurinhas/${id}`)
+};

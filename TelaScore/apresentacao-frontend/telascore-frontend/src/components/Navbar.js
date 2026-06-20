@@ -16,6 +16,8 @@ const links = [
   { label: 'Eventos', path: '/eventos' },
   { label: 'Solicitações', path: '/solicitacoes' },
   { label: 'Denúncias', path: '/denuncias' },
+  { label: 'Quizzes', path: '/quiz' },
+  { label: 'Mensagens', path: '/mensagens' },
 ];
 
 export default function Navbar() {
