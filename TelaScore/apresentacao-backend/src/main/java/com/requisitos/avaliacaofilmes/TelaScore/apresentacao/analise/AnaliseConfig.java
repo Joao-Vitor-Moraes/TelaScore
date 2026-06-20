@@ -7,9 +7,14 @@ import org.springframework.context.annotation.Configuration;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.*;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.template.AtualizadorMetaComNotificacao;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.template.AtualizadorMetaSilencioso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.CriarQuizCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.RemoverQuizCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.ResponderQuizCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.*;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.*;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.*;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.*;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
@@ -108,5 +113,25 @@ public class AnaliseConfig {
     public ListarRecomendacoesPorUsuarioCasoDeUso listarRecomendacoesPorUsuarioCasoDeUso(
             RecomendacaoRepositorio repositorio) {
         return new ListarRecomendacoesPorUsuarioCasoDeUso(repositorio);
+    }
+
+    @Bean
+    public QuizServico quizServico(QuizRepositorio repositorio) {
+        return new QuizServico(repositorio);
+    }
+
+    @Bean
+    public CriarQuizCasoDeUso criarQuizCasoDeUso(QuizRepositorio repositorio, QuizServico servico, GeradorId geradorId) {
+        return new CriarQuizCasoDeUso(repositorio, servico, geradorId);
+    }
+
+    @Bean
+    public RemoverQuizCasoDeUso removerQuizCasoDeUso(QuizRepositorio repositorio) {
+        return new RemoverQuizCasoDeUso(repositorio);
+    }
+
+    @Bean
+    public ResponderQuizCasoDeUso responderQuizCasoDeUso(QuizRepositorio repositorio) {
+        return new ResponderQuizCasoDeUso(repositorio);
     }
 }

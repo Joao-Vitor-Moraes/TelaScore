@@ -5,6 +5,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuar
 
 public interface QuizRepositorio {
 	void salvar(Quiz quiz);
+	List<Quiz> listarTodos();
 	Quiz obter(QuizId id);
 	
 	void salvarTentativa(TentativaQuiz tentativa);

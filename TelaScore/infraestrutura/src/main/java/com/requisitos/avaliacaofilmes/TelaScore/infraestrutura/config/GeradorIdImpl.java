@@ -103,6 +103,6 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdQuiz() {
-        throw new UnsupportedOperationException("Geracao de ID de quiz nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(id) FROM quiz");
     }
 }

@@ -5,38 +5,6 @@ import Navbar from '../../components/Navbar';
 import { quizService } from '../../services/api'; // <-- Importando a API!
 import './analise.css'; 
 
-// DADOS FALSOS (MOCK) - Usado como Plano B se o servidor Java estiver offline
-const QUIZZES_MOCK = [
-    {
-        id: 1,
-        autorId: 1, 
-        titulo: "Mestre do Cinema: Christopher Nolan",
-        descricao: "Você realmente entendeu Interestelar e A Origem? Teste seus neurônios!",
-        perguntas: [ 
-            {
-                enunciado: "Em 'Interestelar', qual é o nome do robô?",
-                alternativas: [
-                    { texto: "JARVIS", correta: false }, { texto: "TARS", correta: true }
-                ]
-            }
-        ]
-    },
-    {
-        id: 2,
-        autorId: 99, 
-        titulo: "Universo Clássico: O Poderoso Chefão",
-        descricao: "Prove que você conhece a família Corleone.",
-        perguntas: [ 
-            {
-                enunciado: "Quem assume a família?",
-                alternativas: [
-                    { texto: "Michael", correta: true }, { texto: "Fredo", correta: false }
-                ]
-            }
-        ]
-    }
-];
-
 export default function Quiz() {
     const { sessao } = useAuth();
     
@@ -64,10 +32,10 @@ export default function Quiz() {
         async function carregarQuizzes() {
             try {
                 const dadosServidor = await quizService.listar();
-                setListaQuizzes(dadosServidor && dadosServidor.length > 0 ? dadosServidor : QUIZZES_MOCK);
+                setListaQuizzes(Array.isArray(dadosServidor) ? dadosServidor : []);
             } catch (error) {
                 console.error("Erro ao buscar quizzes do servidor:", error);
-                setListaQuizzes(QUIZZES_MOCK); // Plano B (Fallback)
+                setListaQuizzes([]);
             }
         }
         carregarQuizzes();
@@ -112,14 +80,14 @@ export default function Quiz() {
         
         try {
             // Tenta salvar no banco de dados real
-            const quizSalvo = await quizService.criar(payload);
-            setListaQuizzes([quizSalvo || { ...payload, id: Date.now() }, ...listaQuizzes]);
+            await quizService.criar(payload);
+            const quizzesAtualizados = await quizService.listar();
+            setListaQuizzes(Array.isArray(quizzesAtualizados) ? quizzesAtualizados : []);
             alert("Quiz publicado com sucesso!"); 
         } catch (error) {
             console.error("Erro ao publicar:", error);
-            // Plano B: Salva apenas visualmente na tela se o servidor falhar
-            setListaQuizzes([{ ...payload, id: Date.now() }, ...listaQuizzes]);
-            alert("Aviso: O quiz foi criado apenas localmente pois o servidor falhou.");
+            alert("Nao foi possivel publicar o quiz no servidor. Verifique o backend e tente novamente.");
+            return;
         }
         
         setModoCriacao(false);

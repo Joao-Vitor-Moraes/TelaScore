@@ -4,7 +4,7 @@ import java.util.List;
 
 // Aqui definimos a estrutura de dados que a aplicação aceita receber
 public record CriarQuizComando(
-    int id,
+    Integer id,
     String titulo,
     String descricao,
     List<PerguntaInfo> perguntas

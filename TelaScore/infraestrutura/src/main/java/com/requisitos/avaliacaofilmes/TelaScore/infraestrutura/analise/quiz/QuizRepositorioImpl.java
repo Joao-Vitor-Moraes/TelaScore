@@ -13,6 +13,25 @@ public class QuizRepositorioImpl implements QuizRepositorio {
         this.entityManager = entityManager;
     }
 
+    private Quiz mapearParaDominio(QuizEntity entity) {
+        Quiz quiz = new Quiz(
+            new QuizId(entity.getId()),
+            entity.getTitulo(),
+            entity.getDescricao()
+        );
+
+        entity.getPerguntas().forEach(perguntaEntity -> {
+            List<Alternativa> alternativasDominio = perguntaEntity.getAlternativas().stream().map(altEntity ->
+                new Alternativa(altEntity.getTexto(), altEntity.isCorreta())
+            ).collect(java.util.stream.Collectors.toList());
+
+            Pergunta perguntaDominio = new Pergunta(perguntaEntity.getTexto(), alternativasDominio);
+            quiz.adicionarPergunta(perguntaDominio);
+        });
+
+        return quiz;
+    }
+
     @Override
     public void salvar(Quiz quiz) {
         QuizEntity entity = new QuizEntity();
@@ -56,28 +75,25 @@ public class QuizRepositorioImpl implements QuizRepositorio {
     }
 
     @Override
+    public List<Quiz> listarTodos() {
+        List<QuizEntity> entities = entityManager.createQuery(
+            "SELECT DISTINCT q FROM QuizEntity q " +
+            "LEFT JOIN FETCH q.perguntas p " +
+            "LEFT JOIN FETCH p.alternativas",
+            QuizEntity.class
+        ).getResultList();
+
+        return entities.stream()
+            .map(this::mapearParaDominio)
+            .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
     public Quiz obter(QuizId id) { 
         QuizEntity entity = entityManager.find(QuizEntity.class, id.getId());
         if (entity == null) return null;
-        
-        // Instancia o Quiz usando o construtor exato do seu domínio (id, titulo, descricao)
-        Quiz quiz = new Quiz(
-            new QuizId(entity.getId()),
-            entity.getTitulo(),
-            entity.getDescricao()
-        );
 
-        // Reconstroi as perguntas em árvore e injeta usando .adicionarPergunta()
-        entity.getPerguntas().forEach(perguntaEntity -> {
-            List<Alternativa> alternativasDominio = perguntaEntity.getAlternativas().stream().map(altEntity -> {
-                return new Alternativa(altEntity.getTexto(), altEntity.isCorreta());
-            }).collect(java.util.stream.Collectors.toList());
-
-            Pergunta perguntaDominio = new Pergunta(perguntaEntity.getTexto(), alternativasDominio);
-            quiz.adicionarPergunta(perguntaDominio);
-        });
-
-        return quiz;
+        return mapearParaDominio(entity);
     }
 
     @Override
