@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import {
   comunidadeService, eventoService, filmeService, listaService, metaService,
-  noticiaService, recomendacaoService, usuarioService,
+  noticiaService, quizService, recomendacaoService, usuarioService,
 } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import {
   FiBookmark, FiCheckCircle, FiChevronDown, FiClock, FiFilm, FiHeart,
-  FiCalendar, FiFileText, FiInbox, FiList, FiPlus, FiSearch, FiSend,
+  FiCalendar, FiFileText, FiHelpCircle, FiInbox, FiList, FiPlus, FiSearch, FiSend,
   FiTarget, FiUser, FiUsers, FiX, FiXCircle, FiZap, FiStar,
 } from 'react-icons/fi';
 import './analise.css';
@@ -19,8 +19,14 @@ const TIPOS_CONTEUDO = {
   COMUNIDADE: { rotulo: 'Comunidade', plural: 'comunidades', icone: FiUsers, placeholder: 'Busque uma comunidade' },
   EVENTO: { rotulo: 'Evento', plural: 'eventos', icone: FiCalendar, placeholder: 'Busque um evento futuro' },
   NOTICIA: { rotulo: 'Notícia', plural: 'notícias', icone: FiFileText, placeholder: 'Busque uma notícia' },
-  META_MODELO: { rotulo: 'Meta-modelo', plural: 'metas-modelo', icone: FiTarget, placeholder: 'Busque um desafio do sistema' },
+  META_SISTEMA: { rotulo: 'Meta do sistema', plural: 'metas do sistema', icone: FiTarget, placeholder: 'Busque uma meta do sistema' },
+  QUIZ: { rotulo: 'Quiz', plural: 'quizzes', icone: FiHelpCircle, placeholder: 'Busque um quiz' },
 };
+
+function configuracaoTipo(tipo) {
+  if (tipo === 'META_MODELO') return TIPOS_CONTEUDO.META_SISTEMA;
+  return TIPOS_CONTEUDO[tipo];
+}
 
 export default function Recomendacoes() {
   const { sessao } = useAuth();
@@ -29,7 +35,7 @@ export default function Recomendacoes() {
   const [enviadas, setEnviadas] = useState([]);
   const [aba, setAba] = useState('recebidas');
   const [filmes, setFilmes] = useState([]);
-  const [conteudos, setConteudos] = useState({ LISTA: [], COMUNIDADE: [], EVENTO: [], NOTICIA: [], META_MODELO: [] });
+  const [conteudos, setConteudos] = useState({ LISTA: [], COMUNIDADE: [], EVENTO: [], NOTICIA: [], META_SISTEMA: [], QUIZ: [] });
   const [tipoConteudo, setTipoConteudo] = useState('FILME');
   const [form, setForm] = useState({ destinatarioId: '', conteudoId: '', mensagem: '' });
   const [buscaApelido, setBuscaApelido] = useState('');
@@ -70,14 +76,16 @@ export default function Recomendacoes() {
       eventoService.listarFuturos().catch(() => []),
       noticiaService.pesquisar('', '').catch(() => []),
       metaService.listarSistema().catch(() => []),
-    ]).then(([dadosFilmes, listasPublicas, comunidades, eventos, noticias, metasModelo]) => {
+      quizService.listar().catch(() => []),
+    ]).then(([dadosFilmes, listasPublicas, comunidades, eventos, noticias, metasModelo, quizzes]) => {
       setFilmes(Array.isArray(dadosFilmes) ? dadosFilmes : []);
       setConteudos({
         LISTA: Array.isArray(listasPublicas) ? listasPublicas : [],
         COMUNIDADE: Array.isArray(comunidades) ? comunidades : [],
         EVENTO: Array.isArray(eventos) ? eventos : [],
         NOTICIA: Array.isArray(noticias) ? noticias : [],
-        META_MODELO: Array.isArray(metasModelo) ? metasModelo : [],
+        META_SISTEMA: Array.isArray(metasModelo) ? metasModelo : [],
+        QUIZ: Array.isArray(quizzes) ? quizzes : [],
       });
     }).catch(() => setFilmes([]));
     listaService.listarPorUsuario(sessao.id, sessao.id).then(setListas).catch(() => setListas([]));
@@ -149,7 +157,7 @@ export default function Recomendacoes() {
   const obterTitulo = useCallback(recomendacao => {
     const item = obterConteudo(recomendacao);
     return tituloConteudo(recomendacao.tipoConteudo, item)
-      || `${TIPOS_CONTEUDO[recomendacao.tipoConteudo]?.rotulo || recomendacao.tipoConteudo} #${recomendacao.conteudoId}`;
+      || `${configuracaoTipo(recomendacao.tipoConteudo)?.rotulo || recomendacao.tipoConteudo} #${recomendacao.conteudoId}`;
   }, [obterConteudo, tituloConteudo]);
   const naoLidas = useMemo(
     () => recomendacoes.filter(recomendacao => recomendacao.status === 'PENDENTE').length,
@@ -246,6 +254,8 @@ export default function Recomendacoes() {
       EVENTO: '/eventos',
       NOTICIA: '/noticias',
       META_MODELO: '/metas',
+      META_SISTEMA: '/metas',
+      QUIZ: '/quiz',
     };
     navigate(rotas[recomendacao.tipoConteudo] || '/recomendacoes', {
       state: { conteudoRecomendadoId: Number(recomendacao.conteudoId) },
@@ -396,8 +406,17 @@ export default function Recomendacoes() {
   }
 
   function iconeConteudo(tipo) {
-    const Icone = TIPOS_CONTEUDO[tipo]?.icone || FiZap;
+    const Icone = configuracaoTipo(tipo)?.icone || FiZap;
     return <Icone />;
+  }
+
+  function placeholderConteudo(tipo) {
+    return (
+      <span className={`recommendation-placeholder recommendation-placeholder--${tipo.toLowerCase()}`}>
+        <span className="recommendation-placeholder__symbol">{iconeConteudo(tipo)}</span>
+        <small>{configuracaoTipo(tipo)?.rotulo || 'Conteúdo'}</small>
+      </span>
+    );
   }
 
   return (
@@ -569,11 +588,11 @@ export default function Recomendacoes() {
               <div className="recommendation-card__poster">
                 {r.tipoConteudo === 'FILME' && filmesPorId[String(r.conteudoId)]?.imagemUrl
                   ? <img src={filmesPorId[String(r.conteudoId)].imagemUrl} alt="" loading="lazy" />
-                  : <span>{iconeConteudo(r.tipoConteudo)}</span>}
+                  : placeholderConteudo(r.tipoConteudo)}
                 <i><FiHeart /></i>
               </div>
               <div>
-                <span className="recommendation-content-badge">{TIPOS_CONTEUDO[r.tipoConteudo]?.rotulo || r.tipoConteudo}</span>
+                <span className="recommendation-content-badge">{configuracaoTipo(r.tipoConteudo)?.rotulo || r.tipoConteudo}</span>
                 <h3>{obterTitulo(r)}</h3>
                 <span className="recommendation-card__sender">{r.remetenteApelido ? `Enviada por @${r.remetenteApelido}` : 'Sugestão da plataforma'}</span>
                 {r.mensagem && <p>{r.mensagem}</p>}
@@ -596,7 +615,7 @@ export default function Recomendacoes() {
                   </button>
                 )}
                 <button type="button" className="recommendation-open" onClick={() => abrirConteudo(r)}>
-                  Abrir {TIPOS_CONTEUDO[r.tipoConteudo]?.rotulo.toLowerCase() || 'conteúdo'}
+                  Abrir {configuracaoTipo(r.tipoConteudo)?.rotulo.toLowerCase() || 'conteúdo'}
                 </button>
               </div>
               {respondendoId === r.id && (
@@ -648,13 +667,13 @@ export default function Recomendacoes() {
               <div className="recommendation-card__poster">
                 {r.tipoConteudo === 'FILME' && filmesPorId[String(r.conteudoId)]?.imagemUrl
                   ? <img src={filmesPorId[String(r.conteudoId)].imagemUrl} alt="" loading="lazy" />
-                  : <span>{iconeConteudo(r.tipoConteudo)}</span>}
+                  : placeholderConteudo(r.tipoConteudo)}
                 <i className={`recommendation-card__poster-status recommendation-card__poster-status--${r.status.toLowerCase()}`}>
                   {iconeStatus(r.status)}
                 </i>
               </div>
               <div>
-                <span className="recommendation-content-badge">{TIPOS_CONTEUDO[r.tipoConteudo]?.rotulo || r.tipoConteudo}</span>
+                <span className="recommendation-content-badge">{configuracaoTipo(r.tipoConteudo)?.rotulo || r.tipoConteudo}</span>
                 <h3>{obterTitulo(r)}</h3>
                 <span className="recommendation-card__sender">Enviada para @{r.destinatarioApelido}</span>
                 {r.mensagem && <p>{r.mensagem}</p>}
@@ -669,7 +688,7 @@ export default function Recomendacoes() {
                   </small>
                 )}
                 <button type="button" className="recommendation-open" onClick={() => abrirConteudo(r)}>
-                  Abrir {TIPOS_CONTEUDO[r.tipoConteudo]?.rotulo.toLowerCase() || 'conteúdo'}
+                  Abrir {configuracaoTipo(r.tipoConteudo)?.rotulo.toLowerCase() || 'conteúdo'}
                 </button>
               </div>
               {r.comentarioResposta && (
