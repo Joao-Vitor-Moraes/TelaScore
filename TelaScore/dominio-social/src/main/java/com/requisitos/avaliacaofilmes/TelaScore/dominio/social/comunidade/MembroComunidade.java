@@ -27,4 +27,18 @@ public class MembroComunidade {
 	public String getUsuarioApelido() { return usuarioApelido; }
 	public PapelComunidade getPapel() { return papel; }
 	public void setPapel(PapelComunidade papel) { this.papel = papel; }
+
+	public void promoverAModerador() {
+		if (this.papel == PapelComunidade.CRIADOR) {
+			throw new IllegalStateException("O criador da comunidade não pode ser promovido");
+		}
+		this.papel = PapelComunidade.MODERADOR;
+	}
+
+	public void rebaixarAMembro() {
+		if (this.papel == PapelComunidade.CRIADOR) {
+			throw new IllegalStateException("O criador da comunidade não pode ser rebaixado");
+		}
+		this.papel = PapelComunidade.MEMBRO;
+	}
 }

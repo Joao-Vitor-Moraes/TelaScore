@@ -7,9 +7,14 @@ import org.springframework.context.annotation.Configuration;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.*;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.template.AtualizadorMetaComNotificacao;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.template.AtualizadorMetaSilencioso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.CriarQuizCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.RemoverQuizCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.ResponderQuizCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.*;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.*;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.*;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.*;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
@@ -85,6 +90,28 @@ public class AnaliseConfig {
             repositorio.salvar(new MetaSistema(repositorio.proximoId(),
                     "Desafio cinéfilo do ano", 25, 365, 2));
         };
+    }
+
+    @Bean
+    public QuizServico quizServico(QuizRepositorio quizRepositorio) {
+        return new QuizServico(quizRepositorio);
+    }
+
+    @Bean
+    public CriarQuizCasoDeUso criarQuizCasoDeUso(QuizRepositorio quizRepositorio,
+                                                   QuizServico quizServico,
+                                                   GeradorId geradorId) {
+        return new CriarQuizCasoDeUso(quizRepositorio, quizServico, geradorId);
+    }
+
+    @Bean
+    public RemoverQuizCasoDeUso removerQuizCasoDeUso(QuizRepositorio quizRepositorio) {
+        return new RemoverQuizCasoDeUso(quizRepositorio);
+    }
+
+    @Bean
+    public ResponderQuizCasoDeUso responderQuizCasoDeUso(QuizRepositorio quizRepositorio) {
+        return new ResponderQuizCasoDeUso(quizRepositorio);
     }
 
     @Bean

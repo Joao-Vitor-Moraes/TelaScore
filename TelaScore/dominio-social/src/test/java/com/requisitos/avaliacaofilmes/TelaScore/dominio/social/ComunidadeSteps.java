@@ -9,6 +9,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.Comuni
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.ComunidadeId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.MembroComunidade;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.PapelComunidade;
+
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
