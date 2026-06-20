@@ -19,7 +19,7 @@ public class AdicionarNoticiaCasoDeUso {
         UsuarioId autorId = new UsuarioId(comando.autorId());
         CategoriaNoticia categoria = CategoriaNoticia.valueOf(comando.categoria().toUpperCase());
 
-        Noticia noticia = new Noticia(novoId, autorId, null, comando.titulo(), comando.conteudo(), categoria);
+        Noticia noticia = new Noticia(novoId, autorId, comando.titulo(), comando.conteudo(), categoria);
 
         servico.publicarNoticia(noticia);
     }

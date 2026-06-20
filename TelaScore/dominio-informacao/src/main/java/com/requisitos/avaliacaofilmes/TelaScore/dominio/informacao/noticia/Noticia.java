@@ -31,14 +31,15 @@ public class Noticia {
 		setConteudo(conteudo);
 	}
 
-	public Noticia(NoticiaId id, UsuarioId autorId, String autorApelido, String titulo, String conteudo, CategoriaNoticia categoria) {
+	public Noticia(NoticiaId id, UsuarioId autorId, String autorApelido, String titulo, String conteudo, LocalDateTime dataPublicacao, CategoriaNoticia categoria) {
 		notNull(id, "O id da notícia não pode ser nulo");
 		notNull(autorId, "O id do autor não pode ser nulo");
+		notNull(dataPublicacao, "A data de publicação não pode ser nula");
 
 		this.id = id;
 		this.autorId = autorId;
 		this.autorApelido = autorApelido;
-		this.dataPublicacao = LocalDateTime.now();
+		this.dataPublicacao = dataPublicacao;
 		this.categoria = categoria;
 
 		setTitulo(titulo);
