@@ -11,6 +11,9 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.CriarQuiz
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.RemoverQuizCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.ResponderQuizCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.*;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recompensa.ConcederPontosCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recompensa.ConsultarTotalPontosCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recompensa.ListarHistoricoPontosCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaSistema;
@@ -33,6 +36,30 @@ public class AnaliseConfig {
     @Bean
     public PontuacaoServico pontuacaoServico(RegistroPontuacaoRepositorio repositorio) {
         return new PontuacaoServico(repositorio);
+    }
+
+    @Bean
+    public EstrategiaPontuacaoFactory estrategiaPontuacaoFactory() {
+        return new EstrategiaPontuacaoFactory();
+    }
+
+    @Bean
+    public ConcederPontosCasoDeUso concederPontosCasoDeUso(
+            PontuacaoServico pontuacao,
+            EstrategiaPontuacaoFactory estrategias) {
+        return new ConcederPontosCasoDeUso(pontuacao, estrategias.obter(AcaoPontuada.AVALIAR_FILME));
+    }
+
+    @Bean
+    public ConsultarTotalPontosCasoDeUso consultarTotalPontosCasoDeUso(
+            RegistroPontuacaoRepositorio repositorio) {
+        return new ConsultarTotalPontosCasoDeUso(repositorio);
+    }
+
+    @Bean
+    public ListarHistoricoPontosCasoDeUso listarHistoricoPontosCasoDeUso(
+            RegistroPontuacaoRepositorio repositorio) {
+        return new ListarHistoricoPontosCasoDeUso(repositorio);
     }
 
     @Bean
