@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 })
 public class TelaScoreApplication {
     public static void main(String[] args) {
+        System.setProperty("spring.devtools.restart.enabled", "false");
+
         org.springframework.boot.SpringApplication.run(TelaScoreApplication.class, args);
     }
 }
