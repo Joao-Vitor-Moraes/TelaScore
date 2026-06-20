@@ -119,6 +119,10 @@ export default function ListaAberta() {
   if (!lista) return <div style={styles.pagina}><Navbar /><p style={styles.carregando}>Carregando...</p></div>;
 
   const voltarRota = lista.tipo === 'WATCHLIST' ? '/watchlist' : '/listas';
+  const ehDono = Number(lista.donoId) === Number(USUARIO_ID);
+  const ehColaborador = (lista.colaboradores || []).some(colaboradorId =>
+    Number(colaboradorId) === Number(USUARIO_ID));
+  const podeModificar = ehDono || ehColaborador;
 
   return (
     <>
@@ -135,13 +139,13 @@ export default function ListaAberta() {
             {lista.rankeada && <span style={styles.badgeRankeada}>Rankeada</span>}
           </div>
           <div style={styles.direita}>
-            <button style={styles.btnIcone} onClick={() => navigate(`/listas/${id}/editar`)}>
+            {ehDono && <button style={styles.btnIcone} onClick={() => navigate(`/listas/${id}/editar`)}>
               <FiEdit2 size={18} />
-            </button>
-            <button style={styles.btnIcone}>
+            </button>}
+            {ehDono && <button style={styles.btnIcone}>
               <FiShare2 size={18} />
-            </button>
-            <div style={{ position: 'relative' }}>
+            </button>}
+            {ehDono && <div style={{ position: 'relative' }}>
               <button style={styles.btnIcone} onClick={() => setMenuAberto(prev => !prev)}>
                 <FiMoreVertical size={18} />
               </button>
@@ -167,15 +171,15 @@ export default function ListaAberta() {
                   </div>
                 </>
               )}
-            </div>
-            <button style={styles.btnAdicionar} onClick={() => navigate(`/listas/${id}/adicionar`)}>
+            </div>}
+            {podeModificar && <button style={styles.btnAdicionar} onClick={() => navigate(`/listas/${id}/adicionar`)}>
               <FiPlusCircle size={16} />
               Adicionar
-            </button>
+            </button>}
           </div>
         </div>
 
-        {lista.rankeada && itens.length > 1 && (
+        {lista.rankeada && itens.length > 1 && podeModificar && (
           <p style={styles.dica}>Arraste os cards para reordenar</p>
         )}
 
@@ -188,14 +192,14 @@ export default function ListaAberta() {
                 key={item.filmeId}
                 style={{
                   ...styles.card,
-                  ...(lista.rankeada ? { cursor: 'grab' } : {}),
+                  ...(lista.rankeada && podeModificar ? { cursor: 'grab' } : {}),
                   ...(dragSobre === item.filmeId ? styles.cardDragSobre : {}),
                 }}
-                draggable={lista.rankeada}
+                draggable={lista.rankeada && podeModificar}
                 onDragStart={() => handleDragStart(item.filmeId)}
-                onDragOver={e => lista.rankeada && handleDragOver(e, item.filmeId)}
+                onDragOver={e => lista.rankeada && podeModificar && handleDragOver(e, item.filmeId)}
                 onDragLeave={handleDragLeave}
-                onDrop={e => lista.rankeada && handleDrop(e, index)}
+                onDrop={e => lista.rankeada && podeModificar && handleDrop(e, index)}
                 onMouseEnter={() => handleMouseEnter(item.filmeId)}
                 onMouseLeave={() => setHoveredFilmeId(null)}
               >
@@ -205,7 +209,7 @@ export default function ListaAberta() {
                     : <span style={styles.semImagem}>🎬</span>
                   }
                   <button
-                    style={styles.btnRemover}
+                    style={{ ...styles.btnRemover, display: podeModificar ? 'flex' : 'none' }}
                     onClick={e => { e.stopPropagation(); handleRemover(item.filmeId); }}
                     title="Remover da lista"
                   >×</button>

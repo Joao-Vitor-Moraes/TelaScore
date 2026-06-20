@@ -10,6 +10,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuari
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.config.ConexaoBanco;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +66,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
                     apelido,
                     entity.getTitulo(),
                     entity.getConteudo(),
+                    entity.getDataPublicacao(),
                     mapearCategoriaSafe(entity.getCategoria())
             );
         } catch (Exception e) {
@@ -168,6 +170,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
                         apelido,
                         entity.getTitulo(),
                         entity.getConteudo(),
+                        entity.getDataPublicacao(),
                         mapearCategoriaSafe(entity.getCategoria())
                 ));
             } catch (Exception e) {

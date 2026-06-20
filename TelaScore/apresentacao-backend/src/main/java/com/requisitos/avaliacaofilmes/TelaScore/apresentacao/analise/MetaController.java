@@ -25,6 +25,7 @@ public class MetaController {
     private final MetaSistemaRepositorio metasSistema;
     private final MetaRepositorio metas;
     private final PontuacaoServico pontuacao;
+    private final NotificacaoMetaRepositorio notificacoes;
     private final SessaoUsuario sessao;
 
     public MetaController(
@@ -37,6 +38,7 @@ public class MetaController {
             MetaSistemaRepositorio metasSistema,
             MetaRepositorio metas,
             PontuacaoServico pontuacao,
+            NotificacaoMetaRepositorio notificacoes,
             SessaoUsuario sessao) {
         this.criarMeta = criarMeta;
         this.adicionarProgresso = adicionarProgresso;
@@ -47,6 +49,7 @@ public class MetaController {
         this.metasSistema = metasSistema;
         this.metas = metas;
         this.pontuacao = pontuacao;
+        this.notificacoes = notificacoes;
         this.sessao = sessao;
     }
 
@@ -93,9 +96,17 @@ public class MetaController {
 
     @PutMapping("/{id}/progresso")
     public ResultadoAtualizacaoMeta adicionar(
-            @PathVariable int id, @RequestParam int quantidade) {
+            @PathVariable int id,
+            @RequestParam int quantidade,
+            @RequestParam(defaultValue = "FEEDBACK") String modo) {
         exigirDono(id);
-        return adicionarProgresso.executar(new AdicionarProgressoMetaComando(id, quantidade));
+        boolean silencioso = "SILENCIOSO".equalsIgnoreCase(modo);
+        if (!silencioso && !"FEEDBACK".equalsIgnoreCase(modo)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Modo de atualização inválido. Use FEEDBACK ou SILENCIOSO.");
+        }
+        return adicionarProgresso.executar(
+                new AdicionarProgressoMetaComando(id, quantidade, silencioso));
     }
 
     @PutMapping("/{id}/progresso/remover")
@@ -116,6 +127,19 @@ public class MetaController {
     @GetMapping("/pontuacao")
     public PontuacaoResumo pontuacao() {
         return new PontuacaoResumo(pontuacao.calcularTotal(usuarioAtual().getId()));
+    }
+
+    @GetMapping("/notificacoes")
+    public List<NotificacaoMetaResumo> listarNotificacoes() {
+        return notificacoes.listarNaoLidas(usuarioAtual().getId()).stream()
+                .map(NotificacaoMetaResumo::de)
+                .toList();
+    }
+
+    @PutMapping("/notificacoes/{id}/visualizar")
+    public ResponseEntity<Void> visualizarNotificacao(@PathVariable int id) {
+        notificacoes.marcarComoLida(id, usuarioAtual().getId());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/sistema")
@@ -173,4 +197,16 @@ public class MetaController {
     public record CriarMetaRequest(String titulo, int quantidadeAlvo, java.time.LocalDate dataPrazo, TipoMeta tipo) {}
     public record EditarMetaRequest(String titulo, int quantidadeAlvo, java.time.LocalDate dataPrazo) {}
     public record PontuacaoResumo(int totalPontos) {}
+    public record NotificacaoMetaResumo(
+            int id, int metaId, String tituloMeta, int pontosGanhos,
+            java.time.LocalDateTime dataCriacao) {
+        static NotificacaoMetaResumo de(NotificacaoMeta notificacao) {
+            return new NotificacaoMetaResumo(
+                    notificacao.id(),
+                    notificacao.metaId().getId(),
+                    notificacao.tituloMeta(),
+                    notificacao.pontosGanhos(),
+                    notificacao.dataCriacao());
+        }
+    }
 }

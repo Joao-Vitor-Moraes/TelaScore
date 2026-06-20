@@ -69,6 +69,16 @@ public class RecomendacaoController {
     public ResponseEntity<String> enviarRecomendacao(@RequestBody EnviarRecomendacaoRequest request) {
         try {
             UsuarioLogado remetente = usuarioAtual();
+            if (request.conteudoId() == null || request.conteudoId().isBlank()) {
+                throw new IllegalArgumentException("Selecione um conteúdo válido.");
+            }
+            if (request.tipoConteudo() == null) {
+                throw new IllegalArgumentException("Selecione o tipo de conteúdo.");
+            }
+            if (usuarios.obter(new com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId(
+                    request.destinatarioId())) == null) {
+                throw new IllegalArgumentException("Destinatário não encontrado.");
+            }
             enviarRecomendacaoCasoDeUso.executar(new EnviarRecomendacaoComando(
                     remetente.getId().getId(),
                     request.destinatarioId(),

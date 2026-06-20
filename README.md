@@ -147,3 +147,16 @@ A aplicação abrirá em `http://localhost:3000`.
 E-mail: admin@admin.com
 Senha: admin123
 ```
+
+## Padrões de Projeto
+
+| Integrante | Padrão | Funcionalidade | Classes |
+|---|---|---|---|
+| João Vitor Moraes | Iterator | Lista | `IteradorDeItens`, `IteradorSequencialDeItens`, `IteradorRanqueadoDeItens`, `Lista` (dominio-catalogo) · `ConsultarItensListaCasoDeUso` (aplicacao) |
+| Ester Carvalho | — | — | — |
+| Célio Pereira | — | — | — |
+| Guilherme Vinicius | — | — | — |
+| Fátima Beatriz Moraes | — | — | — |
+| Caio Almeida | Decorator | Quiz | `QuizDecorator`, `QuizBase`, `QuizComRestricao` (dominio-analise) , `ResponderQuizCasoDeUso` (aplicacao) |
+| Gabriel Reis | — | — | — |
+| Rodrigo Souza | Proxy | Comunidades | `EntrarComunidade`, `EntrarComunidadeProxy` (aplicacao) · `ErroProxyHandler` (apresentacao-backend) |

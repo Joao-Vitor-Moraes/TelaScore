@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.*;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.template.AtualizadorMetaComNotificacao;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.template.AtualizadorMetaTemplate;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.template.AtualizadorMetaSilencioso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.*;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.*;
@@ -28,17 +28,27 @@ public class AnaliseConfig {
     }
 
     @Bean
-    public AtualizadorMetaTemplate atualizadorMetaTemplate(
+    public AtualizadorMetaComNotificacao atualizadorMetaComNotificacao(
+            MetaRepositorio metas, PontuacaoServico pontuacao,
+            EstrategiaPontuacaoFactory estrategias,
+            NotificacaoMetaRepositorio notificacoes) {
+        return new AtualizadorMetaComNotificacao(
+                metas, pontuacao, estrategias.obter(AcaoPontuada.COMPLETAR_META), notificacoes);
+    }
+
+    @Bean
+    public AtualizadorMetaSilencioso atualizadorMetaSilencioso(
             MetaRepositorio metas, PontuacaoServico pontuacao,
             EstrategiaPontuacaoFactory estrategias) {
-        return new AtualizadorMetaComNotificacao(
+        return new AtualizadorMetaSilencioso(
                 metas, pontuacao, estrategias.obter(AcaoPontuada.COMPLETAR_META));
     }
 
     @Bean
     public AdicionarProgressoMetaCasoDeUso adicionarProgressoMetaCasoDeUso(
-            AtualizadorMetaTemplate atualizador) {
-        return new AdicionarProgressoMetaCasoDeUso(atualizador);
+            AtualizadorMetaComNotificacao comFeedback,
+            AtualizadorMetaSilencioso silencioso) {
+        return new AdicionarProgressoMetaCasoDeUso(comFeedback, silencioso);
     }
 
     @Bean

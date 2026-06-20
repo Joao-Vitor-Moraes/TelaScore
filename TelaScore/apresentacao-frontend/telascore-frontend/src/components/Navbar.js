@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiBell, FiChevronDown, FiFilm, FiLogOut, FiMenu, FiShield, FiUser, FiX } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
-import { filmeService, recomendacaoService, usuarioService } from '../services/api';
+import { filmeService, metaService, recomendacaoService, usuarioService } from '../services/api';
 
 const links = [
   { label: 'Filmes', path: '/filmes' },
@@ -53,18 +53,30 @@ export default function Navbar() {
     let ativo = true;
     async function carregarNotificacoes() {
       try {
-        const [recebidas, filmes] = await Promise.all([
+        const [recebidas, filmes, metasConcluidas] = await Promise.all([
           recomendacaoService.listar(),
           filmeService.listar(),
+          metaService.listarNotificacoes(),
         ]);
         if (!ativo) return;
         const titulos = Object.fromEntries(filmes.map(filme => [String(filme.id), filme.titulo]));
-        setNotificacoes(recebidas
+        const recomendacoes = recebidas
             .filter(recomendacao => recomendacao.status === 'PENDENTE')
             .map(recomendacao => ({
               ...recomendacao,
+              chave: `recomendacao-${recomendacao.id}`,
+              tipoNotificacao: 'RECOMENDACAO',
               titulo: titulos[String(recomendacao.conteudoId)] || 'Filme recomendado',
-            }))
+            }));
+        const notificacoesMetas = metasConcluidas.map(notificacao => ({
+          ...notificacao,
+          chave: `meta-${notificacao.id}`,
+          tipoNotificacao: 'META',
+          titulo: 'Meta concluída',
+          mensagem: `${notificacao.tituloMeta} — você ganhou ${notificacao.pontosGanhos} pontos.`,
+          dataGeracao: notificacao.dataCriacao,
+        }));
+        setNotificacoes([...recomendacoes, ...notificacoesMetas]
             .sort((a, b) => new Date(b.dataGeracao) - new Date(a.dataGeracao)));
       } catch {
         if (ativo) setNotificacoes([]);
@@ -74,10 +86,12 @@ export default function Navbar() {
     carregarNotificacoes();
     const intervalo = window.setInterval(carregarNotificacoes, 30000);
     window.addEventListener('telascore:recomendacoes-atualizadas', carregarNotificacoes);
+    window.addEventListener('telascore:notificacoes-atualizadas', carregarNotificacoes);
     return () => {
       ativo = false;
       window.clearInterval(intervalo);
       window.removeEventListener('telascore:recomendacoes-atualizadas', carregarNotificacoes);
+      window.removeEventListener('telascore:notificacoes-atualizadas', carregarNotificacoes);
     };
   }, [sessao?.id]);
 
@@ -90,11 +104,15 @@ export default function Navbar() {
 
   async function abrirNotificacao(notificacao) {
     try {
-      await recomendacaoService.visualizar(notificacao.id);
-      setNotificacoes(atuais => atuais.filter(item => item.id !== notificacao.id));
+      if (notificacao.tipoNotificacao === 'META') {
+        await metaService.visualizarNotificacao(notificacao.id);
+      } else {
+        await recomendacaoService.visualizar(notificacao.id);
+      }
+      setNotificacoes(atuais => atuais.filter(item => item.chave !== notificacao.chave));
     } catch {
     }
-    navegar('/recomendacoes');
+    navegar(notificacao.tipoNotificacao === 'META' ? '/metas' : '/recomendacoes');
   }
 
   function handleLogout() {
@@ -162,24 +180,28 @@ export default function Navbar() {
                   <div className="header-dropdown notification-dropdown">
                     <div className="notification-heading">
                       <div>
-                        <strong>Recomendações</strong>
+                        <strong>Notificações</strong>
                         <span>{notificacoes.length ? `${notificacoes.length} nova${notificacoes.length > 1 ? 's' : ''}` : 'Tudo em dia'}</span>
                       </div>
                       <FiBell />
                     </div>
                     <div className="notification-list">
                       {notificacoes.length === 0 ? (
-                          <div className="notification-empty">Nenhuma recomendação nova por enquanto.</div>
+                          <div className="notification-empty">Nenhuma notificação nova por enquanto.</div>
                       ) : notificacoes.slice(0, 5).map(notificacao => (
                           <button
-                              key={notificacao.id}
+                              key={notificacao.chave}
                               className="notification-item"
                               onClick={() => abrirNotificacao(notificacao)}
                           >
                             <span className="notification-dot" />
                             <span className="notification-content">
                         <strong>{notificacao.titulo}</strong>
-                        <span>Recomendado por @{notificacao.remetenteApelido || 'usuário'}</span>
+                        <span>
+                          {notificacao.tipoNotificacao === 'META'
+                            ? 'Conquista nas suas metas'
+                            : `Recomendado por @${notificacao.remetenteApelido || 'usuário'}`}
+                        </span>
                               {notificacao.mensagem && <small>“{notificacao.mensagem}”</small>}
                               <time>{formatarDataNotificacao(notificacao.dataGeracao)}</time>
                       </span>
@@ -187,7 +209,7 @@ export default function Navbar() {
                       ))}
                     </div>
                     <button className="notification-all" onClick={() => navegar('/recomendacoes')}>
-                      Ver todas as recomendações
+                      Ver recomendações
                     </button>
                   </div>
               )}

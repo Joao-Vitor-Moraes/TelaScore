@@ -7,5 +7,6 @@ public enum TipoConteudo {
     EVENTO,
     NOTICIA,
     META_MODELO,
+    META_SISTEMA,
     QUIZ
 }
