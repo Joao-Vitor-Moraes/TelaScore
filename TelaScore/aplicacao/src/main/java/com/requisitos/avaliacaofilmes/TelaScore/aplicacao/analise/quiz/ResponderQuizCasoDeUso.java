@@ -2,6 +2,9 @@ package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz;
 
 //import java.util.List;
 
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizBase;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizComRestricao;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizComponent;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.Quiz;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizRepositorio;
@@ -26,6 +29,13 @@ public class ResponderQuizCasoDeUso {
             throw new IllegalArgumentException("Quiz não encontrado com o ID fornecido.");
         }
 
+        QuizComponent quizComponent = new QuizComRestricao(new QuizBase(quiz.getTitulo()), 30);
+        quizComponent.iniciar();
+
+        if (!quizComponent.validarRestricao()) {
+            throw new IllegalStateException("O quiz não atende às restrições configuradas.");
+        }
+
         int totalPerguntas = quiz.getTotalPerguntas();
         int contadorAcertos = 0;
 
@@ -43,6 +53,12 @@ public class ResponderQuizCasoDeUso {
                     contadorAcertos++;
                 }
             }
+        }
+
+        int pontuacaoFinal = quizComponent.calcularPontuacao(contadorAcertos);
+
+        if (pontuacaoFinal < 0) {
+            throw new IllegalStateException("A pontuação calculada para o quiz é inválida.");
         }
 
         // 3. Cria a Entidade de Domínio TentativaQuiz com os parâmetros exatos do seu construtor
