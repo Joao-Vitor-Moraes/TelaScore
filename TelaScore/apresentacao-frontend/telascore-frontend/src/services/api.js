@@ -160,10 +160,13 @@ export const metaService = {
   criar: (dados) => request('POST', '/api/metas', dados),
   editar: (id, dados) => request('PUT', `/api/metas/${id}`, dados),
   remover: (id) => request('DELETE', `/api/metas/${id}`),
-  adicionarProgresso: (id, quantity) => request('PUT', `/api/metas/${id}/progresso?quantidade=${quantity}`),
+  adicionarProgresso: (id, quantity, modo = 'FEEDBACK') =>
+      request('PUT', `/api/metas/${id}/progresso?quantidade=${quantity}&modo=${modo}`),
   removerProgresso: (id, quantity) => request('PUT', `/api/metas/${id}/progresso/remover?quantidade=${quantity}`),
   estenderPrazo: (metaId, novoPrazo) => request('PUT', '/api/metas/prazo', { metaId, novoPrazo }),
   pontuacao: () => request('GET', '/api/metas/pontuacao'),
+  listarNotificacoes: () => request('GET', '/api/metas/notificacoes'),
+  visualizarNotificacao: (id) => request('PUT', `/api/metas/notificacoes/${id}/visualizar`),
   listarSistema: () => request('GET', '/api/metas/sistema'),
   criarSistema: (dados) => request('POST', '/api/metas/sistema', dados),
 };
