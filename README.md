@@ -157,6 +157,6 @@ Senha: admin123
 | Célio Pereira | — | — | — |
 | Guilherme Vinicius | — | — | — |
 | Fátima Beatriz Moraes | — | — | — |
-| Caio Almeida | Decorator | Quiz | `QuizDecorator`, `QuizBase`, `QuizComRestricao (dominio-analise)` , `ResponderQuizCasoDeUso (aplicacao)` |
+| Caio Almeida | Decorator | Quiz | `QuizDecorator`, `QuizBase`, `QuizComRestricao` (dominio-analise) , `ResponderQuizCasoDeUso` (aplicacao) |
 | Gabriel Reis | — | — | — |
-| Rodrigo Souza | — | — | — |
+| Rodrigo Souza | Proxy | Comunidades | `EntrarComunidade`, `EntrarComunidadeProxy` (aplicacao) · `ErroProxyHandler` (apresentacao-backend) |
