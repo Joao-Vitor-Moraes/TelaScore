@@ -119,6 +119,7 @@ export const usuarioService = {
   enviarAvatar: (arquivo) => upload('/api/identidade/usuario/meu-usuario/avatar', arquivo),
   listar: () => request('GET', '/api/identidade/usuario'),
   obterPorId: (id) => request('GET', `/api/identidade/usuario/${id}`),
+  obter: (id) => request('GET', `/api/identidade/usuario/${id}`),
   editar: (id, dados) => request('PUT', `/api/identidade/usuario/${id}`, dados),
   remover: (id) => request('DELETE', `/api/identidade/usuario/${id}`),
   buscarPorApelido: (apelido) =>

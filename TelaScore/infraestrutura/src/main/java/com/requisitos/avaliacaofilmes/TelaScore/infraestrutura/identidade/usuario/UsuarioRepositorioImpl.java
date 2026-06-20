@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 
 public class UsuarioRepositorioImpl implements UsuarioRepositorio {
 
+    private static final String SENHA_LEGADO_INVALIDA = "senha-invalida";
+
     @Override
     public void salvar(Usuario usuario) {
         EntityManager em = ConexaoBanco.obterEntityManager();
@@ -173,7 +175,7 @@ public class UsuarioRepositorioImpl implements UsuarioRepositorio {
         String avatarUrl = (String) linha[7];
 
         Email email = new Email(enderecoEmail);
-        Senha senha = new Senha(valorSenha);
+        Senha senha = new Senha(senhaOuMarcadorLegado(valorSenha));
         PapelUsuario papel = PapelUsuario.valueOf(papelUsuario);
 
         String nomeDominio = valorOuPadrao(nome, enderecoEmail);
@@ -192,6 +194,13 @@ public class UsuarioRepositorioImpl implements UsuarioRepositorio {
 
     private String valorOuPadrao(String valor, String padrao) {
         return valor == null || valor.isBlank() ? padrao : valor;
+    }
+
+    private String senhaOuMarcadorLegado(String valor) {
+        if (valor == null || valor.isBlank() || valor.length() < 6 || valor.length() > 50) {
+            return SENHA_LEGADO_INVALIDA;
+        }
+        return valor;
     }
 
     private String apelidoOuPadrao(String apelido, String nome, String email) {
