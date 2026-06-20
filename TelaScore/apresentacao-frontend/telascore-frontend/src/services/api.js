@@ -237,3 +237,17 @@ export const figurinhaService = {
   criar: (dados) => request('POST', '/api/figurinhas', dados),
   remover: (id) => request('DELETE', `/api/figurinhas/${id}`)
 };
+
+// Amigos
+export const amigoService = {
+  seguir: (seguidorId, seguidoId) => request('POST', '/api/conexoes', { seguidorId, seguidoId }),
+  deixarDeSeguir: (seguidoId, seguidorId) => request('DELETE', `/api/conexoes/${seguidoId}`, null, { 'X-Usuario-Id': seguidorId }),
+  buscarPorApelido: (apelido) => request('GET', `/api/identidade/usuario/buscar?apelido=${encodeURIComponent(apelido)}`),
+};
+
+// Recompensas
+export const recompensaService = {
+  consultarTotal: (usuarioId) => request('GET', `/api/recompensas/total?usuarioId=${usuarioId}`),
+  listarHistorico: (usuarioId) => request('GET', `/api/recompensas/historico?usuarioId=${usuarioId}`),
+  conceder: (dados) => request('POST', '/api/recompensas/conceder', dados),
+};

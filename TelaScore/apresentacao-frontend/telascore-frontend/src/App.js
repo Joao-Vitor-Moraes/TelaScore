@@ -31,6 +31,8 @@ import CriarEvento from './pages/eventos/CriarEvento';
 import Calendario from './pages/calendario/Calendario';
 import Quiz from './pages/analise/Quiz';
 import Mensagens from './pages/comunidade/Mensagens';
+import Amigos from './pages/social/Amigos';
+import Recompensas from './pages/analise/Recompensas';
 
 function App() {
   return (
@@ -96,6 +98,10 @@ function App() {
 
             {/* Mensagens */}
             <Route path="/mensagens" element={<RotaProtegida><Mensagens /></RotaProtegida>} />
+
+            <Route path="/amigos" element={<RotaProtegida><Amigos /></RotaProtegida>} />
+
+            <Route path="/recompensas" element={<RotaProtegida><Recompensas /></RotaProtegida>} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

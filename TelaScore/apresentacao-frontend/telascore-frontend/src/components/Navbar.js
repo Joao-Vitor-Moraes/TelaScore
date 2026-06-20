@@ -11,12 +11,14 @@ const links = [
   { label: 'Metas', path: '/metas' },
   { label: 'Recomendações', path: '/recomendacoes' },
   { label: 'Comunidades', path: '/comunidades' },
+  { label: 'Amigos', path: '/amigos' }, 
   { label: 'Notícias', path: '/noticias' },
   { label: 'Calendário', path: '/calendario' },
   { label: 'Eventos', path: '/eventos' },
   { label: 'Solicitações', path: '/solicitacoes' },
   { label: 'Denúncias', path: '/denuncias' },
   { label: 'Quizzes', path: '/quiz' },
+  { label: 'Recompensas', path: '/recompensas' },
   { label: 'Mensagens', path: '/mensagens' },
 ];
 
