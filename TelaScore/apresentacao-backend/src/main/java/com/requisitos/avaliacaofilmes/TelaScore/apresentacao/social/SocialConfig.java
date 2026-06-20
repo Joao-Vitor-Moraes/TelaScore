@@ -1,14 +1,38 @@
 package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.social;
 
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.*;
-import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.RemoverMensagemCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.CriarComunidadeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.EntrarComunidade;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.EntrarComunidadeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.EntrarComunidadeProxy;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.EnviarMensagemCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.ExcluirComunidadeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.ExcluirMensagemCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.ListarComunidadesUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.ListarMembrosComunidadeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.ListarMensagensCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.ListarTodasComunidadesCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.PromoverMembroCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.RebaixarMembroCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.RemoverMembroCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.DeixarDeSeguirCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.SeguirUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.AvaliarDenunciaCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.ListarDenunciasPendentesCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.ListarDenunciasPorStatusCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.ListarDenunciasPorUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.ListarTodasDenunciasCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.RegistrarDenunciaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.ComunidadeRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.conexao.ConexaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.denuncia.DenunciaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.denuncia.DenunciaServico;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.mensagem.MensagemRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.mensagem.MensagemServico;
 
 @Configuration
 public class SocialConfig {
@@ -72,6 +96,35 @@ public class SocialConfig {
     @Bean
     public ExcluirMensagemCasoDeUso excluirMensagemCasoDeUso(ComunidadeRepositorio comunidadeRepositorio) {
         return new ExcluirMensagemCasoDeUso(comunidadeRepositorio);
+    }
+
+    @Bean
+    public SeguirUsuarioCasoDeUso seguirUsuarioCasoDeUso(ConexaoRepositorio conexaoRepositorio, GeradorId geradorId) {
+        return new SeguirUsuarioCasoDeUso(conexaoRepositorio, geradorId);
+    }
+
+    @Bean
+    public DeixarDeSeguirCasoDeUso deixarDeSeguirCasoDeUso(ConexaoRepositorio conexaoRepositorio) {
+        return new DeixarDeSeguirCasoDeUso(conexaoRepositorio);
+    }
+
+    @Bean
+    public MensagemServico mensagemServico(MensagemRepositorio mensagemRepositorio) {
+        return new MensagemServico(mensagemRepositorio);
+    }
+
+    @Bean
+    public com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.EnviarMensagemCasoDeUso enviarMensagemDiretaCasoDeUso(
+            MensagemRepositorio mensagemRepositorio,
+            MensagemServico mensagemServico,
+            GeradorId geradorId) {
+        return new com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.EnviarMensagemCasoDeUso(
+                mensagemRepositorio, mensagemServico, geradorId);
+    }
+
+    @Bean
+    public RemoverMensagemCasoDeUso removerMensagemCasoDeUso(MensagemRepositorio mensagemRepositorio) {
+        return new RemoverMensagemCasoDeUso(mensagemRepositorio);
     }
 
     @Bean
