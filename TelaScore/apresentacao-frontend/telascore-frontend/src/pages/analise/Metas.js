@@ -3,7 +3,7 @@ import Navbar from '../../components/Navbar';
 import { metaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import {
-  FiActivity, FiAward, FiCalendar, FiCheckCircle, FiClock, FiMinus,
+  FiActivity, FiAward, FiBell, FiCalendar, FiCheckCircle, FiClock, FiEyeOff, FiMinus,
   FiEdit2, FiFilm, FiFileText, FiPlus, FiStar, FiTarget, FiTrash2, FiTrendingUp, FiUsers, FiX,
 } from 'react-icons/fi';
 import './analise.css';
@@ -67,6 +67,7 @@ export default function Metas() {
   const [novoPrazo, setNovoPrazo] = useState('');
   const [totalPontos, setTotalPontos] = useState(0);
   const [feedback, setFeedback] = useState('');
+  const [modosAtualizacao, setModosAtualizacao] = useState({});
   const [erro, setErro] = useState('');
   const [salvando, setSalvando] = useState(false);
 
@@ -137,9 +138,18 @@ export default function Metas() {
     setErro('');
     try {
       if (delta > 0) {
-        const resultado = await metaService.adicionarProgresso(meta.id, delta);
-        setFeedback(resultado.mensagem);
-        setTotalPontos(resultado.totalPontos);
+        const modo = modosAtualizacao[meta.id] || 'FEEDBACK';
+        const resultado = await metaService.adicionarProgresso(meta.id, delta, modo);
+        if (modo === 'FEEDBACK') {
+          setFeedback(resultado.status === 'CONCLUIDA' ? '' : resultado.mensagem);
+          setTotalPontos(resultado.totalPontos);
+          if (resultado.status === 'CONCLUIDA') {
+            window.dispatchEvent(new Event('telascore:notificacoes-atualizadas'));
+          }
+        } else {
+          setFeedback('');
+          setTotalPontos(resultado.totalPontos);
+        }
       } else {
         await metaService.removerProgresso(meta.id, Math.abs(delta));
       }
@@ -333,6 +343,25 @@ export default function Metas() {
                 </div>
 
                 <div className="goal-card__actions">
+                  <div className="goal-update-mode" aria-label="Modo de atualização">
+                    <button
+                      type="button"
+                      className={(modosAtualizacao[meta.id] || 'FEEDBACK') === 'FEEDBACK' ? 'is-active' : ''}
+                      onClick={() => setModosAtualizacao(atual => ({ ...atual, [meta.id]: 'FEEDBACK' }))}
+                      title="Ao concluir, envia uma notificação para o sininho. Os pontos são concedidos nos dois modos."
+                    >
+                      <FiBell /> Notificar
+                    </button>
+                    <button
+                      type="button"
+                      className={modosAtualizacao[meta.id] === 'SILENCIOSO' ? 'is-active' : ''}
+                      onClick={() => setModosAtualizacao(atual => ({ ...atual, [meta.id]: 'SILENCIOSO' }))}
+                      title="Concede os pontos normalmente, mas não cria notificação no sininho"
+                    >
+                      <FiEyeOff /> Silencioso
+                    </button>
+                  </div>
+                  <div className="goal-card__action-row">
                   <div className="goal-counter" aria-label="Alterar progresso">
                     <button
                       onClick={() => alterarProgresso(meta, -1)}
@@ -351,6 +380,7 @@ export default function Metas() {
                       <FiClock /> Alterar prazo
                     </button>
                   )}
+                  </div>
                 </div>
               </article>
             );

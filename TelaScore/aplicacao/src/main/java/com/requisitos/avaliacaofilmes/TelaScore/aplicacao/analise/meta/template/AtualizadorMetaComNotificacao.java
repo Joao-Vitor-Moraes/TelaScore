@@ -3,6 +3,7 @@ package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.template
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.ResultadoAtualizacaoMeta;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.Meta;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.NotificacaoMetaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.AcaoPontuada;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.EstrategiaPontuacao;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.Pontos;
@@ -11,12 +12,15 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.Pontu
 public class AtualizadorMetaComNotificacao extends AtualizadorMetaTemplate {
     private final PontuacaoServico pontuacaoServico;
     private final EstrategiaPontuacao estrategia;
+    private final NotificacaoMetaRepositorio notificacoes;
 
     public AtualizadorMetaComNotificacao(MetaRepositorio metaRepositorio,
-            PontuacaoServico pontuacaoServico, EstrategiaPontuacao estrategia) {
+            PontuacaoServico pontuacaoServico, EstrategiaPontuacao estrategia,
+            NotificacaoMetaRepositorio notificacoes) {
         super(metaRepositorio);
         this.pontuacaoServico = pontuacaoServico;
         this.estrategia = estrategia;
+        this.notificacoes = notificacoes;
     }
 
     @Override
@@ -29,6 +33,7 @@ public class AtualizadorMetaComNotificacao extends AtualizadorMetaTemplate {
                     meta.getUsuarioId(), AcaoPontuada.COMPLETAR_META, estrategia);
             pontosGanhos = pontos.getQuantidade();
             meta.marcarPontosConcedidos();
+            notificacoes.criar(meta.getUsuarioId(), meta.getId(), meta.getTitulo(), pontosGanhos);
             mensagem = "Meta concluída! Você ganhou " + pontosGanhos + " pontos.";
         } else if (concluiuAgora) {
             mensagem = "Meta concluída!";

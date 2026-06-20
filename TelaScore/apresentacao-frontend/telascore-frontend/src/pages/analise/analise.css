@@ -299,11 +299,55 @@
   position: relative;
   z-index: 2;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: stretch;
+  flex-direction: column;
   gap: 12px;
   margin-top: auto;
   padding-top: 24px;
+}
+
+.goal-update-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .025);
+}
+
+.goal-update-mode button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 800;
+  transition: color .2s ease, background .2s ease;
+}
+
+.goal-update-mode button:hover {
+  color: #fff;
+}
+
+.goal-update-mode button.is-active {
+  color: #fff;
+  background: rgba(229, 9, 20, .18);
+  box-shadow: inset 0 0 0 1px rgba(255, 55, 73, .22);
+}
+
+.goal-card__action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .goal-counter {
@@ -1968,6 +2012,11 @@
   }
 
   .goal-card__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .goal-card__action-row {
     align-items: stretch;
     flex-direction: column;
   }
