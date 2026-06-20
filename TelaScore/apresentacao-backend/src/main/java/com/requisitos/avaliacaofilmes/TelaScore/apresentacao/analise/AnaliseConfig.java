@@ -12,7 +12,10 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.RemoverQu
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.ResponderQuizCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.*;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.*;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaSistema;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaSistemaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.NotificacaoMetaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.*;

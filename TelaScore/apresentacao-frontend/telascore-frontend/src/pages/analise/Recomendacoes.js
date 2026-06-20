@@ -73,7 +73,7 @@ export default function Recomendacoes() {
       filmeService.listar(),
       listaService.listarPublicas().catch(() => []),
       comunidadeService.listarTodas().catch(() => []),
-      eventoService.listarFuturos().catch(() => []),
+      eventoService.listar(sessao.id).catch(() => []),
       noticiaService.pesquisar('', '').catch(() => []),
       metaService.listarSistema().catch(() => []),
       quizService.listar().catch(() => []),
