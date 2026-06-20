@@ -1,46 +1,114 @@
-Domain CinemaAppDomain {}
-
-ContextMap CinemaAppContextMap {
-  Aggregate ExperienciaCinematograficaAggregate {
-    contains ExperienciaCinematograficaContext
-    contains DescobertaDeFilmesContext
-    contains InteracaoSocialContext
-    contains ConteudoInformativoContext
-    contains IdentidadeContext
-  }
+Domain TelaScoreDomain {
+  Subdomain CatalogoSubdomain { type = CORE_DOMAIN }
+  Subdomain IdentidadeSubdomain { type = SUPPORTING_DOMAIN }
+  Subdomain AnaliseSubdomain { type = CORE_DOMAIN }
+  Subdomain SocialSubdomain { type = SUPPORTING_DOMAIN }
+  Subdomain InformacaoSubdomain { type = SUPPORTING_DOMAIN }
 }
 
-BoundedContext ExperienciaCinematograficaContext implements CinemaAppDomain {
+ContextMap TelaScoreContextMap {
+  contains CatalogoContext
+  contains IdentidadeContext
+  contains AnaliseContext
+  contains SocialContext
+  contains InformacaoContext
+}
+
+
+BoundedContext CatalogoContext implements CatalogoSubdomain {
+
+  Aggregate FilmeAggregate {
+
+    Entity Filme {
+      aggregateRoot
+
+      - FilmeId id
+      - String titulo
+      - String sinopse
+      - Integer anoLancamento
+      - String imagemUrl
+      - List<DiretorId> diretores
+    }
+
+    ValueObject FilmeId {
+      - UUID valor
+    }
+
+    Service FilmeServico {
+      @Filme criar(String titulo, String sinopse, Integer anoLancamento, List<DiretorId> diretores);
+      void editar(FilmeId id, String titulo, String sinopse, Integer anoLancamento);
+      void remover(FilmeId id);
+    }
+
+    Repository FilmeRepositorio {
+      @Filme buscarPorId(FilmeId id);
+      List<@Filme> listarTodos();
+      @Filme salvar(@Filme filme);
+      void deletar(FilmeId id);
+    }
+  }
+
+
+  Aggregate DiretorAggregate {
+
+    Entity Diretor {
+      aggregateRoot
+
+      - DiretorId id
+      - String nome
+    }
+
+    ValueObject DiretorId {
+      - UUID valor
+    }
+
+    Service DiretorServico {
+      @Diretor criar(String nome);
+      void editar(DiretorId id, String nome);
+    }
+
+    Repository DiretorRepositorio {
+      @Diretor buscarPorId(DiretorId id);
+      List<@Diretor> listarTodos();
+      @Diretor salvar(@Diretor diretor);
+    }
+  }
+
 
   Aggregate AvaliacaoAggregate {
 
     Entity Avaliacao {
       aggregateRoot
 
-      - UUID id
-      - int nota
-      - String review
-      - Date data
-      - UUID usuarioId
-      - UUID filmeId
+      - AvaliacaoId id
+      - FilmeId filmeId
+      - UsuarioId usuarioId
+      - Nota nota
+      - String resenha
+      - String visibilidade
+      - Date dataAvaliacao
+    }
+
+    ValueObject AvaliacaoId {
+      - UUID valor
     }
 
     ValueObject Nota {
       int valor
     }
 
-    Service AvaliacaoService {
-      @Avaliacao registrarAvaliacao(UUID usuarioId, UUID filmeId, int nota, String review);
-      @Avaliacao editarAvaliacao(UUID avaliacaoId, int nota, String review);
-      void removerAvaliacao(UUID avaliacaoId);
+    Service AvaliacaoServico {
+      @Avaliacao registrar(FilmeId filmeId, UsuarioId usuarioId, Nota nota, String resenha, String visibilidade);
+      void editar(AvaliacaoId id, Nota nota, String resenha);
+      void remover(AvaliacaoId id);
     }
 
-    Repository AvaliacaoRepository {
-      @Avaliacao findById(UUID id);
-      List<@Avaliacao> findByFilme(UUID filmeId);
-      List<@Avaliacao> findByUsuario(UUID usuarioId);
-      @Avaliacao save(@Avaliacao avaliacao);
-      void delete(UUID id);
+    Repository AvaliacaoRepositorio {
+      @Avaliacao buscarPorId(AvaliacaoId id);
+      List<@Avaliacao> buscarPorFilme(FilmeId filmeId);
+      List<@Avaliacao> buscarPorUsuario(UsuarioId usuarioId);
+      @Avaliacao salvar(@Avaliacao avaliacao);
+      void deletar(AvaliacaoId id);
     }
   }
 
@@ -50,169 +118,352 @@ BoundedContext ExperienciaCinematograficaContext implements CinemaAppDomain {
     Entity Lista {
       aggregateRoot
 
-      - UUID id
+      - ListaId id
+      - UsuarioId donoId
       - String titulo
       - String descricao
+      - boolean ranqueada
       - Visibilidade visibilidade
-      - UUID usuarioId
+      - TipoLista tipo
+      - boolean colaborativa
+      - List<UsuarioId> colaboradores
       - List<@ItemLista> itens
     }
 
+    ValueObject ListaId {
+      - UUID valor
+    }
+
     ValueObject ItemLista {
-      - UUID filmeId
-      - int posicao
+      - FilmeId filmeId
+      - Integer posicao
     }
 
     enum Visibilidade {
-      PUBLICA,
-      PRIVADA
+      PUBLICA, PRIVADA
     }
 
-    Service ListaService {
-      void adicionarFilme(@Lista lista, UUID filmeId);
-      void removerFilme(@Lista lista, UUID filmeId);
-      void moverFilme(@Lista lista, UUID filmeId, int novaPosicao);
+    enum TipoLista {
+      NORMAL, WATCHLIST
     }
 
-    Repository ListaRepository {
-      @Lista findById(UUID id);
-      List<@Lista> findByUsuario(UUID usuarioId);
-      @Lista save(@Lista lista);
-      void delete(UUID id);
+    Service ListaServico {
+      void adicionarItem(@Lista lista, @ItemLista item, UsuarioId usuarioId, boolean filmeJaFoiAssistido);
+      void removerItem(@Lista lista, FilmeId filmeId, UsuarioId usuarioId);
+      void moverFilme(@Lista lista, FilmeId filmeId, int novaPosicao, UsuarioId usuarioId);
+      void tornarColaborativa(@Lista lista);
+      void adicionarColaborador(@Lista lista, UsuarioId donoAcao, UsuarioId novoColaborador);
+      void removerColaborador(@Lista lista, UsuarioId donoAcao, UsuarioId colaborador);
+    }
+
+    Repository ListaRepositorio {
+      @Lista buscarPorId(ListaId id);
+      List<@Lista> buscarPorUsuario(UsuarioId usuarioId);
+      @Lista salvar(@Lista lista);
+      void deletar(ListaId id);
     }
   }
 
 
-  Aggregate RegistroAggregate {
+  Aggregate SolicitacaoAggregate {
 
-    Entity RegistroVisualizacao {
+    Entity SolicitacaoFilme {
       aggregateRoot
 
-      - UUID id
-      - Date data
-      - UUID usuarioId
-      - UUID filmeId
+      - SolicitacaoId id
+      - UsuarioId solicitanteId
+      - String tituloSugerido
+      - String justificativa
+      - String pais
+      - Integer ano
+      - String genero
+      - String fotoUrl
+      - StatusSolicitacao status
+      - Date dataCriacao
+      - String feedbackAdmin
     }
 
-    Service RegistroService {
-      void registrarVisualizacao(UUID usuarioId, UUID filmeId);
+    ValueObject SolicitacaoId {
+      - UUID valor
     }
 
-    Repository RegistroRepository {
-      @RegistroVisualizacao findById(UUID id);
-      List<@RegistroVisualizacao> findByUsuario(UUID usuarioId);
-      @RegistroVisualizacao save(@RegistroVisualizacao registro);
+    enum StatusSolicitacao {
+      PENDENTE, APROVADA, REJEITADA, CANCELADA, AGUARDANDO_AJUSTES
+    }
+
+    Service SolicitacaoServico {
+      void aprovar(SolicitacaoId id);
+      void rejeitar(SolicitacaoId id);
+      void cancelar(SolicitacaoId id, UsuarioId solicitanteId);
+      void solicitarAjustes(SolicitacaoId id, String feedback);
+      void editar(SolicitacaoId id, String novoTitulo, String justificativa, String pais, Integer ano, String genero, String fotoUrl);
+    }
+
+    Repository SolicitacaoRepositorio {
+      @SolicitacaoFilme buscarPorId(SolicitacaoId id);
+      List<@SolicitacaoFilme> buscarPorUsuario(UsuarioId usuarioId);
+      List<@SolicitacaoFilme> listarPendentes();
+      @SolicitacaoFilme salvar(@SolicitacaoFilme solicitacao);
     }
   }
 }
 
 
-BoundedContext DescobertaDeFilmesContext implements CinemaAppDomain {
+BoundedContext IdentidadeContext implements IdentidadeSubdomain {
+
+  Aggregate UsuarioAggregate {
+
+    Entity Usuario {
+      aggregateRoot
+
+      - UsuarioId id
+      - Email email
+      - Senha senha
+      - String papel
+    }
+
+    ValueObject UsuarioId {
+      - UUID valor
+    }
+
+    ValueObject Email {
+      String endereco
+    }
+
+    ValueObject Senha {
+      String hash
+    }
+
+    Service UsuarioServico {
+      @Usuario registrar(String email, String senha, String papel);
+      @Usuario autenticar(String email, String senha);
+    }
+
+    Repository UsuarioRepositorio {
+      @Usuario buscarPorId(UsuarioId id);
+      @Usuario buscarPorEmail(String email);
+      @Usuario salvar(@Usuario usuario);
+    }
+  }
+}
+
+
+BoundedContext AnaliseContext implements AnaliseSubdomain {
+
+  Aggregate QuizAggregate {
+
+    Entity Quiz {
+      aggregateRoot
+
+      - QuizId id
+      - String titulo
+      - String descricao
+      - List<@Pergunta> perguntas
+    }
+
+    Entity Pergunta {
+      - String enunciado
+      - List<@Alternativa> alternativas
+    }
+
+    Entity Alternativa {
+      - String texto
+      - boolean correta
+    }
+
+    Entity TentativaQuiz {
+      - UsuarioId usuarioId
+      - QuizId quizId
+      - int acertos
+      - Date dataTentativa
+    }
+
+    ValueObject QuizId {
+      - UUID valor
+    }
+
+    Service QuizServico {
+      @Quiz criar(String titulo, String descricao);
+      void adicionarPergunta(QuizId quizId, @Pergunta pergunta);
+      @TentativaQuiz responder(QuizId quizId, UsuarioId usuarioId, List<Integer> respostas);
+    }
+
+    Repository QuizRepositorio {
+      @Quiz buscarPorId(QuizId id);
+      List<@Quiz> listarTodos();
+      @Quiz salvar(@Quiz quiz);
+    }
+  }
+
+
+  Aggregate RecompensaAggregate {
+
+    Entity RegistroPontuacao {
+      aggregateRoot
+
+      - RegistroPontuacaoId id
+      - UsuarioId usuarioId
+      - @Pontos pontosGanhos
+      - AcaoPontuada acao
+      - Date dataRegistro
+    }
+
+    ValueObject RegistroPontuacaoId {
+      - UUID valor
+    }
+
+    ValueObject Pontos {
+      int valor
+    }
+
+    enum AcaoPontuada {
+      AVALIAR_FILME, ACERTAR_QUIZ, CRIAR_LISTA, COMPLETAR_META, CONVIDAR_AMIGO
+    }
+
+    Service PontuacaoServico {
+      @RegistroPontuacao registrar(UsuarioId usuarioId, @Pontos pontos, AcaoPontuada acao);
+      int totalPontos(UsuarioId usuarioId);
+    }
+
+    Repository RegistroPontuacaoRepositorio {
+      List<@RegistroPontuacao> buscarPorUsuario(UsuarioId usuarioId);
+      @RegistroPontuacao salvar(@RegistroPontuacao registro);
+    }
+  }
+
+
+  Aggregate MetaAggregate {
+
+    Entity Meta {
+      aggregateRoot
+
+      - MetaId id
+      - UsuarioId usuarioId
+      - String titulo
+      - int quantidadeAlvo
+      - int quantidadeAtual
+      - Date dataPrazo
+      - StatusMeta status
+      - TipoMeta tipo
+      - Integer metaSistemaId
+      - boolean pontosConcedidos
+    }
+
+    Entity MetaSistema {
+      - int id
+      - String titulo
+      - TipoMeta tipo
+      - int quantidadeAlvo
+    }
+
+    ValueObject MetaId {
+      - UUID valor
+    }
+
+    enum StatusMeta {
+      EM_ANDAMENTO, CONCLUIDA, FALHADA, CANCELADA
+    }
+
+    enum TipoMeta {
+      FILMES, AVALIACOES, RESENHAS
+    }
+
+    Service MetaServico {
+      @Meta criar(UsuarioId usuarioId, String titulo, int quantidadeAlvo, Date dataPrazo, TipoMeta tipo);
+      void adicionarProgresso(MetaId id, int quantidade);
+      void removerProgresso(MetaId id, int quantidade);
+      void cancelar(MetaId id);
+      void marcarComoFalhada(MetaId id);
+      void estenderPrazo(MetaId id, Date novoPrazo);
+    }
+
+    Repository MetaRepositorio {
+      @Meta buscarPorId(MetaId id);
+      List<@Meta> buscarPorUsuario(UsuarioId usuarioId);
+      @Meta salvar(@Meta meta);
+    }
+
+    Repository MetaSistemaRepositorio {
+      @MetaSistema buscarPorId(int id);
+      List<@MetaSistema> listarTodas();
+    }
+  }
+
 
   Aggregate RecomendacaoAggregate {
 
     Entity Recomendacao {
       aggregateRoot
 
-      - UUID id
-      - UUID usuarioId
-      - List<UUID> filmesRecomendados
+      - RecomendacaoId id
+      - UsuarioId usuarioId
+      - String conteudoId
+      - TipoConteudo tipoConteudo
+      - UsuarioId remetenteId
+      - String mensagem
+      - double pontuacaoCompatibilidade
       - Date dataGeracao
+      - StatusRecomendacao status
+      - String comentarioResposta
+      - Integer notaPosterior
+      - String avaliacaoPosterior
     }
 
-    Service RecomendacaoService {
-      List<UUID> gerarRecomendacoes(UUID usuarioId);
+    ValueObject RecomendacaoId {
+      - UUID valor
     }
 
-    Service DescobertaService {
-      List<UUID> sugerirFilmes(UUID usuarioId);
-      List<UUID> filmesPopulares();
-      List<UUID> filmesBemAvaliados();
+    enum TipoConteudo {
+      FILME, LISTA, COMUNIDADE, EVENTO, NOTICIA, META_MODELO, META_SISTEMA, QUIZ
     }
 
-    Repository RecomendacaoRepository {
-      @Recomendacao findByUsuario(UUID usuarioId);
-      @Recomendacao save(@Recomendacao recomendacao);
-    }
-  }
-
-
-  Aggregate PreferenciaAggregate {
-
-    Entity PreferenciaUsuario {
-      aggregateRoot
-
-      - UUID id
-      - UUID usuarioId
-      - List<String> generosPreferidos
-      - List<String> temasInteresse
+    enum StatusRecomendacao {
+      PENDENTE, VISUALIZADA, ACEITA, REJEITADA, VOU_ASSISTIR, JA_ASSISTI, SEM_INTERESSE
     }
 
-    Service PreferenciaService {
-      void atualizarPreferencias(@PreferenciaUsuario preferencias);
+    Service RecomendacaoServico {
+      @Recomendacao gerar(UsuarioId usuarioId, String conteudoId, TipoConteudo tipo, double pontuacao);
+      @Recomendacao enviar(UsuarioId remetenteId, UsuarioId destinatarioId, String conteudoId, TipoConteudo tipo, String mensagem);
+      void responder(RecomendacaoId id, StatusRecomendacao resposta, String comentario);
+      void registrarAvaliacaoPosterior(RecomendacaoId id, int nota, String comentario);
     }
 
-    Repository PreferenciaRepository {
-      @PreferenciaUsuario findByUsuario(UUID usuarioId);
-      @PreferenciaUsuario save(@PreferenciaUsuario preferencia);
+    Repository RecomendacaoRepositorio {
+      @Recomendacao buscarPorId(RecomendacaoId id);
+      List<@Recomendacao> buscarPorUsuario(UsuarioId usuarioId);
+      @Recomendacao salvar(@Recomendacao recomendacao);
     }
   }
 }
 
 
-BoundedContext InteracaoSocialContext implements CinemaAppDomain {
+BoundedContext SocialContext implements SocialSubdomain {
 
-  Aggregate RelacaoSocialAggregate {
+  Aggregate ConexaoAggregate {
 
-    Entity RelacaoSocial {
+    Entity Conexao {
       aggregateRoot
 
-      - UUID id
-      - UUID seguidorId
-      - UUID seguidoId
-      - TipoRelacao tipo
+      - ConexaoId id
+      - UsuarioId seguidorId
+      - UsuarioId seguidoId
+      - Date dataCriacao
     }
 
-    enum TipoRelacao {
-      SEGUIDOR
+    ValueObject ConexaoId {
+      - UUID valor
     }
 
-    Service RelacaoSocialService {
-      void seguirUsuario(UUID seguidorId, UUID seguidoId);
-      void deixarDeSeguir(UUID seguidorId, UUID seguidoId);
+    Service ConexaoServico {
+      @Conexao seguir(UsuarioId seguidorId, UsuarioId seguidoId);
+      void deixarDeSeguir(UsuarioId seguidorId, UsuarioId seguidoId);
     }
 
-    Repository RelacaoSocialRepository {
-      List<@RelacaoSocial> findSeguidores(UUID usuarioId);
-      List<@RelacaoSocial> findSeguindo(UUID usuarioId);
-      @RelacaoSocial save(@RelacaoSocial relacao);
-      void delete(UUID id);
-    }
-  }
-
-
-  Aggregate ComentarioAggregate {
-
-    Entity Comentario {
-      aggregateRoot
-
-      - UUID id
-      - UUID autorId
-      - UUID conteudoId
-      - String texto
-      - Date data
-    }
-
-    Service ComentarioService {
-      @Comentario adicionarComentario(UUID autorId, UUID conteudoId, String texto);
-      void removerComentario(UUID comentarioId);
-    }
-
-    Repository ComentarioRepository {
-      @Comentario findById(UUID id);
-      List<@Comentario> findByConteudo(UUID conteudoId);
-      @Comentario save(@Comentario comentario);
-      void delete(UUID id);
+    Repository ConexaoRepositorio {
+      List<@Conexao> buscarSeguidores(UsuarioId usuarioId);
+      List<@Conexao> buscarSeguindo(UsuarioId usuarioId);
+      @Conexao salvar(@Conexao conexao);
+      void deletar(ConexaoId id);
     }
   }
 
@@ -222,21 +473,27 @@ BoundedContext InteracaoSocialContext implements CinemaAppDomain {
     Entity Mensagem {
       aggregateRoot
 
-      - UUID id
-      - UUID remetenteId
-      - UUID destinatarioId
+      - MensagemId id
+      - UsuarioId remetenteId
+      - UsuarioId destinatarioId
       - String conteudo
-      - Date data
+      - Date dataEnvio
+      - boolean lida
     }
 
-    Service MensagemService {
-      void enviarMensagem(UUID remetenteId, UUID destinatarioId, String conteudo);
+    ValueObject MensagemId {
+      - UUID valor
     }
 
-    Repository MensagemRepository {
-      @Mensagem findById(UUID id);
-      List<@Mensagem> findConversa(UUID usuario1, UUID usuario2);
-      @Mensagem save(@Mensagem mensagem);
+    Service MensagemServico {
+      @Mensagem enviar(UsuarioId remetenteId, UsuarioId destinatarioId, String conteudo);
+      void marcarComoLida(MensagemId id);
+    }
+
+    Repository MensagemRepositorio {
+      @Mensagem buscarPorId(MensagemId id);
+      List<@Mensagem> buscarConversa(UsuarioId usuario1, UsuarioId usuario2);
+      @Mensagem salvar(@Mensagem mensagem);
     }
   }
 
@@ -246,64 +503,120 @@ BoundedContext InteracaoSocialContext implements CinemaAppDomain {
     Entity Comunidade {
       aggregateRoot
 
-      - UUID id
+      - ComunidadeId id
       - String nome
       - String descricao
-      - UUID criadorId
+      - String regras
+      - Date dataCriacao
     }
 
-    Entity Postagem {
-      - UUID id
-      - UUID autorId
-      - String conteudo
-      - Date data
+    Entity MembroComunidade {
+      - UsuarioId usuarioId
+      - ComunidadeId comunidadeId
+      - PapelComunidade papel
     }
 
-    Service ComunidadeService {
-      @Comunidade criarComunidade(UUID criadorId, String nome, String descricao);
-      @Postagem adicionarPostagem(UUID comunidadeId, UUID autorId, String conteudo);
+    ValueObject ComunidadeId {
+      - UUID valor
     }
 
-    Repository ComunidadeRepository {
-      @Comunidade findById(UUID id);
-      List<@Comunidade> findByUsuario(UUID usuarioId);
-      @Comunidade save(@Comunidade comunidade);
+    enum PapelComunidade {
+      CRIADOR, MODERADOR, MEMBRO
     }
 
-    Repository PostagemRepository {
-      @Postagem findById(UUID id);
-      List<@Postagem> findByComunidade(UUID comunidadeId);
-      @Postagem save(@Postagem postagem);
-      void delete(UUID id);
+    Service ComunidadeServico {
+      @Comunidade criar(String nome, String descricao, UsuarioId criadorId);
+      void entrar(ComunidadeId id, UsuarioId usuarioId);
+      void sair(ComunidadeId id, UsuarioId usuarioId);
+    }
+
+    Repository ComunidadeRepositorio {
+      @Comunidade buscarPorId(ComunidadeId id);
+      List<@Comunidade> buscarPorUsuario(UsuarioId usuarioId);
+      @Comunidade salvar(@Comunidade comunidade);
+    }
+  }
+
+
+  Aggregate DenunciaAggregate {
+
+    Entity Denuncia {
+      aggregateRoot
+
+      - DenunciaId id
+      - UsuarioId denuncianteId
+      - TipoAlvoDenuncia tipoAlvo
+      - String alvoId
+      - MotivoDenuncia motivo
+      - StatusDenuncia status
+    }
+
+    ValueObject DenunciaId {
+      - UUID valor
+    }
+
+    enum MotivoDenuncia {
+      OFENSIVO, SPAM, ASSEDIO, CONTEUDO_INADEQUADO, OUTRO
+    }
+
+    enum StatusDenuncia {
+      PENDENTE, EM_ANALISE, ACEITA, REJEITADA
+    }
+
+    enum TipoAlvoDenuncia {
+      USUARIO, MENSAGEM, COMUNIDADE, AVALIACAO
+    }
+
+    Service DenunciaServico {
+      void registrar(@Denuncia denuncia);
+      void colocarEmAnalise(@Denuncia denuncia);
+      void aceitar(@Denuncia denuncia);
+      void rejeitar(@Denuncia denuncia);
+    }
+
+    Repository DenunciaRepositorio {
+      @Denuncia buscarPorId(DenunciaId id);
+      List<@Denuncia> listarPendentes();
+      @Denuncia salvar(@Denuncia denuncia);
     }
   }
 }
 
 
-BoundedContext ConteudoInformativoContext implements CinemaAppDomain {
+BoundedContext InformacaoContext implements InformacaoSubdomain {
 
   Aggregate NoticiaAggregate {
 
     Entity Noticia {
       aggregateRoot
 
-      - UUID id
+      - NoticiaId id
+      - UsuarioId autorId
       - String titulo
       - String conteudo
+      - CategoriaNoticia categoria
       - Date dataPublicacao
-      - String fonte
     }
 
-    Service NoticiaService {
-      @Noticia publicarNoticia(String titulo, String conteudo, String fonte);
-      void removerNoticia(UUID noticiaId);
+    ValueObject NoticiaId {
+      - UUID valor
     }
 
-    Repository NoticiaRepository {
-      @Noticia findById(UUID id);
-      List<@Noticia> findRecentes();
-      @Noticia save(@Noticia noticia);
-      void delete(UUID id);
+    enum CategoriaNoticia {
+      LANCAMENTO, CRITICA, EVENTO, CURIOSIDADE
+    }
+
+    Service NoticiaServico {
+      @Noticia publicar(UsuarioId autorId, String titulo, String conteudo, CategoriaNoticia categoria);
+      void remover(NoticiaId id);
+    }
+
+    Repository NoticiaRepositorio {
+      @Noticia buscarPorId(NoticiaId id);
+      List<@Noticia> buscarRecentes();
+      List<@Noticia> buscarPorFiltros(String termo, CategoriaNoticia categoria);
+      @Noticia salvar(@Noticia noticia);
+      void deletar(NoticiaId id);
     }
   }
 
@@ -313,242 +626,59 @@ BoundedContext ConteudoInformativoContext implements CinemaAppDomain {
     Entity Evento {
       aggregateRoot
 
-      - UUID id
+      - EventoId id
       - String titulo
       - String descricao
       - Date dataEvento
-      - UUID criadorId
+      - UsuarioId criadorId
     }
 
-    Entity Participacao {
-      - UUID id
-      - UUID eventoId
-      - UUID usuarioId
-      - StatusParticipacao status
+    ValueObject EventoId {
+      - UUID valor
     }
 
-    enum StatusParticipacao {
-      CONFIRMADO,
-      INTERESSADO,
-      CANCELADO
+    Service EventoServico {
+      @Evento criar(UsuarioId criadorId, String titulo, String descricao, Date dataEvento);
+      void remover(EventoId id);
     }
 
-    Service EventoService {
-      @Evento criarEvento(UUID criadorId, String titulo, String descricao, Date dataEvento);
-      void participarEvento(UUID eventoId, UUID usuarioId, StatusParticipacao status);
-    }
-
-    Repository EventoRepository {
-      @Evento findById(UUID id);
-      List<@Evento> findProximosEventos();
-      @Evento save(@Evento evento);
-    }
-
-    Repository ParticipacaoRepository {
-      @Participacao findById(UUID id);
-      List<@Participacao> findByEvento(UUID eventoId);
-      @Participacao save(@Participacao participacao);
-    }
-  }
-
-
-  Aggregate LancamentoAggregate {
-
-    Entity Lancamento {
-      aggregateRoot
-
-      - UUID id
-      - UUID filmeId
-      - Date dataEstreia
-      - TipoLancamento tipoLancamento
-    }
-
-    enum TipoLancamento {
-      CINEMA,
-      STREAMING
-    }
-
-    Service LancamentoService {
-      @Lancamento adicionarLancamento(UUID filmeId, Date dataEstreia, TipoLancamento tipo);
-    }
-
-    Repository LancamentoRepository {
-      @Lancamento findById(UUID id);
-      List<@Lancamento> findProximos();
-      @Lancamento save(@Lancamento lancamento);
+    Repository EventoRepositorio {
+      @Evento buscarPorId(EventoId id);
+      List<@Evento> buscarProximos();
+      @Evento salvar(@Evento evento);
     }
   }
 
 
   Aggregate CalendarioAggregate {
 
-    Entity CalendarioPersonalizado {
+    Entity CalendarioEstreia {
       aggregateRoot
 
-      - UUID id
-      - UUID usuarioId
-      - List<@EventoCalendario> eventos
+      - CalendarioId id
+      - UsuarioId usuarioId
+      - List<@EntradaCalendario> entradas
     }
 
-    ValueObject EventoCalendario {
-      - UUID referenciaId
-      - TipoEventoCalendario tipo
-      - Date data
+    ValueObject CalendarioId {
+      - UUID valor
     }
 
-    enum TipoEventoCalendario {
-      LANCAMENTO,
-      EVENTO
+    ValueObject EntradaCalendario {
+      - FilmeId filmeId
+      - Date dataEstreiaPrevista
+      - boolean lembreteAtivo
     }
 
-    Service CalendarioService {
-      void adicionarAoCalendario(UUID usuarioId, UUID referenciaId, TipoEventoCalendario tipo);
-      void removerDoCalendario(UUID usuarioId, UUID referenciaId);
+    Service CalendarioServico {
+      void adicionarFilme(CalendarioId id, @EntradaCalendario entrada);
+      void removerFilme(CalendarioId id, FilmeId filmeId);
+      void dispararLembretesDoDia(CalendarioId id, Date dataReferencia);
     }
 
-    Repository CalendarioRepository {
-      @CalendarioPersonalizado findByUsuario(UUID usuarioId);
-      @CalendarioPersonalizado save(@CalendarioPersonalizado calendario);
-    }
-  }
-}
-
-BoundedContext IdentidadeContext implements CinemaAppDomain {
-
-  Aggregate PerfilAggregate {
-
-    Entity Perfil {
-      aggregateRoot
-
-      - UUID id
-      - UUID usuarioId
-      - String nomeUsuario
-      - String biografia
-      - String fotoUrl
-      - ConfiguracaoPrivacidade privacidade
-    }
-
-    enum ConfiguracaoPrivacidade {
-      PUBLICO,
-      PRIVADO,
-      APENAS_SEGUIDORES
-    }
-
-    Service PerfilService {
-      void atualizarPerfil(@Perfil perfil);
-      void alterarPrivacidade(UUID usuarioId, ConfiguracaoPrivacidade privacidade);
-    }
-
-    Repository PerfilRepository {
-      @Perfil findById(UUID id);
-      @Perfil findByUsuario(UUID usuarioId);
-      @Perfil save(@Perfil perfil);
+    Repository CalendarioRepositorio {
+      @CalendarioEstreia buscarPorUsuario(UsuarioId usuarioId);
+      @CalendarioEstreia salvar(@CalendarioEstreia calendario);
     }
   }
-
-
-  Aggregate PreferenciaAggregate {
-
-    Entity Preferencia {
-      aggregateRoot
-
-      - UUID id
-      - UUID usuarioId
-      - List<String> generosFavoritos
-      - List<String> temasInteresse
-    }
-
-    Service PreferenciaService {
-      void atualizarPreferencias(@Preferencia preferencia);
-    }
-
-    Repository PreferenciaRepository {
-      @Preferencia findByUsuario(UUID usuarioId);
-      @Preferencia save(@Preferencia preferencia);
-    }
-  }
-
-
-  Aggregate ConfiguracaoAggregate {
-
-    Entity ConfiguracaoUsuario {
-      aggregateRoot
-
-      - UUID id
-      - UUID usuarioId
-      - boolean receberNotificacoes
-      - boolean perfilVisivel
-    }
-
-    Service ConfiguracaoService {
-      void atualizarConfiguracoes(@ConfiguracaoUsuario configuracao);
-    }
-
-    Repository ConfiguracaoRepository {
-      @ConfiguracaoUsuario findByUsuario(UUID usuarioId);
-      @ConfiguracaoUsuario save(@ConfiguracaoUsuario configuracao);
-    }
-  }
-
-  Aggregate NoticiaAggregate {
-
-      Entity Noticia {
-        aggregateRoot
-
-        - NoticiaId id
-        - UsuarioId autorId
-        - String titulo
-        - String conteudo
-        - CategoriaNoticia categoria
-        - Date dataPublicacao
-      }
-
-      ValueObject NoticiaId {
-        - UUID id
-      }
-
-      enum CategoriaNoticia {
-        CRITICA,
-        LANCAMENTO,
-        EVENTO,
-        CURIOSIDADE
-      }
-
-      Service NoticiaService {
-        @Noticia publicarNoticia(UsuarioId autorId, String titulo, String conteudo, String categoria);
-        void removerNoticia(NoticiaId noticiaId);
-      }
-
-      Repository NoticiaRepository {
-        @Noticia findById(NoticiaId id);
-        List<@Noticia> findRecentes();
-        List<@Noticia> findByFiltros(String termo, String categoria);
-        @Noticia save(@Noticia noticia);
-        void delete(NoticiaId id);
-      }
-    }
-
-    Aggregate ComunidadeAggregate {
-        Entity Comunidade {
-          aggregateRoot
-          - ComunidadeId id
-          - String nome
-          - String descricao
-          - Date dataCriacao
-        }
-
-        Entity MembroComunidade {
-          - UsuarioId usuarioId
-          - PapelComunidade papel
-        }
-
-        enum PapelComunidade {
-          CRIADOR, MODERADOR, MEMBRO
-        }
-
-        Service ComunidadeServico {
-          void criarComunidade(@Comunidade comunidade, UsuarioId criadorId);
-          void entrarNaComunidade(ComunidadeId id, UsuarioId usuarioId);
-        }
-    }
 }
