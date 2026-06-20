@@ -1175,8 +1175,94 @@
 }
 
 .recommendation-card__poster > span {
-  color: #666670;
+  color: #fff;
   font-size: 24px;
+}
+
+.recommendation-card__poster .recommendation-placeholder {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  padding: 18px 8px;
+  isolation: isolate;
+}
+
+.recommendation-placeholder::before,
+.recommendation-placeholder::after {
+  position: absolute;
+  border-radius: 50%;
+  content: "";
+  filter: blur(2px);
+  z-index: -1;
+}
+
+.recommendation-placeholder::before {
+  top: -28px;
+  right: -24px;
+  width: 88px;
+  height: 88px;
+  background: rgba(255, 255, 255, .12);
+}
+
+.recommendation-placeholder::after {
+  bottom: -32px;
+  left: -28px;
+  width: 98px;
+  height: 98px;
+  background: rgba(0, 0, 0, .18);
+}
+
+.recommendation-placeholder__symbol {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 14px;
+  background: rgba(10, 10, 15, .2);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, .18);
+  font-size: 22px;
+}
+
+.recommendation-placeholder small {
+  max-width: 100%;
+  overflow: hidden;
+  color: rgba(255, 255, 255, .88);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.recommendation-placeholder--lista {
+  background: linear-gradient(155deg, #78451d, #26150d 78%);
+}
+
+.recommendation-placeholder--comunidade {
+  background: linear-gradient(155deg, #7d1934, #250c18 78%);
+}
+
+.recommendation-placeholder--evento {
+  background: linear-gradient(155deg, #254f91, #10182d 78%);
+}
+
+.recommendation-placeholder--noticia {
+  background: linear-gradient(155deg, #5941a8, #18122f 78%);
+}
+
+.recommendation-placeholder--meta_modelo,
+.recommendation-placeholder--meta_sistema {
+  background: linear-gradient(155deg, #1f7a5a, #0b261d 78%);
+}
+
+.recommendation-placeholder--quiz {
+  background: linear-gradient(155deg, #be6b22, #351708 78%);
 }
 
 .recommendation-card__poster i {
