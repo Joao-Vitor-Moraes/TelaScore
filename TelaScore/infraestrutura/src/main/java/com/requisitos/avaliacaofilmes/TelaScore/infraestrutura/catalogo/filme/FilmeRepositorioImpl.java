@@ -31,6 +31,7 @@ public class FilmeRepositorioImpl implements FilmeRepositorio {
             entity.setTitulo(filme.getTitulo());
             entity.setSinopse(filme.getSinopse());
             entity.setAnoLancamento(filme.getAnoLancamento());
+            entity.setDataEstreia(filme.getDataEstreia());
             entity.setImagemUrl(filme.getImagemUrl());
 
             // Converte lista de DiretorId para lista de Integer
@@ -102,6 +103,7 @@ public class FilmeRepositorioImpl implements FilmeRepositorio {
         Filme filme = new Filme(filmeId, entity.getTitulo(), entity.getSinopse(),
                 entity.getAnoLancamento(), diretores);
         filme.setImagemUrl(entity.getImagemUrl());
+        filme.setDataEstreia(entity.getDataEstreia());
         return filme;
     }
 

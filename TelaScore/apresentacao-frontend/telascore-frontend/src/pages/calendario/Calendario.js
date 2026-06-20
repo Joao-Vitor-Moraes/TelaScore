@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { FiCalendar, FiBell, FiBellOff, FiTrash2, FiPlus } from 'react-icons/fi';
+import { FiCalendar, FiBell, FiBellOff, FiTrash2, FiCheck } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
 import { calendarioService, filmeService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
@@ -23,10 +23,7 @@ export default function Calendario() {
   const [filmes, setFilmes] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
-
-  const [filmeSelecionado, setFilmeSelecionado] = useState('');
-  const [dataEstreia, setDataEstreia] = useState('');
-  const [adicionando, setAdicionando] = useState(false);
+  const [salvandoId, setSalvandoId] = useState(null);
 
   const filmeMap = useMemo(
     () => Object.fromEntries(filmes.map(f => [String(f.id), f])),
@@ -36,7 +33,7 @@ export default function Calendario() {
   function carregarCalendario() {
     return calendarioService.obter(USUARIO_ID)
       .then(cal => setEntradas(cal?.entradas ?? []))
-      .catch(() => setEntradas([])); // 404 = utilizador ainda não tem calendário
+      .catch(() => setEntradas([])); // 404 = utilizador ainda não acompanha nenhuma estreia
   }
 
   useEffect(() => {
@@ -52,26 +49,37 @@ export default function Calendario() {
       .finally(() => setCarregando(false));
   }, []);
 
-  async function handleAdicionar(e) {
-    e.preventDefault();
+  const hoje = hojeISO();
+  const idsSeguidos = useMemo(
+    () => new Set(entradas.map(e => String(e.filmeId))),
+    [entradas]
+  );
+
+  const proximasEstreias = useMemo(
+    () => filmes
+      .filter(f => f.dataEstreia && f.dataEstreia >= hoje && !idsSeguidos.has(String(f.id)))
+      .sort((a, b) => a.dataEstreia.localeCompare(b.dataEstreia)),
+    [filmes, idsSeguidos, hoje]
+  );
+
+  const acompanhando = useMemo(
+    () => [...entradas].sort((a, b) => a.dataEstreiaPrevista.localeCompare(b.dataEstreiaPrevista)),
+    [entradas]
+  );
+
+  async function handleSeguir(filme) {
+    setSalvandoId(filme.id);
     setErro(null);
-    if (!filmeSelecionado || !dataEstreia) {
-      setErro('Selecione um filme e a data de estreia.');
-      return;
-    }
-    setAdicionando(true);
     try {
       await calendarioService.registrarFilme(USUARIO_ID, {
-        filmeId: filmeSelecionado,
-        dataEstreia,
+        filmeId: String(filme.id),
+        dataEstreia: filme.dataEstreia,
       });
-      setFilmeSelecionado('');
-      setDataEstreia('');
       await carregarCalendario();
     } catch {
-      setErro('Erro ao adicionar filme ao calendário.');
+      setErro('Erro ao seguir a estreia.');
     } finally {
-      setAdicionando(false);
+      setSalvandoId(null);
     }
   }
 
@@ -85,27 +93,14 @@ export default function Calendario() {
   }
 
   async function handleRemover(filmeId) {
-    if (!window.confirm('Remover este filme do calendário?')) return;
+    if (!window.confirm('Deixar de acompanhar esta estreia?')) return;
     try {
       await calendarioService.removerFilme(USUARIO_ID, filmeId);
       await carregarCalendario();
     } catch {
-      alert('Erro ao remover o filme.');
+      alert('Erro ao remover do calendário.');
     }
   }
-
-  async function handleDispararLembretes() {
-    try {
-      await calendarioService.dispararLembretes(USUARIO_ID, hojeISO());
-      alert('Lembretes do dia disparados!');
-    } catch {
-      alert('Erro ao disparar lembretes.');
-    }
-  }
-
-  const entradasOrdenadas = [...entradas].sort(
-    (a, b) => a.dataEstreiaPrevista.localeCompare(b.dataEstreiaPrevista)
-  );
 
   return (
     <div style={styles.pagina}>
@@ -116,95 +111,94 @@ export default function Calendario() {
             <FiCalendar size={22} color="#e94560" />
             <h2 style={styles.titulo}>Calendário de Estreias</h2>
           </div>
-          {entradas.length > 0 && (
-            <button style={styles.btnLembretes} onClick={handleDispararLembretes}>
-              <FiBell size={14} /> Disparar lembretes de hoje
-            </button>
-          )}
         </div>
-
-        <form style={styles.formAdd} onSubmit={handleAdicionar}>
-          <p style={styles.formTitulo}>ADICIONAR ESTREIA</p>
-          <div style={styles.formLinha}>
-            <select
-              style={{ ...styles.input, flex: 2 }}
-              value={filmeSelecionado}
-              onChange={e => setFilmeSelecionado(e.target.value)}
-            >
-              <option value="">Selecione um filme</option>
-              {filmes.map(f => (
-                <option key={f.id} value={f.id}>
-                  {f.titulo}{f.anoLancamento ? ` (${f.anoLancamento})` : ''}
-                </option>
-              ))}
-            </select>
-            <input
-              style={{ ...styles.input, flex: 1 }}
-              type="date"
-              value={dataEstreia}
-              onChange={e => setDataEstreia(e.target.value)}
-            />
-            <button type="submit" style={styles.btnAdd} disabled={adicionando}>
-              <FiPlus size={16} /> {adicionando ? 'Adicionando...' : 'Adicionar'}
-            </button>
-          </div>
-        </form>
+        <p style={styles.subtitulo}>
+          Escolha os filmes que você quer acompanhar e seja avisado quando estrearem.
+        </p>
 
         {erro && <p style={styles.erro}>{erro}</p>}
-
         {carregando && <p style={styles.msg}>Carregando...</p>}
 
-        {!carregando && entradasOrdenadas.length === 0 && !erro && (
-          <p style={styles.vazio}>Seu calendário está vazio. Adicione um filme para acompanhar a estreia!</p>
-        )}
-
-        <div style={styles.lista}>
-          {entradasOrdenadas.map(entrada => {
-            const filme = filmeMap[String(entrada.filmeId)];
-            return (
-              <div key={entrada.filmeId} style={styles.card}>
-                <div style={styles.cardEsquerda}>
-                  {filme?.imagemUrl
-                    ? <img src={filme.imagemUrl} alt={filme.titulo} style={styles.poster} />
-                    : <div style={styles.posterPlaceholder}>🎬</div>}
-                </div>
-
-                <div style={styles.cardInfo}>
-                  <span style={styles.cardTitulo}>
-                    {filme?.titulo ?? `Filme #${entrada.filmeId}`}
-                  </span>
-                  <span style={styles.cardData}>
-                    Estreia: {formatarData(entrada.dataEstreiaPrevista)}
-                  </span>
-                  <span style={{ ...styles.lembreteStatus, color: entrada.lembreteAtivo ? '#10b981' : '#6b7280' }}>
-                    {entrada.lembreteAtivo ? 'Lembrete ativo' : 'Lembrete desativado'}
-                  </span>
-                </div>
-
-                <div style={styles.cardAcoes}>
-                  <button
-                    style={{
-                      ...styles.btnIcone,
-                      borderColor: entrada.lembreteAtivo ? '#10b981' : '#6b7280',
-                      color: entrada.lembreteAtivo ? '#10b981' : '#6b7280',
-                    }}
-                    title={entrada.lembreteAtivo ? 'Desativar lembrete' : 'Ativar lembrete'}
-                    onClick={() => handleAlternarLembrete(entrada.filmeId)}
-                  >
-                    {entrada.lembreteAtivo ? <FiBell size={16} /> : <FiBellOff size={16} />}
-                  </button>
-                  <button
-                    style={{ ...styles.btnIcone, borderColor: '#e94560', color: '#e94560' }}
-                    title="Remover do calendário"
-                    onClick={() => handleRemover(entrada.filmeId)}
-                  >
-                    <FiTrash2 size={16} />
-                  </button>
-                </div>
+        {!carregando && (
+          <>
+            {/* Acompanhando */}
+            <p style={styles.secao}>ACOMPANHANDO ({acompanhando.length})</p>
+            {acompanhando.length === 0 ? (
+              <p style={styles.vazioSecao}>Você ainda não acompanha nenhuma estreia. Escolha abaixo!</p>
+            ) : (
+              <div style={styles.lista}>
+                {acompanhando.map(entrada => {
+                  const filme = filmeMap[String(entrada.filmeId)];
+                  return (
+                    <div key={entrada.filmeId} style={styles.card}>
+                      <div style={styles.cardEsquerda}>
+                        {filme?.imagemUrl
+                          ? <img src={filme.imagemUrl} alt={filme.titulo} style={styles.poster} />
+                          : <div style={styles.posterPlaceholder}>🎬</div>}
+                      </div>
+                      <div style={styles.cardInfo}>
+                        <span style={styles.cardTitulo}>{filme?.titulo ?? `Filme #${entrada.filmeId}`}</span>
+                        <span style={styles.cardData}>Estreia: {formatarData(entrada.dataEstreiaPrevista)}</span>
+                        <span style={{ ...styles.lembreteStatus, color: entrada.lembreteAtivo ? '#10b981' : '#6b7280' }}>
+                          {entrada.lembreteAtivo ? 'Lembrete ativo' : 'Lembrete desativado'}
+                        </span>
+                      </div>
+                      <div style={styles.cardAcoes}>
+                        <button
+                          style={{
+                            ...styles.btnIcone,
+                            borderColor: entrada.lembreteAtivo ? '#10b981' : '#6b7280',
+                            color: entrada.lembreteAtivo ? '#10b981' : '#6b7280',
+                          }}
+                          title={entrada.lembreteAtivo ? 'Desativar lembrete' : 'Ativar lembrete'}
+                          onClick={() => handleAlternarLembrete(entrada.filmeId)}
+                        >
+                          {entrada.lembreteAtivo ? <FiBell size={16} /> : <FiBellOff size={16} />}
+                        </button>
+                        <button
+                          style={{ ...styles.btnIcone, borderColor: '#e94560', color: '#e94560' }}
+                          title="Deixar de acompanhar"
+                          onClick={() => handleRemover(entrada.filmeId)}
+                        >
+                          <FiTrash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
+            )}
+
+            {/* Próximas estreias */}
+            <p style={{ ...styles.secao, marginTop: '32px' }}>PRÓXIMAS ESTREIAS</p>
+            {proximasEstreias.length === 0 ? (
+              <p style={styles.vazioSecao}>Nenhuma estreia futura no catálogo no momento.</p>
+            ) : (
+              <div style={styles.lista}>
+                {proximasEstreias.map(filme => (
+                  <div key={filme.id} style={styles.card}>
+                    <div style={styles.cardEsquerda}>
+                      {filme.imagemUrl
+                        ? <img src={filme.imagemUrl} alt={filme.titulo} style={styles.poster} />
+                        : <div style={styles.posterPlaceholder}>🎬</div>}
+                    </div>
+                    <div style={styles.cardInfo}>
+                      <span style={styles.cardTitulo}>{filme.titulo}</span>
+                      <span style={styles.cardData}>Estreia: {formatarData(filme.dataEstreia)}</span>
+                    </div>
+                    <button
+                      style={styles.btnSeguir}
+                      onClick={() => handleSeguir(filme)}
+                      disabled={salvandoId === filme.id}
+                    >
+                      <FiBell size={14} /> {salvandoId === filme.id ? 'Salvando...' : 'Quero ser avisado'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
@@ -212,28 +206,12 @@ export default function Calendario() {
 
 const styles = {
   pagina: { minHeight: '100vh', backgroundColor: '#0f3460', color: 'white' },
-  conteudo: { maxWidth: '720px', margin: '0 auto', padding: '32px' },
-  cabecalho: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px' },
+  conteudo: { maxWidth: '760px', margin: '0 auto', padding: '32px' },
+  cabecalho: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' },
   tituloWrapper: { display: 'flex', alignItems: 'center', gap: '10px' },
   titulo: { margin: 0, fontSize: '24px' },
-  btnLembretes: {
-    display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', borderRadius: '6px',
-    border: '1px solid #aaa', backgroundColor: 'transparent', color: '#aaa',
-    cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap',
-  },
-  formAdd: { backgroundColor: '#16213e', borderRadius: '12px', padding: '18px', marginBottom: '24px' },
-  formTitulo: { fontSize: '11px', fontWeight: 'bold', letterSpacing: '1px', color: '#aaa', margin: '0 0 12px 0' },
-  formLinha: { display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' },
-  input: {
-    padding: '9px 12px', borderRadius: '6px', border: '1px solid #2a2a4a',
-    backgroundColor: '#0f3460', color: 'white', fontSize: '13px', outline: 'none',
-    colorScheme: 'dark', minWidth: '120px',
-  },
-  btnAdd: {
-    display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 18px', borderRadius: '6px',
-    border: 'none', backgroundColor: '#e94560', color: 'white', cursor: 'pointer',
-    fontSize: '13px', fontWeight: 'bold', whiteSpace: 'nowrap',
-  },
+  subtitulo: { color: '#aaa', fontSize: '14px', margin: '8px 0 24px 0' },
+  secao: { fontSize: '11px', letterSpacing: '1px', color: '#aaa', margin: '0 0 12px 0', fontWeight: 'bold' },
   lista: { display: 'flex', flexDirection: 'column', gap: '12px' },
   card: { backgroundColor: '#16213e', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', gap: '16px' },
   cardEsquerda: { flexShrink: 0 },
@@ -252,7 +230,12 @@ const styles = {
     backgroundColor: 'transparent', cursor: 'pointer',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
   },
-  vazio: { color: '#aaa', textAlign: 'center', marginTop: '60px' },
+  btnSeguir: {
+    display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '8px',
+    border: 'none', backgroundColor: '#c8102e', color: '#fff', cursor: 'pointer',
+    fontSize: '13px', fontWeight: 'bold', whiteSpace: 'nowrap', flexShrink: 0,
+  },
+  vazioSecao: { color: '#aaa', fontSize: '14px', margin: '0 0 8px 0' },
   msg: { color: '#aaa', textAlign: 'center', marginTop: '60px' },
   erro: { color: '#e94560', marginBottom: '16px' },
 };

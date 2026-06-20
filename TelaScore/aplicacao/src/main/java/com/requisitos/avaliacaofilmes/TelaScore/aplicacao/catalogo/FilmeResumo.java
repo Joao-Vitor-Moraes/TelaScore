@@ -7,5 +7,6 @@ public record FilmeResumo(
 		int anoLancamento,
 		String nomeDiretor,
 		double mediaNotas,
-		String imagemUrl
+		String imagemUrl,
+		String dataEstreia
 ) {}

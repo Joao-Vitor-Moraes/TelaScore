@@ -43,7 +43,8 @@ public class ListarFilmesCasoDeUso {
                             f.getAnoLancamento(),
                             nomeDiretor,
                             media,
-                            f.getImagemUrl());
+                            f.getImagemUrl(),
+                            f.getDataEstreia() != null ? f.getDataEstreia().toString() : null);
                 })
                 .collect(Collectors.toList());
     }

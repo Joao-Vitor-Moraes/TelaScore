@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,9 @@ public class FilmeEntity {
 
     @Column(name = "ano_lancamento", nullable = false)
     private Integer anoLancamento;
+
+    @Column(name = "data_estreia")
+    private LocalDate dataEstreia;
 
     @Column(name = "imagem_url")
     private String imagemUrl;
@@ -49,6 +53,9 @@ public class FilmeEntity {
 
     public Integer getAnoLancamento() { return anoLancamento; }
     public void setAnoLancamento(Integer anoLancamento) { this.anoLancamento = anoLancamento; }
+
+    public LocalDate getDataEstreia() { return dataEstreia; }
+    public void setDataEstreia(LocalDate dataEstreia) { this.dataEstreia = dataEstreia; }
 
     public List<Integer> getDiretores() { return diretores; }
     public void setDiretores(List<Integer> diretores) { this.diretores = diretores; }

@@ -5,6 +5,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuar
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.evento.Evento;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.evento.EventoId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.evento.EventoServico;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.evento.Visibilidade;
 
 public class AgendarEventoCasoDeUso {
 
@@ -22,6 +23,16 @@ public class AgendarEventoCasoDeUso {
 
         Evento evento = new Evento(novoId, criadorId, comando.titulo(), comando.dataHora());
         evento.setDescricao(comando.descricao());
+
+        if (comando.visibilidade() != null && !comando.visibilidade().isBlank()) {
+            evento.setVisibilidade(Visibilidade.valueOf(comando.visibilidade().toUpperCase()));
+        }
+        if (comando.comunidadesConvidadas() != null) {
+            comando.comunidadesConvidadas().forEach(evento::convidarComunidade);
+        }
+        if (comando.convidados() != null) {
+            comando.convidados().forEach(evento::convidarUsuario);
+        }
 
         servico.agendarEvento(evento);
         return novoId.getId();

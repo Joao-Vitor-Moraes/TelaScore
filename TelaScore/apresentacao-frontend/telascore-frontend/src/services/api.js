@@ -128,10 +128,12 @@ export const usuarioService = {
 
 // Eventos
 export const eventoService = {
-  listarFuturos: (aPartirDe) => request('GET', `/api/eventos${aPartirDe ? `?aPartirDe=${encodeURIComponent(aPartirDe)}` : ''}`),
-  obter: (id) => request('GET', `/api/eventos/${id}`),
+  listar: (usuarioId) => request('GET', `/api/eventos?usuarioId=${usuarioId}`),
+  obter: (id, usuarioId) => request('GET', `/api/eventos/${id}${usuarioId != null ? `?usuarioId=${usuarioId}` : ''}`),
   agendar: (comando) => request('POST', '/api/eventos', comando),
+  responder: (id, usuarioId, resposta) => request('POST', `/api/eventos/${id}/resposta`, { usuarioId, resposta }),
   cancelar: (id) => request('DELETE', `/api/eventos/${id}`),
+  amigos: (usuarioId) => request('GET', `/api/eventos/amigos?usuarioId=${usuarioId}`),
 };
 
 // Calendário de estreias

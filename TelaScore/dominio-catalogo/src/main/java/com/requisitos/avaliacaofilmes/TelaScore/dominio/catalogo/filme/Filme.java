@@ -4,6 +4,7 @@ import static org.apache.commons.lang3.Validate.notBlank;
 import static org.apache.commons.lang3.Validate.notEmpty;
 import static org.apache.commons.lang3.Validate.notNull;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +17,7 @@ public class Filme {
 	private String titulo;
 	private String sinopse;
 	private Integer anoLancamento;
+	private LocalDate dataEstreia;
 	private String imagemUrl;
 
 	private final List<DiretorId> diretores = new ArrayList<>();
@@ -55,6 +57,9 @@ public class Filme {
 		this.anoLancamento = anoLancamento;
 	}
 	public Integer getAnoLancamento() { return anoLancamento; }
+
+	public void setDataEstreia(LocalDate dataEstreia) { this.dataEstreia = dataEstreia; }
+	public LocalDate getDataEstreia() { return dataEstreia; }
 
 	private void setDiretores(Collection<DiretorId> diretores) {
 		notNull(diretores, "A lista de diretores não pode ser nula");

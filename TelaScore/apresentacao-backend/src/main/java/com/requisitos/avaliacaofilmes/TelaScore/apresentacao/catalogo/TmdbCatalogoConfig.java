@@ -34,6 +34,7 @@ public class TmdbCatalogoConfig {
     private static final String IMAGEM_BASE = "https://image.tmdb.org/t/p/w500";
     private static final int PAGINAS_PADRAO = 20;
     private static final int MAXIMO_PAGINAS = 50;
+    private static final int PAGINAS_ESTREIAS = 3;
 
     @Bean
     @Order(2)
@@ -59,34 +60,53 @@ public class TmdbCatalogoConfig {
                     .filter(id -> id >= PREFIXO_ID_TMDB)
                     .count();
 
-            if (quantidadeJaImportada >= paginas * 15L) {
-                System.out.printf("Catálogo TMDB já possui %d filmes importados.%n", quantidadeJaImportada);
-                return;
-            }
-
             HttpClient cliente = HttpClient.newBuilder()
                     .connectTimeout(Duration.ofSeconds(8))
                     .build();
 
-            int importados = 0;
-            for (int pagina = 1; pagina <= paginas; pagina++) {
+            if (quantidadeJaImportada >= paginas * 15L) {
+                System.out.printf("Catálogo TMDB já possui %d filmes importados.%n", quantidadeJaImportada);
+            } else {
+                int importados = 0;
+                for (int pagina = 1; pagina <= paginas; pagina++) {
+                    try {
+                        JsonNode resposta = consultarPagina(cliente, objectMapper, apiKey, pagina);
+                        for (JsonNode item : resposta.path("results")) {
+                            if (importarFilme(item, repositorio, idsExistentes, titulosExistentes)) {
+                                importados++;
+                            }
+                        }
+                    } catch (Exception erro) {
+                        System.err.printf(
+                                "Não foi possível importar a página %d do TMDB. O catálogo local continuará disponível. Motivo: %s%n",
+                                pagina,
+                                erro.getMessage());
+                        break;
+                    }
+                }
+                System.out.printf("Catálogo TMDB atualizado: %d novos filmes importados.%n", importados);
+            }
+
+            // Próximas estreias: filmes com lançamento futuro, para alimentar o calendário de estreias.
+            int estreias = 0;
+            String hoje = LocalDate.now().toString();
+            for (int pagina = 1; pagina <= PAGINAS_ESTREIAS; pagina++) {
                 try {
-                    JsonNode resposta = consultarPagina(cliente, objectMapper, apiKey, pagina);
+                    JsonNode resposta = consultarEstreias(cliente, objectMapper, apiKey, pagina, hoje);
                     for (JsonNode item : resposta.path("results")) {
                         if (importarFilme(item, repositorio, idsExistentes, titulosExistentes)) {
-                            importados++;
+                            estreias++;
                         }
                     }
                 } catch (Exception erro) {
                     System.err.printf(
-                            "Não foi possível importar a página %d do TMDB. O catálogo local continuará disponível. Motivo: %s%n",
+                            "Não foi possível importar a página %d de estreias do TMDB. Motivo: %s%n",
                             pagina,
                             erro.getMessage());
                     break;
                 }
             }
-
-            System.out.printf("Catálogo TMDB atualizado: %d novos filmes importados.%n", importados);
+            System.out.printf("Estreias futuras importadas do TMDB: %d.%n", estreias);
         };
     }
 
@@ -117,6 +137,35 @@ public class TmdbCatalogoConfig {
         return objectMapper.readTree(resposta.body());
     }
 
+    private JsonNode consultarEstreias(
+            HttpClient cliente,
+            ObjectMapper objectMapper,
+            String apiKey,
+            int pagina,
+            String aPartirDe) throws Exception {
+        String url = "https://api.themoviedb.org/3/discover/movie"
+                + "?api_key=" + URLEncoder.encode(apiKey, StandardCharsets.UTF_8)
+                + "&language=pt-BR"
+                + "&region=BR"
+                + "&include_adult=false"
+                + "&sort_by=primary_release_date.asc"
+                + "&with_release_type=2%7C3"
+                + "&primary_release_date.gte=" + aPartirDe
+                + "&page=" + pagina;
+
+        HttpRequest requisicao = HttpRequest.newBuilder(URI.create(url))
+                .timeout(Duration.ofSeconds(12))
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+
+        HttpResponse<String> resposta = cliente.send(requisicao, HttpResponse.BodyHandlers.ofString());
+        if (resposta.statusCode() < 200 || resposta.statusCode() >= 300) {
+            throw new IllegalStateException("TMDB respondeu HTTP " + resposta.statusCode());
+        }
+        return objectMapper.readTree(resposta.body());
+    }
+
     private boolean importarFilme(
             JsonNode item,
             FilmeRepositorio repositorio,
@@ -125,7 +174,8 @@ public class TmdbCatalogoConfig {
         int tmdbId = item.path("id").asInt(0);
         String titulo = texto(item, "title");
         String poster = texto(item, "poster_path");
-        Integer ano = ano(texto(item, "release_date"));
+        LocalDate dataEstreia = data(texto(item, "release_date"));
+        Integer ano = dataEstreia != null ? dataEstreia.getYear() : null;
 
         if (tmdbId <= 0 || titulo == null || poster == null || ano == null) {
             return false;
@@ -145,6 +195,7 @@ public class TmdbCatalogoConfig {
                 ano,
                 List.of());
         filme.setImagemUrl(IMAGEM_BASE + poster);
+        filme.setDataEstreia(dataEstreia);
         repositorio.salvar(filme);
         idsExistentes.add(filmeId.getCodigo());
         titulosExistentes.add(tituloNormalizado);
@@ -156,9 +207,9 @@ public class TmdbCatalogoConfig {
         return valor.isEmpty() ? null : valor;
     }
 
-    private Integer ano(String data) {
+    private LocalDate data(String data) {
         try {
-            return data == null ? null : LocalDate.parse(data).getYear();
+            return data == null ? null : LocalDate.parse(data);
         } catch (Exception ignorado) {
             return null;
         }
