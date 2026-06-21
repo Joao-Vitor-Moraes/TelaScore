@@ -75,7 +75,7 @@ export default function Navbar() {
           chave: `meta-${notificacao.id}`,
           tipoNotificacao: 'META',
           titulo: 'Meta concluída',
-          mensagem: `${notificacao.tituloMeta} — você ganhou ${notificacao.pontosGanhos} pontos.`,
+          mensagem: `${notificacao.tituloMeta} — status: concluída.`,
           dataGeracao: notificacao.dataCriacao,
         }));
         setNotificacoes([...recomendacoes, ...notificacoesMetas]

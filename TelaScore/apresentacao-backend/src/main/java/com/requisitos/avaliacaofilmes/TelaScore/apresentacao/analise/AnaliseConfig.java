@@ -64,19 +64,14 @@ public class AnaliseConfig {
 
     @Bean
     public AtualizadorMetaComNotificacao atualizadorMetaComNotificacao(
-            MetaRepositorio metas, PontuacaoServico pontuacao,
-            EstrategiaPontuacaoFactory estrategias,
+            MetaRepositorio metas,
             NotificacaoMetaRepositorio notificacoes) {
-        return new AtualizadorMetaComNotificacao(
-                metas, pontuacao, estrategias.obter(AcaoPontuada.COMPLETAR_META), notificacoes);
+        return new AtualizadorMetaComNotificacao(metas, notificacoes);
     }
 
     @Bean
-    public AtualizadorMetaSilencioso atualizadorMetaSilencioso(
-            MetaRepositorio metas, PontuacaoServico pontuacao,
-            EstrategiaPontuacaoFactory estrategias) {
-        return new AtualizadorMetaSilencioso(
-                metas, pontuacao, estrategias.obter(AcaoPontuada.COMPLETAR_META));
+    public AtualizadorMetaSilencioso atualizadorMetaSilencioso(MetaRepositorio metas) {
+        return new AtualizadorMetaSilencioso(metas);
     }
 
     @Bean

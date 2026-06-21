@@ -10,7 +10,6 @@ const HISTORICO_MOCK = [
     { id: 2, acao: 'CONVIDAR_AMIGO', pontos: 300, dataRegistro: '2026-06-17T15:00:00' },
     { id: 3, acao: 'ACERTAR_QUIZ', pontos: 500, dataRegistro: '2026-06-16T09:00:00' },
     { id: 4, acao: 'CRIAR_LISTA', pontos: 100, dataRegistro: '2026-06-15T20:00:00' },
-    { id: 5, acao: 'COMPLETAR_META', pontos: 100, dataRegistro: '2026-06-14T11:00:00' },
 ];
 
 const ACOES_INFO = {
@@ -98,7 +97,7 @@ export default function Recompensas() {
                         Recompensas
                     </h2>
                     <p className="page-description">
-                        Ganhe pontos assistindo filmes, completando metas e interagindo com a comunidade.
+                        Ganhe pontos assistindo filmes, respondendo quizzes e interagindo com a comunidade.
                     </p>
                 </div>
 
@@ -169,9 +168,13 @@ export default function Recompensas() {
                             <div className="goal-card__content">
                                 <h2 style={{ fontSize: '15px', margin: '0 0 6px' }}>{info.label}</h2>
                                 <p style={{ color: 'var(--muted)', fontSize: '12px', margin: 0 }}>
-                                    + <strong style={{ color: info.cor }}>
-                                        {chave === 'CONVIDAR_AMIGO' ? '300' : chave === 'ACERTAR_QUIZ' ? '500' : '100'} pts
-                                    </strong>
+                                    {chave === 'COMPLETAR_META' ? (
+                                        <strong style={{ color: info.cor }}>Sem pontos</strong>
+                                    ) : (
+                                        <>+ <strong style={{ color: info.cor }}>
+                                            {chave === 'CONVIDAR_AMIGO' ? '300' : chave === 'ACERTAR_QUIZ' ? '500' : '100'} pts
+                                        </strong></>
+                                    )}
                                 </p>
                             </div>
                         </article>
@@ -187,7 +190,7 @@ export default function Recompensas() {
                     <div className="recommendations-empty">
                         <FiAward />
                         <p>Nenhum ponto ganho ainda</p>
-                        <span>Comece avaliando filmes, completando metas ou convidando amigos.</span>
+                        <span>Comece avaliando filmes, respondendo quizzes ou convidando amigos.</span>
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
