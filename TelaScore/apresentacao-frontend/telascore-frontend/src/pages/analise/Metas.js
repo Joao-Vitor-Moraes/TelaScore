@@ -3,7 +3,7 @@ import Navbar from '../../components/Navbar';
 import { metaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import {
-  FiActivity, FiAward, FiBell, FiCalendar, FiCheckCircle, FiClock, FiEyeOff, FiMinus,
+  FiActivity, FiBell, FiCalendar, FiCheckCircle, FiClock, FiEyeOff, FiMinus,
   FiEdit2, FiFilm, FiFileText, FiPlus, FiStar, FiTarget, FiTrash2, FiTrendingUp, FiUsers, FiX,
 } from 'react-icons/fi';
 import './analise.css';
@@ -65,7 +65,6 @@ export default function Metas() {
   const [metaExcluindo, setMetaExcluindo] = useState(null);
   const [formEdicao, setFormEdicao] = useState(FORM_INICIAL);
   const [novoPrazo, setNovoPrazo] = useState('');
-  const [totalPontos, setTotalPontos] = useState(0);
   const [feedback, setFeedback] = useState('');
   const [modosAtualizacao, setModosAtualizacao] = useState({});
   const [erro, setErro] = useState('');
@@ -73,10 +72,9 @@ export default function Metas() {
 
   const carregar = useCallback(() => {
     setErro('');
-    return Promise.all([metaService.listar(), metaService.pontuacao()])
-      .then(([metasRecebidas, pontuacao]) => {
+    return metaService.listar()
+      .then((metasRecebidas) => {
         setMetas(metasRecebidas);
-        setTotalPontos(pontuacao.totalPontos);
       })
       .catch(e => setErro(e.message));
   }, []);
@@ -142,13 +140,11 @@ export default function Metas() {
         const resultado = await metaService.adicionarProgresso(meta.id, delta, modo);
         if (modo === 'FEEDBACK') {
           setFeedback(resultado.status === 'CONCLUIDA' ? '' : resultado.mensagem);
-          setTotalPontos(resultado.totalPontos);
           if (resultado.status === 'CONCLUIDA') {
             window.dispatchEvent(new Event('telascore:notificacoes-atualizadas'));
           }
         } else {
           setFeedback('');
-          setTotalPontos(resultado.totalPontos);
         }
       } else {
         await metaService.removerProgresso(meta.id, Math.abs(delta));
@@ -293,14 +289,10 @@ export default function Metas() {
             <FiTrendingUp />
             <div><strong>{resumo.progresso}%</strong><span>Progresso médio</span></div>
           </div>
-          <div className="goals-summary__item goals-summary__item--points">
-            <FiAward />
-            <div><strong>{totalPontos}</strong><span>Pontos de gamificação</span></div>
-          </div>
         </section>
 
         {erro && <div className="analysis-error">{erro}</div>}
-        {feedback && <div className="analysis-feedback"><FiAward /> {feedback}</div>}
+        {feedback && <div className="analysis-feedback"><FiCheckCircle /> {feedback}</div>}
 
         <div className="goals-grid">
           {metas.map(meta => {
@@ -348,7 +340,7 @@ export default function Metas() {
                       type="button"
                       className={(modosAtualizacao[meta.id] || 'FEEDBACK') === 'FEEDBACK' ? 'is-active' : ''}
                       onClick={() => setModosAtualizacao(atual => ({ ...atual, [meta.id]: 'FEEDBACK' }))}
-                      title="Ao concluir, envia uma notificação para o sininho. Os pontos são concedidos nos dois modos."
+                      title="Ao concluir, envia uma notificação para o sininho."
                     >
                       <FiBell /> Notificar
                     </button>
@@ -356,7 +348,7 @@ export default function Metas() {
                       type="button"
                       className={modosAtualizacao[meta.id] === 'SILENCIOSO' ? 'is-active' : ''}
                       onClick={() => setModosAtualizacao(atual => ({ ...atual, [meta.id]: 'SILENCIOSO' }))}
-                      title="Concede os pontos normalmente, mas não cria notificação no sininho"
+                      title="Atualiza sem criar notificação no sininho."
                     >
                       <FiEyeOff /> Silencioso
                     </button>

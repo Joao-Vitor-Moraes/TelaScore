@@ -14,11 +14,11 @@ public class ConexaoBanco {
         try {
             Map<String, String> props = new HashMap<>();
             props.put("jakarta.persistence.jdbc.url",
-                    env("DB_URL", "jdbc:mysql://localhost:3306/telascore_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"));
+                    env("DB_URL", "jdbc:mysql://localhost:3307/telascore_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"));
             props.put("jakarta.persistence.jdbc.user",
-                    env("DB_USER", "root"));
+                    env("DB_USER", "telascore"));
             props.put("jakarta.persistence.jdbc.password",
-                    env("DB_PASSWORD", "Barbosa09_"));
+                    env("DB_PASSWORD", "defina-uma-senha"));
             emf = Persistence.createEntityManagerFactory("telascorePU", props);
         } catch (Throwable ex) {
             System.err.println("Initial EntityManagerFactory creation failed." + ex);

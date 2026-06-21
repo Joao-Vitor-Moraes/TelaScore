@@ -10,7 +10,6 @@ const HISTORICO_MOCK = [
     { id: 2, acao: 'CONVIDAR_AMIGO', pontos: 300, dataRegistro: '2026-06-17T15:00:00' },
     { id: 3, acao: 'ACERTAR_QUIZ', pontos: 500, dataRegistro: '2026-06-16T09:00:00' },
     { id: 4, acao: 'CRIAR_LISTA', pontos: 100, dataRegistro: '2026-06-15T20:00:00' },
-    { id: 5, acao: 'COMPLETAR_META', pontos: 100, dataRegistro: '2026-06-14T11:00:00' },
 ];
 
 const ACOES_INFO = {
@@ -89,15 +88,15 @@ export default function Recompensas() {
             <Navbar />
             <main className="goals-container" style={{ margin: '0 auto', paddingTop: '28px' }}>
 
-            {/* Cabeçalho */}
-            <div className="goals-heading" style={{ flexDirection: 'column', alignItems: 'flex-start', marginBottom: '5px', gap: '0' }}>
-                <p style={{ color: 'var(--brand)', fontSize: '13px', fontWeight: 400, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
-                    Seu Progresso
-                </p>
-                <h2 className="page-title" style={{ fontSize: '32px', margin: '0 0 6px 0' }}>
-                    Recompensas
-                </h2>
-                    <p className="page-description" style={{ margin: '0' }}>
+                {/* Cabeçalho */}
+                <div className="goals-heading" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <p style={{ color: 'var(--brand)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                        Seu Progresso
+                    </p>
+                    <h2 className="page-title" style={{ fontSize: '32px', margin: '0 0 10px 0' }}>
+                        Recompensas
+                    </h2>
+                    <p className="page-description">
                         Ganhe pontos assistindo filmes, completando metas e interagindo com a comunidade.
                     </p>
             </div>
@@ -169,9 +168,13 @@ export default function Recompensas() {
                             <div className="goal-card__content">
                                 <h2 style={{ fontSize: '15px', margin: '0 0 6px' }}>{info.label}</h2>
                                 <p style={{ color: 'var(--muted)', fontSize: '12px', margin: 0 }}>
-                                    + <strong style={{ color: info.cor }}>
-                                        {chave === 'CONVIDAR_AMIGO' ? '300' : chave === 'ACERTAR_QUIZ' ? '500' : '100'} pts
-                                    </strong>
+                                    {chave === 'COMPLETAR_META' ? (
+                                        <strong style={{ color: info.cor }}>Sem pontos</strong>
+                                    ) : (
+                                        <>+ <strong style={{ color: info.cor }}>
+                                            {chave === 'CONVIDAR_AMIGO' ? '300' : chave === 'ACERTAR_QUIZ' ? '500' : '100'} pts
+                                        </strong></>
+                                    )}
                                 </p>
                             </div>
                         </article>
@@ -187,7 +190,7 @@ export default function Recompensas() {
                     <div className="recommendations-empty">
                         <FiAward />
                         <p>Nenhum ponto ganho ainda</p>
-                        <span>Comece avaliando filmes, completando metas ou convidando amigos.</span>
+                        <span>Comece avaliando filmes, respondendo quizzes ou convidando amigos.</span>
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>

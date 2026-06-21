@@ -11,6 +11,9 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.CriarQuiz
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.RemoverQuizCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.quiz.ResponderQuizCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.*;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recompensa.ConcederPontosCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recompensa.ConsultarTotalPontosCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recompensa.ListarHistoricoPontosCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaSistema;
@@ -36,20 +39,39 @@ public class AnaliseConfig {
     }
 
     @Bean
-    public AtualizadorMetaComNotificacao atualizadorMetaComNotificacao(
-            MetaRepositorio metas, PontuacaoServico pontuacao,
-            EstrategiaPontuacaoFactory estrategias,
-            NotificacaoMetaRepositorio notificacoes) {
-        return new AtualizadorMetaComNotificacao(
-                metas, pontuacao, estrategias.obter(AcaoPontuada.COMPLETAR_META), notificacoes);
+    public EstrategiaPontuacaoFactory estrategiaPontuacaoFactory() {
+        return new EstrategiaPontuacaoFactory();
     }
 
     @Bean
-    public AtualizadorMetaSilencioso atualizadorMetaSilencioso(
-            MetaRepositorio metas, PontuacaoServico pontuacao,
+    public ConcederPontosCasoDeUso concederPontosCasoDeUso(
+            PontuacaoServico pontuacao,
             EstrategiaPontuacaoFactory estrategias) {
-        return new AtualizadorMetaSilencioso(
-                metas, pontuacao, estrategias.obter(AcaoPontuada.COMPLETAR_META));
+        return new ConcederPontosCasoDeUso(pontuacao, estrategias.obter(AcaoPontuada.AVALIAR_FILME));
+    }
+
+    @Bean
+    public ConsultarTotalPontosCasoDeUso consultarTotalPontosCasoDeUso(
+            RegistroPontuacaoRepositorio repositorio) {
+        return new ConsultarTotalPontosCasoDeUso(repositorio);
+    }
+
+    @Bean
+    public ListarHistoricoPontosCasoDeUso listarHistoricoPontosCasoDeUso(
+            RegistroPontuacaoRepositorio repositorio) {
+        return new ListarHistoricoPontosCasoDeUso(repositorio);
+    }
+
+    @Bean
+    public AtualizadorMetaComNotificacao atualizadorMetaComNotificacao(
+            MetaRepositorio metas,
+            NotificacaoMetaRepositorio notificacoes) {
+        return new AtualizadorMetaComNotificacao(metas, notificacoes);
+    }
+
+    @Bean
+    public AtualizadorMetaSilencioso atualizadorMetaSilencioso(MetaRepositorio metas) {
+        return new AtualizadorMetaSilencioso(metas);
     }
 
     @Bean

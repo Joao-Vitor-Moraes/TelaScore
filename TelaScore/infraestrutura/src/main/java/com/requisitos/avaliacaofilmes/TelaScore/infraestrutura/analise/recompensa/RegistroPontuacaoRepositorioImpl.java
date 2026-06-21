@@ -45,9 +45,10 @@ public class RegistroPontuacaoRepositorioImpl implements RegistroPontuacaoReposi
         EntityManager em = ConexaoBanco.obterEntityManager();
         try {
             List<RegistroPontuacaoEntity> entities = em.createQuery(
-                "SELECT r FROM RegistroPontuacaoEntity r WHERE r.usuarioId = :uid",
+                "SELECT r FROM RegistroPontuacaoEntity r WHERE r.usuarioId = :uid AND r.tipoAcao <> :acaoMeta",
                 RegistroPontuacaoEntity.class)
                 .setParameter("uid", usuarioId.getId())
+                .setParameter("acaoMeta", AcaoPontuada.COMPLETAR_META.name())
                 .getResultList();
 
             List<RegistroPontuacao> lista = new ArrayList<>();
@@ -65,9 +66,10 @@ public class RegistroPontuacaoRepositorioImpl implements RegistroPontuacaoReposi
         EntityManager em = ConexaoBanco.obterEntityManager();
         try {
             Long total = em.createQuery(
-                "SELECT SUM(r.pontos) FROM RegistroPontuacaoEntity r WHERE r.usuarioId = :uid",
+                "SELECT SUM(r.pontos) FROM RegistroPontuacaoEntity r WHERE r.usuarioId = :uid AND r.tipoAcao <> :acaoMeta",
                 Long.class)
                 .setParameter("uid", usuarioId.getId())
+                .setParameter("acaoMeta", AcaoPontuada.COMPLETAR_META.name())
                 .getSingleResult();
 
             return total != null ? total.intValue() : 0;
