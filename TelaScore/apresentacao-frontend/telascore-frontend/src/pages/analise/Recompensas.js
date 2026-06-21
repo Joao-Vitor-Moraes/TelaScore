@@ -87,20 +87,20 @@ export default function Recompensas() {
     return (
         <div className="analysis-page">
             <Navbar />
-            <main className="goals-container" style={{ margin: '0 auto' }}>
+            <main className="goals-container" style={{ margin: '0 auto', paddingTop: '28px' }}>
 
-                {/* Cabeçalho */}
-                <div className="goals-heading" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <p style={{ color: 'var(--brand)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>
-                        Seu Progresso
-                    </p>
-                    <h2 className="page-title" style={{ fontSize: '32px', margin: '0 0 10px 0' }}>
-                        Recompensas
-                    </h2>
-                    <p className="page-description">
+            {/* Cabeçalho */}
+            <div className="goals-heading" style={{ flexDirection: 'column', alignItems: 'flex-start', marginBottom: '5px', gap: '0' }}>
+                <p style={{ color: 'var(--brand)', fontSize: '13px', fontWeight: 400, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Seu Progresso
+                </p>
+                <h2 className="page-title" style={{ fontSize: '32px', margin: '0 0 6px 0' }}>
+                    Recompensas
+                </h2>
+                    <p className="page-description" style={{ margin: '0' }}>
                         Ganhe pontos assistindo filmes, completando metas e interagindo com a comunidade.
                     </p>
-                </div>
+            </div>
 
                 {/* Cards de resumo */}
                 <div className="goals-summary" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginTop: '30px' }}>

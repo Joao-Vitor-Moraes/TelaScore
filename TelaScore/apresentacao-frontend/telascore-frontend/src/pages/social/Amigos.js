@@ -135,14 +135,14 @@ export default function Amigos() {
     return (
         <div className="analysis-page">
             <Navbar />
-            <main className="goals-container" style={{ margin: '0 auto' }}>
+            <main className="goals-container" style={{ margin: '0 auto', paddingTop: '28px', paddingLeft: '0px', paddingRight: '24px' }}>
 
                 {/* Cabeçalho */}
-                <div className="goals-heading" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <p style={{ color: 'var(--brand)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                <div className="goals-heading" style={{ flexDirection: 'column', alignItems: 'flex-start', marginBottom: '5px', gap: '0' }}>
+                    <p style={{ color: 'var(--brand)', fontSize: '13px', fontWeight: 400, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>
                         Suas Conexões
                     </p>
-                    <h2 className="page-title" style={{ fontSize: '32px', margin: '0 0 10px 0' }}>
+                    <h2 className="page-title" style={{ fontSize: '32px', margin: '0 0 0px 0' }}>
                         Amigos
                     </h2>
                     <p className="page-description">
