@@ -8,5 +8,6 @@ public record CriarMetaComando(
 		String titulo,
 		int quantidadeAlvo,
 		LocalDate dataPrazo,
-		TipoMeta tipo
+		TipoMeta tipo,
+		String generoAlvo
 ) {}

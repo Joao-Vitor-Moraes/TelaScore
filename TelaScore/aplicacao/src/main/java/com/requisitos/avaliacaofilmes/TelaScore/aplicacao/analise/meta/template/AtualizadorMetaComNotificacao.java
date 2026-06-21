@@ -20,7 +20,9 @@ public class AtualizadorMetaComNotificacao extends AtualizadorMetaTemplate {
 
         if (concluiuAgora) {
             meta.marcarPontosConcedidos();
-            notificacoes.criar(meta.getUsuarioId(), meta.getId(), meta.getTitulo());
+            if (meta.isNotificacaoAtiva()) {
+                notificacoes.criar(meta.getUsuarioId(), meta.getId(), meta.getTitulo());
+            }
             mensagem = "Meta concluida: " + meta.getTitulo() + ".";
         } else {
             int faltam = meta.getQuantidadeAlvo() - meta.getQuantidadeAtual();

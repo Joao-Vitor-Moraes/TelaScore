@@ -192,6 +192,26 @@
   background: rgba(255, 255, 255, .09);
 }
 
+.goal-card__manage button.goal-notify-button.is-active {
+  border-color: rgba(70, 211, 105, .28);
+  color: #65dc82;
+  background: rgba(70, 211, 105, .08);
+}
+
+.goal-card__manage button.goal-notify-button.is-active:hover {
+  color: #91f0a7;
+  background: rgba(70, 211, 105, .13);
+}
+
+.goal-card__manage button.goal-notify-button.is-silent {
+  color: #858590;
+  background: rgba(255, 255, 255, .025);
+}
+
+.goal-card__manage button.goal-notify-button.is-silent:hover {
+  color: #c8c8d0;
+}
+
 .goal-card__manage button.is-danger:hover {
   border-color: rgba(255, 77, 94, .32);
   color: #ff6975;
@@ -593,7 +613,8 @@
   font-weight: 700;
 }
 
-.analysis-modal__form input {
+.analysis-modal__form input,
+.analysis-modal__form select {
   width: 100%;
   min-height: 46px;
   padding: 0 13px;
@@ -604,7 +625,8 @@
   outline: none;
 }
 
-.analysis-modal__form input:focus {
+.analysis-modal__form input:focus,
+.analysis-modal__form select:focus {
   border-color: rgba(229, 9, 20, .7);
   box-shadow: 0 0 0 3px rgba(229, 9, 20, .1);
 }

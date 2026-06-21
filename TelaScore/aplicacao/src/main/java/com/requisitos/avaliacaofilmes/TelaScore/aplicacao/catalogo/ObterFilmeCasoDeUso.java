@@ -47,6 +47,7 @@ public class ObterFilmeCasoDeUso {
         int idNumerico = Integer.parseInt(filme.getId().getCodigo()); 
 
         return new FilmeResumo(idNumerico, filme.getTitulo(), filme.getSinopse(), filme.getAnoLancamento(), nomeDiretor, media, filme.getImagemUrl(),
-                filme.getDataEstreia() != null ? filme.getDataEstreia().toString() : null);
+                filme.getDataEstreia() != null ? filme.getDataEstreia().toString() : null,
+                filme.getGeneros().stream().toList());
     }
 }

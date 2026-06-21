@@ -89,6 +89,7 @@ export const solicitacaoService = {
 // Filmes
 export const filmeService = {
   listar: () => request('GET', '/filmes'),
+  listarGeneros: () => request('GET', '/filmes/generos'),
   obter: (id) => request('GET', `/filmes/${id}`),
   cadastrar: (dados) => request('POST', '/filmes', dados),
   atualizar: (id, dados) => request('PUT', `/filmes/${id}`, dados),
@@ -162,6 +163,7 @@ export const metaService = {
   listarPorUsuario: (usuarioId) => request('GET', `/api/metas/usuario/${usuarioId}`),
   criar: (dados) => request('POST', '/api/metas', dados),
   editar: (id, dados) => request('PUT', `/api/metas/${id}`, dados),
+  alternarNotificacao: (id, ativa) => request('PATCH', `/api/metas/${id}/notificacao`, { ativa }),
   remover: (id) => request('DELETE', `/api/metas/${id}`),
   adicionarProgresso: (id, quantity, modo = 'FEEDBACK') =>
       request('PUT', `/api/metas/${id}/progresso?quantidade=${quantity}&modo=${modo}`),

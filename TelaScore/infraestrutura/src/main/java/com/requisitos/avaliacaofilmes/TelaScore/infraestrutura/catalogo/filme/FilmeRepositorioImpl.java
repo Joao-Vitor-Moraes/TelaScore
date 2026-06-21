@@ -39,6 +39,7 @@ public class FilmeRepositorioImpl implements FilmeRepositorio {
                     .map(DiretorId::getId)
                     .collect(Collectors.toList());
             entity.setDiretores(diretoresIds);
+            entity.setGeneros(filme.getGeneros().stream().collect(Collectors.toList()));
 
             if (!em.contains(entity)) {
                 em.merge(entity);
@@ -104,6 +105,7 @@ public class FilmeRepositorioImpl implements FilmeRepositorio {
                 entity.getAnoLancamento(), diretores);
         filme.setImagemUrl(entity.getImagemUrl());
         filme.setDataEstreia(entity.getDataEstreia());
+        filme.setGeneros(entity.getGeneros());
         return filme;
     }
 

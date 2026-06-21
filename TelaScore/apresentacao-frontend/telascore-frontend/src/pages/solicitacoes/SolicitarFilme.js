@@ -89,7 +89,7 @@ export default function SolicitarFilme() {
                 ) : (
                   <div style={styles.fotoPlaceholder}>✕</div>
                 )}
-                <input style={{ ...styles.input, marginTop: '8px', fontSize: '12px' }}
+                <input style={styles.fotoInput}
                   name="fotoUrl" value={form.fotoUrl} onChange={handleChange}
                   placeholder="URL da imagem" />
               </div>
@@ -130,14 +130,31 @@ const styles = {
     fontSize: '12px', fontWeight: 'bold', letterSpacing: '1px',
     color: '#aaa', marginBottom: '20px', marginTop: 0,
   },
-  grade: { display: 'grid', gridTemplateColumns: '1fr auto', gap: '24px', marginBottom: '16px' },
+  grade: {
+    display: 'grid',
+    gridTemplateColumns: 'minmax(0, 1fr) 132px',
+    gap: '24px',
+    alignItems: 'start',
+    marginBottom: '16px',
+  },
   colunaEsq: { display: 'flex', flexDirection: 'column', gap: '14px' },
-  colunaDireita: { display: 'flex', flexDirection: 'column', alignItems: 'center', width: '120px' },
+  colunaDireita: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    minWidth: 0,
+  },
   campo: { display: 'flex', flexDirection: 'column', gap: '6px' },
   label: { fontSize: '11px', fontWeight: 'bold', color: '#aaa', letterSpacing: '1px' },
   input: {
     padding: '8px 12px', borderRadius: '6px', border: '1px solid #2a2a4a',
     backgroundColor: '#0f3460', color: 'white', fontSize: '13px', outline: 'none',
+    width: '100%', boxSizing: 'border-box',
+  },
+  fotoInput: {
+    padding: '8px 10px', borderRadius: '6px', border: '1px solid #2a2a4a',
+    backgroundColor: '#0f3460', color: 'white', fontSize: '12px', outline: 'none',
+    width: '100%', minWidth: 0, boxSizing: 'border-box', marginTop: '8px',
   },
   textarea: {
     padding: '8px 12px', borderRadius: '6px', border: '1px solid #2a2a4a',
@@ -147,9 +164,9 @@ const styles = {
   fotoPlaceholder: {
     width: '100px', height: '120px', borderRadius: '6px', border: '1px solid #2a2a4a',
     backgroundColor: '#0f3460', display: 'flex', alignItems: 'center',
-    justifyContent: 'center', fontSize: '24px', color: '#444',
+    justifyContent: 'center', fontSize: '24px', color: '#444', alignSelf: 'center',
   },
-  preview: { width: '100px', height: '120px', borderRadius: '6px', objectFit: 'cover' },
+  preview: { width: '100px', height: '120px', borderRadius: '6px', objectFit: 'cover', alignSelf: 'center' },
   rodape: { display: 'flex', justifyContent: 'flex-end', marginTop: '20px' },
   btnEnviar: {
     padding: '10px 32px', borderRadius: '6px', border: 'none',

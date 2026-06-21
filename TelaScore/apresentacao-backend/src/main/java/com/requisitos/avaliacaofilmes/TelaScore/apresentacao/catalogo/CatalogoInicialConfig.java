@@ -2,6 +2,7 @@ package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.catalogo;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.boot.ApplicationRunner;
@@ -26,11 +27,20 @@ public class CatalogoInicialConfig {
             DiretorRepositorio diretorRepositorio) {
         return args -> {
             Map<String, DiretorId> diretores = prepararDiretores(diretorRepositorio);
+            Map<String, Filme> filmesExistentes = new LinkedHashMap<>();
+            filmeRepositorio.listarTodos().forEach(filme ->
+                    filmesExistentes.put(normalizarTitulo(filme.getTitulo()), filme));
             int id = 10000;
 
             for (FilmeInicial item : filmes()) {
                 int filmeId = id++;
+                List<String> generos = inferirGeneros(item);
                 if (filmeRepositorio.existeComTitulo(item.titulo())) {
+                    Filme existente = filmesExistentes.get(normalizarTitulo(item.titulo()));
+                    if (existente != null && existente.getGeneros().isEmpty()) {
+                        existente.setGeneros(generos);
+                        filmeRepositorio.salvar(existente);
+                    }
                     continue;
                 }
 
@@ -45,6 +55,7 @@ public class CatalogoInicialConfig {
                         item.ano(),
                         idsDiretores);
                 filme.setImagemUrl(item.imagemUrl());
+                filme.setGeneros(generos);
                 filmeRepositorio.salvar(filme);
             }
         };
@@ -68,6 +79,90 @@ public class CatalogoInicialConfig {
             }
         }
         return resultado;
+    }
+
+    private List<String> inferirGeneros(FilmeInicial filme) {
+        String titulo = filme.titulo();
+        String tituloNormalizado = normalizarTitulo(titulo);
+
+        if (titulo.equals("Billie Eilish - Hit Me Hard and Soft: The Tour (Live in 3D)")) {
+            return List.of("Documentario", "Musical");
+        }
+        if (tituloNormalizado.contains("kpop")) {
+            return List.of("Animacao", "Aventura", "Fantasia", "Musical");
+        }
+        if (tituloNormalizado.contains("wicked") || tituloNormalizado.contains("la la land")) {
+            return List.of("Musical", "Romance", "Drama");
+        }
+        if (tituloNormalizado.contains("homem-aranha") || tituloNormalizado.contains("aranhaverso")) {
+            return tituloNormalizado.contains("aranhaverso")
+                    ? List.of("Animacao", "Acao", "Aventura", "Super-heroi")
+                    : List.of("Acao", "Aventura", "Super-heroi");
+        }
+        if (tituloNormalizado.contains("senhor dos aneis")
+                || tituloNormalizado.contains("harry potter")
+                || tituloNormalizado.contains("star wars")
+                || tituloNormalizado.contains("duna")) {
+            return List.of("Aventura", "Fantasia", "Ficcao cientifica");
+        }
+        if (tituloNormalizado.contains("matrix")
+                || tituloNormalizado.contains("interestelar")
+                || tituloNormalizado.contains("blade runner")
+                || tituloNormalizado.contains("project hail mary")
+                || tituloNormalizado.contains("hoppers")) {
+            return List.of("Ficcao cientifica", "Aventura", "Drama");
+        }
+        if (tituloNormalizado.contains("diario de uma paixao")
+                || tituloNormalizado.contains("orgulho e preconceito")
+                || tituloNormalizado.contains("antes do amanhecer")
+                || tituloNormalizado.contains("questao de tempo")
+                || tituloNormalizado.contains("brilho eterno")
+                || tituloNormalizado.contains("titanic")
+                || tituloNormalizado.contains("your name")) {
+            return List.of("Romance", "Drama");
+        }
+        if (tituloNormalizado.contains("poderoso chefao")
+                || tituloNormalizado.contains("pulp fiction")
+                || tituloNormalizado.contains("parasita")
+                || tituloNormalizado.contains("pecadores")) {
+            return List.of("Drama", "Crime", "Suspense");
+        }
+        if (tituloNormalizado.contains("whiplash")) {
+            return List.of("Drama", "Musical");
+        }
+        if (tituloNormalizado.contains("tudo em todo")
+                || tituloNormalizado.contains("show de truman")
+                || tituloNormalizado.contains("sonho de liberdade")) {
+            return List.of("Drama", "Comedia");
+        }
+        if (tituloNormalizado.contains("mortal kombat")) {
+            return List.of("Acao", "Aventura", "Fantasia");
+        }
+        if (tituloNormalizado.contains("f1")) {
+            return List.of("Acao", "Drama", "Esporte");
+        }
+        if (tituloNormalizado.contains("zootopia")
+                || tituloNormalizado.contains("toy story")
+                || tituloNormalizado.contains("super mario")) {
+            return List.of("Animacao", "Aventura", "Comedia");
+        }
+        if (filme.diretores().stream().anyMatch(this::diretorGhibli)) {
+            return List.of("Animacao", "Fantasia", "Aventura");
+        }
+        return List.of("Drama");
+    }
+
+    private boolean diretorGhibli(String diretor) {
+        return List.of("Hayao Miyazaki", "Isao Takahata", "Yoshifumi KondÅ", "Hiroyuki Morita",
+                "GorÅ Miyazaki", "Hiromasa Yonebayashi", "MichaÃ«l Dudok de Wit")
+                .contains(diretor);
+    }
+
+    private String normalizarTitulo(String titulo) {
+        return java.text.Normalizer.normalize(titulo, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .trim()
+                .toLowerCase(Locale.ROOT);
     }
 
     private List<FilmeInicial> filmes() {

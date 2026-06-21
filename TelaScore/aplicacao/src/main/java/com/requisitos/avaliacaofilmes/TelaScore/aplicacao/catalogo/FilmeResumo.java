@@ -1,5 +1,7 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo;
 
+import java.util.List;
+
 public record FilmeResumo(
 		int id,
 		String titulo,
@@ -8,5 +10,6 @@ public record FilmeResumo(
 		String nomeDiretor,
 		double mediaNotas,
 		String imagemUrl,
-		String dataEstreia
+		String dataEstreia,
+		List<String> generos
 ) {}

@@ -72,7 +72,8 @@ public class MetaController {
             criarMeta.executar(new CriarMetaComando(
                     usuario.getId().getId(), request.titulo(),
                     request.quantidadeAlvo(), request.dataPrazo(),
-                    request.tipo() == null ? TipoMeta.FILMES : request.tipo()));
+                    TipoMeta.AVALIACOES,
+                    request.generoAlvo()));
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -82,7 +83,15 @@ public class MetaController {
     @PutMapping("/{id}")
     public ResponseEntity<MetaResumo> editar(@PathVariable int id, @RequestBody EditarMetaRequest request) {
         Meta meta = exigirMetaPessoalDoDono(id);
-        meta.editar(request.titulo(), request.quantidadeAlvo(), request.dataPrazo());
+        meta.editar(request.titulo(), request.quantidadeAlvo(), request.dataPrazo(), request.generoAlvo());
+        metas.salvar(meta);
+        return ResponseEntity.ok(MetaResumo.de(meta));
+    }
+
+    @PatchMapping("/{id}/notificacao")
+    public ResponseEntity<MetaResumo> alternarNotificacao(@PathVariable int id, @RequestBody NotificacaoMetaRequest request) {
+        Meta meta = exigirDono(id);
+        meta.definirNotificacaoAtiva(request.ativa());
         metas.salvar(meta);
         return ResponseEntity.ok(MetaResumo.de(meta));
     }
@@ -194,8 +203,9 @@ public class MetaController {
     }
 
     public record CriarMetaSistemaRequest(String titulo, int quantidadeAlvo, int duracaoDias) {}
-    public record CriarMetaRequest(String titulo, int quantidadeAlvo, java.time.LocalDate dataPrazo, TipoMeta tipo) {}
-    public record EditarMetaRequest(String titulo, int quantidadeAlvo, java.time.LocalDate dataPrazo) {}
+    public record CriarMetaRequest(String titulo, int quantidadeAlvo, java.time.LocalDate dataPrazo, TipoMeta tipo, String generoAlvo) {}
+    public record EditarMetaRequest(String titulo, int quantidadeAlvo, java.time.LocalDate dataPrazo, String generoAlvo) {}
+    public record NotificacaoMetaRequest(boolean ativa) {}
     public record PontuacaoResumo(int totalPontos) {}
     public record NotificacaoMetaResumo(
             int id, int metaId, String tituloMeta, int pontosGanhos,

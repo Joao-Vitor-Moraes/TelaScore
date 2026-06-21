@@ -18,14 +18,20 @@ public class Meta {
 	private LocalDate dataPrazo;
 	private StatusMeta status;
 	private TipoMeta tipo;
+	private String generoAlvo;
 	private Integer metaSistemaId;
 	private boolean pontosConcedidos;
+	private boolean notificacaoAtiva;
 
 	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, LocalDate dataPrazo) {
 		this(id, usuarioId, titulo, quantidadeAlvo, dataPrazo, TipoMeta.FILMES);
 	}
 
 	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, LocalDate dataPrazo, TipoMeta tipo) {
+		this(id, usuarioId, titulo, quantidadeAlvo, dataPrazo, tipo, null);
+	}
+
+	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, LocalDate dataPrazo, TipoMeta tipo, String generoAlvo) {
 		notNull(id, "O id da meta não pode ser nulo");
 		notNull(usuarioId, "O id do utilizador não pode ser nulo");
 		notNull(dataPrazo, "A data de prazo não pode ser nula");
@@ -39,8 +45,10 @@ public class Meta {
 		this.quantidadeAtual = 0;
 		this.status = StatusMeta.EM_ANDAMENTO;
 		this.tipo = tipo == null ? TipoMeta.FILMES : tipo;
+		setGeneroAlvo(generoAlvo);
 		this.metaSistemaId = null;
 		this.pontosConcedidos = false;
+		this.notificacaoAtiva = true;
 
 		setTitulo(titulo);
 		setQuantidadeAlvo(quantidadeAlvo);
@@ -52,8 +60,21 @@ public class Meta {
 	public LocalDate getDataPrazo() { return dataPrazo; }
 	public StatusMeta getStatus() { return status; }
 	public TipoMeta getTipo() { return tipo; }
+	public String getGeneroAlvo() { return generoAlvo; }
 	public Integer getMetaSistemaId() { return metaSistemaId; }
 	public boolean isPontosConcedidos() { return pontosConcedidos; }
+	public boolean isNotificacaoAtiva() { return notificacaoAtiva; }
+
+	public void definirNotificacaoAtiva(boolean notificacaoAtiva) {
+		this.notificacaoAtiva = notificacaoAtiva;
+	}
+
+	public void setGeneroAlvo(String generoAlvo) {
+		this.generoAlvo = generoAlvo == null || generoAlvo.isBlank() ? null : generoAlvo.trim();
+		if (this.tipo == TipoMeta.GENERO) {
+			notBlank(this.generoAlvo, "O genero alvo deve ser informado para metas por genero");
+		}
+	}
 
 	public void vincularMetaSistema(int metaSistemaId) {
 		isTrue(metaSistemaId > 0, "O id da meta de sistema deve ser positivo");
@@ -85,11 +106,16 @@ public class Meta {
 	public int getQuantidadeAlvo() { return quantidadeAlvo; }
 
 	public void editar(String titulo, int quantidadeAlvo, LocalDate dataPrazo) {
+		editar(titulo, quantidadeAlvo, dataPrazo, this.generoAlvo);
+	}
+
+	public void editar(String titulo, int quantidadeAlvo, LocalDate dataPrazo, String generoAlvo) {
 		notNull(dataPrazo, "A data de prazo não pode ser nula");
 		isTrue(dataPrazo.isAfter(LocalDate.now()) || dataPrazo.isEqual(LocalDate.now()),
 				"O prazo deve ser uma data futura ou o dia de hoje");
 		setTitulo(titulo);
 		this.dataPrazo = dataPrazo;
+		setGeneroAlvo(generoAlvo);
 		setQuantidadeAlvo(quantidadeAlvo);
 	}
 
@@ -126,6 +152,17 @@ public class Meta {
 		}
 	}
 
+	public void redefinirProgresso(int quantidadeAtual) {
+		isTrue(quantidadeAtual >= 0, "A quantidade atual nao pode ser negativa");
+		if (this.status == StatusMeta.FALHADA || this.status == StatusMeta.CANCELADA) {
+			return;
+		}
+		this.quantidadeAtual = Math.min(quantidadeAtual, this.quantidadeAlvo);
+		this.status = this.quantidadeAtual >= this.quantidadeAlvo
+				? StatusMeta.CONCLUIDA
+				: StatusMeta.EM_ANDAMENTO;
+	}
+
 	public void estenderPrazo(LocalDate novoPrazo) {
         if (this.status != StatusMeta.EM_ANDAMENTO) {
             throw new IllegalStateException("Apenas metas em andamento podem ter o prazo estendido.");
@@ -158,6 +195,19 @@ public class Meta {
 
 	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, int quantidadeAtual,
 			LocalDate dataPrazo, StatusMeta status, Integer metaSistemaId, boolean pontosConcedidos, TipoMeta tipo) {
+		this(id, usuarioId, titulo, quantidadeAlvo, quantidadeAtual, dataPrazo, status,
+				metaSistemaId, pontosConcedidos, tipo, null);
+	}
+
+	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, int quantidadeAtual,
+			LocalDate dataPrazo, StatusMeta status, Integer metaSistemaId, boolean pontosConcedidos, TipoMeta tipo, String generoAlvo) {
+		this(id, usuarioId, titulo, quantidadeAlvo, quantidadeAtual, dataPrazo, status,
+				metaSistemaId, pontosConcedidos, tipo, generoAlvo, true);
+	}
+
+	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, int quantidadeAtual,
+			LocalDate dataPrazo, StatusMeta status, Integer metaSistemaId, boolean pontosConcedidos,
+			TipoMeta tipo, String generoAlvo, boolean notificacaoAtiva) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.titulo = titulo;
@@ -166,8 +216,10 @@ public class Meta {
         this.dataPrazo = dataPrazo;
         this.status = status;
         this.tipo = tipo == null ? TipoMeta.FILMES : tipo;
+        this.generoAlvo = generoAlvo == null || generoAlvo.isBlank() ? null : generoAlvo.trim();
         this.metaSistemaId = metaSistemaId;
         this.pontosConcedidos = pontosConcedidos;
+        this.notificacaoAtiva = notificacaoAtiva;
     }
 
 	public Meta(MetaId id, UsuarioId usuarioId, String titulo, int quantidadeAlvo, int quantidadeAtual,

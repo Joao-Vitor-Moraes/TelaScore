@@ -31,6 +31,9 @@ public class AtualizarFilmeCasoDeUso {
         if (comando.anoLancamento() != null) {
             filme.setAnoLancamento(comando.anoLancamento());
         }
+        if (comando.generos() != null) {
+            filme.setGeneros(comando.generos());
+        }
 
         filmeRepositorio.salvar(filme);
     }

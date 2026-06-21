@@ -11,6 +11,7 @@ export default function EditarFilme() {
     sinopse: '',
     anoLancamento: '',
     imagemUrl: '',
+    generos: '',
   });
   const [erro, setErro] = useState(null);
   const [enviando, setEnviando] = useState(false);
@@ -22,6 +23,7 @@ export default function EditarFilme() {
         sinopse: filme.sinopse || '',
         anoLancamento: filme.anoLancamento || '',
         imagemUrl: filme.imagemUrl || '',
+        generos: (filme.generos || []).join(', '),
       });
     }).catch(() => setErro('Filme não encontrado.'));
   }, [id]);
@@ -38,6 +40,7 @@ export default function EditarFilme() {
       await filmeService.atualizar(id, {
         ...form,
         anoLancamento: parseInt(form.anoLancamento),
+        generos: form.generos.split(',').map(g => g.trim()).filter(Boolean),
       });
       navigate(`/filmes/${id}`);
     } catch {
@@ -67,6 +70,11 @@ export default function EditarFilme() {
               <div style={styles.campo}>
                 <label style={styles.label}>SINOPSE</label>
                 <textarea style={styles.textarea} name="sinopse" value={form.sinopse} onChange={handleChange} rows={4} />
+              </div>
+
+              <div style={styles.campo}>
+                <label style={styles.label}>GENEROS</label>
+                <input style={styles.input} name="generos" value={form.generos} onChange={handleChange} placeholder="Ex: Documentario, Musical" />
               </div>
 
               <div style={styles.campo}>

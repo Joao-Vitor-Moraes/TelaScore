@@ -23,6 +23,8 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizReposit
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.*;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.*;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.avaliacao.AvaliacaoRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recompensa.EstrategiaPontuacaoFactory;
 
@@ -93,8 +95,11 @@ public class AnaliseConfig {
 
     @Bean
     public ListarMetasPorUsuarioCasoDeUso listarMetasPorUsuarioCasoDeUso(
-            MetaRepositorio repositorio, MetaSistemaRepositorio sistemas, GeradorId geradorId) {
-        return new ListarMetasPorUsuarioCasoDeUso(repositorio, sistemas, geradorId);
+            MetaRepositorio repositorio, MetaSistemaRepositorio sistemas, GeradorId geradorId,
+            AvaliacaoRepositorio avaliacaoRepositorio, FilmeRepositorio filmeRepositorio,
+            NotificacaoMetaRepositorio notificacoes) {
+        return new ListarMetasPorUsuarioCasoDeUso(repositorio, sistemas, geradorId,
+                avaliacaoRepositorio, filmeRepositorio, notificacoes);
     }
 
     @Bean

@@ -1,28 +1,44 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Navbar from '../../components/Navbar';
-import { metaService } from '../../services/api';
+import { filmeService, metaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import {
-  FiActivity, FiBell, FiCalendar, FiCheckCircle, FiClock, FiEyeOff, FiMinus,
-  FiEdit2, FiFilm, FiFileText, FiPlus, FiStar, FiTarget, FiTrash2, FiTrendingUp, FiUsers, FiX,
+  FiActivity, FiBell, FiBellOff, FiCalendar, FiCheckCircle, FiClock, FiMinus,
+  FiEdit2, FiPlus, FiStar, FiTarget, FiTrash2, FiTrendingUp, FiUsers, FiX,
 } from 'react-icons/fi';
 import './analise.css';
 
-const TIPOS_META = {
-  FILMES: { titulo: 'Filmes assistidos', descricao: 'Crie um ritmo para descobrir e assistir filmes.', unidade: 'filmes', exemplo: 'Ex.: Assistir 12 filmes neste mês', icone: FiFilm },
-  AVALIACOES: { titulo: 'Avaliações', descricao: 'Transforme o que assistiu em notas e opiniões.', unidade: 'avaliações', exemplo: 'Ex.: Avaliar 8 filmes que assisti', icone: FiStar },
-  RESENHAS: { titulo: 'Resenhas', descricao: 'Desenvolva o hábito de escrever sobre cinema.', unidade: 'resenhas', exemplo: 'Ex.: Escrever 4 resenhas completas', icone: FiFileText },
-};
+const META_REVIEW = { titulo: 'Meta de review', unidade: 'reviews', exemplo: 'Ex.: Avaliar 5 documentarios', icone: FiStar };
 
-const FORM_INICIAL = { titulo: '', quantidadeAlvo: 10, dataPrazo: '', tipo: 'FILMES' };
+const FORM_INICIAL = { titulo: '', quantidadeAlvo: 10, dataPrazo: '', tipo: 'AVALIACOES', generoAlvo: '' };
 const FORM_SISTEMA_INICIAL = { titulo: '', quantidadeAlvo: 10, duracaoDias: 30 };
 
-function inferirTipoMeta(meta) {
-  if (meta.tipo && TIPOS_META[meta.tipo]) return meta.tipo;
-  const texto = (meta.titulo || '').toLowerCase();
-  if (texto.includes('resenha') || texto.includes('escrever')) return 'RESENHAS';
-  if (texto.includes('avalia') || texto.includes('nota')) return 'AVALIACOES';
-  return 'FILMES';
+function normalizarGenero(genero) {
+  return String(genero || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+}
+
+function temAcento(valor) {
+  const texto = String(valor || '');
+  return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '') !== texto;
+}
+
+function deduplicarGeneros(lista) {
+  const porChave = new Map();
+  (lista || []).forEach(genero => {
+    const nome = String(genero || '').trim();
+    const chave = normalizarGenero(nome);
+    if (!chave) return;
+    const atual = porChave.get(chave);
+    if (!atual || (temAcento(nome) && !temAcento(atual))) {
+      porChave.set(chave, nome);
+    }
+  });
+  return Array.from(porChave.values())
+    .sort((a, b) => normalizarGenero(a).localeCompare(normalizarGenero(b), 'pt-BR'));
 }
 
 function formatarData(data) {
@@ -56,6 +72,7 @@ function diaSeguinte(data) {
 export default function Metas() {
   const { sessao } = useAuth();
   const [metas, setMetas] = useState([]);
+  const [generos, setGeneros] = useState([]);
   const [form, setForm] = useState(FORM_INICIAL);
   const [formSistema, setFormSistema] = useState(FORM_SISTEMA_INICIAL);
   const [modalAberto, setModalAberto] = useState(false);
@@ -66,7 +83,6 @@ export default function Metas() {
   const [formEdicao, setFormEdicao] = useState(FORM_INICIAL);
   const [novoPrazo, setNovoPrazo] = useState('');
   const [feedback, setFeedback] = useState('');
-  const [modosAtualizacao, setModosAtualizacao] = useState({});
   const [erro, setErro] = useState('');
   const [salvando, setSalvando] = useState(false);
 
@@ -80,6 +96,12 @@ export default function Metas() {
   }, []);
 
   useEffect(() => { carregar(); }, [carregar]);
+
+  useEffect(() => {
+    filmeService.listarGeneros()
+      .then(generosRecebidos => setGeneros(deduplicarGeneros(generosRecebidos)))
+      .catch(() => setGeneros([]));
+  }, []);
 
   useEffect(() => {
     if (!modalAberto && !modalSistemaAberto && !metaPrazo && !metaEditando && !metaExcluindo) return undefined;
@@ -119,7 +141,8 @@ export default function Metas() {
       await metaService.criar({
         titulo: form.titulo,
         dataPrazo: form.dataPrazo,
-        tipo: form.tipo,
+        tipo: 'AVALIACOES',
+        generoAlvo: form.generoAlvo || null,
         quantidadeAlvo: Number(form.quantidadeAlvo),
       });
       setForm(FORM_INICIAL);
@@ -129,29 +152,6 @@ export default function Metas() {
       setErro(e.message);
     } finally {
       setSalvando(false);
-    }
-  }
-
-  async function alterarProgresso(meta, delta) {
-    setErro('');
-    try {
-      if (delta > 0) {
-        const modo = modosAtualizacao[meta.id] || 'FEEDBACK';
-        const resultado = await metaService.adicionarProgresso(meta.id, delta, modo);
-        if (modo === 'FEEDBACK') {
-          setFeedback(resultado.status === 'CONCLUIDA' ? '' : resultado.mensagem);
-          if (resultado.status === 'CONCLUIDA') {
-            window.dispatchEvent(new Event('telascore:notificacoes-atualizadas'));
-          }
-        } else {
-          setFeedback('');
-        }
-      } else {
-        await metaService.removerProgresso(meta.id, Math.abs(delta));
-      }
-      await carregar();
-    } catch (e) {
-      setErro(e.message);
     }
   }
 
@@ -202,6 +202,8 @@ export default function Metas() {
       titulo: meta.titulo,
       quantidadeAlvo: meta.quantidadeAlvo,
       dataPrazo: meta.dataPrazo,
+      tipo: 'AVALIACOES',
+      generoAlvo: meta.generoAlvo || '',
     });
     setErro('');
   }
@@ -214,6 +216,7 @@ export default function Metas() {
       await metaService.editar(metaEditando.id, {
         ...formEdicao,
         quantidadeAlvo: Number(formEdicao.quantidadeAlvo),
+        generoAlvo: formEdicao.generoAlvo || null,
       });
       setMetaEditando(null);
       setFeedback('Meta atualizada com sucesso.');
@@ -237,6 +240,27 @@ export default function Metas() {
       setErro(e.message);
     } finally {
       setSalvando(false);
+    }
+  }
+
+  async function alternarSinoMeta(meta) {
+    setErro('');
+    try {
+      const proximoEstado = !meta.notificacaoAtiva;
+      const metaAtualizada = await metaService.alternarNotificacao(meta.id, proximoEstado);
+      setMetas(atuais => atuais.map(item => item.id === meta.id ? metaAtualizada : item));
+      if (!proximoEstado) {
+        const pendentes = await metaService.listarNotificacoes().catch(() => []);
+        await Promise.all(pendentes
+          .filter(notificacao => notificacao.metaId === meta.id)
+          .map(notificacao => metaService.visualizarNotificacao(notificacao.id)));
+      }
+      window.dispatchEvent(new Event('telascore:notificacoes-atualizadas'));
+      setFeedback(proximoEstado
+        ? 'Notificacoes ativadas para esta meta.'
+        : 'Meta em modo silencioso.');
+    } catch (e) {
+      setErro(e.message);
     }
   }
 
@@ -297,21 +321,29 @@ export default function Metas() {
         <div className="goals-grid">
           {metas.map(meta => {
             const percentual = Math.min(100, Math.round(meta.quantidadeAtual * 100 / meta.quantidadeAlvo));
-            const encerrada = meta.status === 'FALHADA' || meta.status === 'CANCELADA';
-            const tipoMeta = TIPOS_META[inferirTipoMeta(meta)];
+            const tipoMeta = META_REVIEW;
             const IconeTipo = tipoMeta.icone;
+            const notificacaoAtiva = meta.notificacaoAtiva !== false;
             return (
               <article key={meta.id} className={`goal-card goal-card--${meta.status.toLowerCase()}`}>
                 <div className="goal-card__top">
                   <div className="goal-card__icon"><IconeTipo /></div>
                   <div className="goal-card__top-right">
-                    {!meta.metaDoSistema && (
-                      <div className="goal-card__manage">
-                        <button onClick={() => abrirEdicao(meta)} title="Editar meta" aria-label="Editar meta"><FiEdit2 /></button>
-                        <button className="is-danger" onClick={() => setMetaExcluindo(meta)}
-                          title="Excluir meta" aria-label="Excluir meta"><FiTrash2 /></button>
-                      </div>
-                    )}
+                    <div className="goal-card__manage">
+                      <button className={`goal-notify-button ${notificacaoAtiva ? 'is-active' : 'is-silent'}`}
+                        onClick={() => alternarSinoMeta(meta)}
+                        title={notificacaoAtiva ? 'Notificacoes ligadas' : 'Modo silencioso'}
+                        aria-label={notificacaoAtiva ? 'Desativar notificacoes da meta' : 'Ativar notificacoes da meta'}>
+                        {notificacaoAtiva ? <FiBell /> : <FiBellOff />}
+                      </button>
+                      {!meta.metaDoSistema && (
+                        <>
+                          <button onClick={() => abrirEdicao(meta)} title="Editar meta" aria-label="Editar meta"><FiEdit2 /></button>
+                          <button className="is-danger" onClick={() => setMetaExcluindo(meta)}
+                            title="Excluir meta" aria-label="Excluir meta"><FiTrash2 /></button>
+                        </>
+                      )}
+                    </div>
                     <div className="goal-card__badges">
                       {meta.metaDoSistema && <span className="system-goal-pill"><FiUsers /> Meta do sistema</span>}
                       <span className={`status-pill status-pill--${meta.status.toLowerCase()}`}>
@@ -322,7 +354,7 @@ export default function Metas() {
                 </div>
 
                 <div className="goal-card__content">
-                  <span className="goal-card__type">{tipoMeta.titulo}</span>
+                  <span className="goal-card__type">{meta.generoAlvo ? `Reviews em ${meta.generoAlvo}` : tipoMeta.titulo}</span>
                   <h2>{meta.titulo}</h2>
                   <div className="goal-card__progress-label">
                     <span><strong>{meta.quantidadeAtual}</strong> de {meta.quantidadeAlvo} {tipoMeta.unidade}</span>
@@ -335,43 +367,12 @@ export default function Metas() {
                 </div>
 
                 <div className="goal-card__actions">
-                  <div className="goal-update-mode" aria-label="Modo de atualização">
-                    <button
-                      type="button"
-                      className={(modosAtualizacao[meta.id] || 'FEEDBACK') === 'FEEDBACK' ? 'is-active' : ''}
-                      onClick={() => setModosAtualizacao(atual => ({ ...atual, [meta.id]: 'FEEDBACK' }))}
-                      title="Ao concluir, envia uma notificação para o sininho."
-                    >
-                      <FiBell /> Notificar
-                    </button>
-                    <button
-                      type="button"
-                      className={modosAtualizacao[meta.id] === 'SILENCIOSO' ? 'is-active' : ''}
-                      onClick={() => setModosAtualizacao(atual => ({ ...atual, [meta.id]: 'SILENCIOSO' }))}
-                      title="Atualiza sem criar notificação no sininho."
-                    >
-                      <FiEyeOff /> Silencioso
-                    </button>
-                  </div>
                   <div className="goal-card__action-row">
-                  <div className="goal-counter" aria-label="Alterar progresso">
-                    <button
-                      onClick={() => alterarProgresso(meta, -1)}
-                      disabled={meta.quantidadeAtual === 0 || encerrada}
-                      title="Diminuir progresso"
-                    ><FiMinus /></button>
-                    <span>{meta.quantidadeAtual}</span>
-                    <button
-                      onClick={() => alterarProgresso(meta, 1)}
-                      disabled={meta.status !== 'EM_ANDAMENTO'}
-                      title="Aumentar progresso"
-                    ><FiPlus /></button>
-                  </div>
-                  {meta.status === 'EM_ANDAMENTO' && (
-                    <button className="goal-deadline-button" onClick={() => abrirPrazo(meta)}>
-                      <FiClock /> Alterar prazo
-                    </button>
-                  )}
+                    {meta.status === 'EM_ANDAMENTO' && (
+                      <button className="goal-deadline-button" onClick={() => abrirPrazo(meta)}>
+                        <FiClock /> Alterar prazo
+                      </button>
+                    )}
                   </div>
                 </div>
               </article>
@@ -389,28 +390,24 @@ export default function Metas() {
               <div><p className="page-eyebrow">Novo desafio</p><h2 id="nova-meta-titulo">Criar uma meta</h2></div>
             </div>
             <form onSubmit={criar} className="analysis-modal__form">
-              <fieldset className="goal-type-picker">
-                <legend>O que você quer transformar em hábito?</legend>
-                <div>
-                  {Object.entries(TIPOS_META).map(([chave, tipo]) => {
-                    const Icone = tipo.icone;
-                    return (
-                      <button key={chave} type="button" className={form.tipo === chave ? 'is-selected' : ''}
-                        onClick={() => setForm({ ...form, tipo: chave })}>
-                        <Icone />
-                        <span><strong>{tipo.titulo}</strong><small>{tipo.descricao}</small></span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </fieldset>
+              <p className="analysis-modal__hint">
+                O progresso desta meta e calculado automaticamente pelas reviews que voce publicar.
+              </p>
+              <label>
+                <span>Filtrar por genero</span>
+                <select value={form.generoAlvo}
+                  onChange={e => setForm({ ...form, generoAlvo: e.target.value })}>
+                  <option value="">Qualquer genero</option>
+                  {generos.map(genero => <option key={genero} value={genero}>{genero}</option>)}
+                </select>
+              </label>
               <label>
                 <span>Nome da meta</span>
-                <input placeholder={TIPOS_META[form.tipo].exemplo} value={form.titulo}
+                <input placeholder={META_REVIEW.exemplo} value={form.titulo}
                   onChange={e => setForm({ ...form, titulo: e.target.value })} required autoFocus />
               </label>
               <label>
-                <span>Quantidade de {TIPOS_META[form.tipo].unidade}</span>
+                <span>Quantidade de reviews</span>
                 <div className="number-stepper">
                   <button type="button" onClick={() => ajustarAlvo(-1)} disabled={Number(form.quantidadeAlvo) <= 1}><FiMinus /></button>
                   <input type="number" min="1" value={form.quantidadeAlvo}
@@ -453,7 +450,7 @@ export default function Metas() {
                   onChange={e => setFormSistema({ ...formSistema, titulo: e.target.value })} required autoFocus />
               </label>
               <label>
-                <span>Quantidade de filmes</span>
+                <span>Quantidade de reviews</span>
                 <div className="number-stepper">
                   <button type="button" onClick={() => ajustarCampoSistema('quantidadeAlvo', -1)}
                     disabled={Number(formSistema.quantidadeAlvo) <= 1}><FiMinus /></button>
@@ -522,7 +519,15 @@ export default function Metas() {
                   onChange={e => setFormEdicao({ ...formEdicao, titulo: e.target.value })} required autoFocus />
               </label>
               <label>
-                <span>Quantidade de filmes</span>
+                <span>Filtrar por genero</span>
+                <select value={formEdicao.generoAlvo}
+                  onChange={e => setFormEdicao({ ...formEdicao, generoAlvo: e.target.value })}>
+                  <option value="">Qualquer genero</option>
+                  {generos.map(genero => <option key={genero} value={genero}>{genero}</option>)}
+                </select>
+              </label>
+              <label>
+                <span>Quantidade de reviews</span>
                 <input type="number" min="1" value={formEdicao.quantidadeAlvo}
                   onChange={e => setFormEdicao({ ...formEdicao, quantidadeAlvo: e.target.value })} required />
               </label>

@@ -1,13 +1,13 @@
 package com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme;
 
 import static org.apache.commons.lang3.Validate.notBlank;
-import static org.apache.commons.lang3.Validate.notEmpty;
 import static org.apache.commons.lang3.Validate.notNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.diretor.DiretorId;
 
@@ -21,6 +21,7 @@ public class Filme {
 	private String imagemUrl;
 
 	private final List<DiretorId> diretores = new ArrayList<>();
+	private final List<String> generos = new ArrayList<>();
 
 	public Filme(FilmeId id, String titulo, String sinopse, Integer anoLancamento, List<DiretorId> diretores) {
 		notNull(id, "O id não pode ser nulo");
@@ -77,6 +78,62 @@ public class Filme {
 	public void adicionarDiretor(DiretorId diretor) {
 		notNull(diretor, "O diretor não pode ser nulo");
 		diretores.add(diretor);
+	}
+
+	public Collection<String> getGeneros() {
+		return new ArrayList<>(generos);
+	}
+
+	public void setGeneros(Collection<String> generos) {
+		this.generos.clear();
+		if (generos == null) {
+			return;
+		}
+		for (String genero : generos) {
+			adicionarGenero(genero);
+		}
+	}
+
+	public void adicionarGenero(String genero) {
+		if (genero == null || genero.isBlank()) {
+			return;
+		}
+		String normalizado = normalizarGenero(genero);
+		boolean jaExiste = generos.stream()
+				.anyMatch(valor -> valor.equalsIgnoreCase(normalizado));
+		if (!jaExiste) {
+			generos.add(normalizado);
+		}
+	}
+
+	public boolean possuiGenero(String genero) {
+		if (genero == null || genero.isBlank()) {
+			return false;
+		}
+		String normalizado = normalizarGenero(genero);
+		return generos.stream().anyMatch(valor -> valor.equalsIgnoreCase(normalizado));
+	}
+
+	private String normalizarGenero(String genero) {
+		String texto = genero.trim().replace('_', ' ').replace('-', ' ');
+		if (texto.isBlank()) {
+			return texto;
+		}
+		String[] partes = texto.toLowerCase(Locale.ROOT).split("\\s+");
+		StringBuilder resultado = new StringBuilder();
+		for (String parte : partes) {
+			if (parte.isBlank()) {
+				continue;
+			}
+			if (resultado.length() > 0) {
+				resultado.append(' ');
+			}
+			resultado.append(Character.toUpperCase(parte.charAt(0)));
+			if (parte.length() > 1) {
+				resultado.append(parte.substring(1));
+			}
+		}
+		return resultado.toString();
 	}
 
 	@Override

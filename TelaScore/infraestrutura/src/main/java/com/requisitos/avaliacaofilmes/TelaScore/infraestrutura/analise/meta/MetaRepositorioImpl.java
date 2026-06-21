@@ -55,8 +55,10 @@ public class MetaRepositorioImpl implements MetaRepositorio {
             entity.setDataPrazo(meta.getDataPrazo());
             entity.setStatus(meta.getStatus().name());
             entity.setTipo(meta.getTipo().name());
+            entity.setGeneroAlvo(meta.getGeneroAlvo());
             entity.setMetaSistemaId(meta.getMetaSistemaId());
             entity.setPontosConcedidos(meta.isPontosConcedidos());
+            entity.setNotificacaoAtiva(meta.isNotificacaoAtiva());
 
             if (!em.contains(entity)) {
                 em.persist(entity);
@@ -136,7 +138,9 @@ public class MetaRepositorioImpl implements MetaRepositorio {
             StatusMeta.valueOf(entity.getStatus()),
             entity.getMetaSistemaId(),
             Boolean.TRUE.equals(entity.getPontosConcedidos()),
-            converterTipo(entity.getTipo())
+            converterTipo(entity.getTipo()),
+            entity.getGeneroAlvo(),
+            entity.getNotificacaoAtiva() == null || Boolean.TRUE.equals(entity.getNotificacaoAtiva())
         );
     }
 

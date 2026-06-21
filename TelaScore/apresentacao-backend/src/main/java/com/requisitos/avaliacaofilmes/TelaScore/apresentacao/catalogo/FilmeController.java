@@ -1,6 +1,10 @@
 package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.catalogo;
 
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AtualizarFilmeComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AtualizarFilmeCasoDeUso;
@@ -49,6 +53,26 @@ public class FilmeController {
         return listarFilmes.executar();
     }
 
+    @GetMapping("/generos")
+    public List<String> listarGeneros() {
+        Map<String, String> generosPorChave = new LinkedHashMap<>();
+        listarFilmes.executar().stream()
+                .flatMap(filme -> filme.generos().stream())
+                .map(String::trim)
+                .filter(genero -> !genero.isBlank())
+                .forEach(genero -> {
+                    String chave = normalizarGenero(genero);
+                    String atual = generosPorChave.get(chave);
+                    if (atual == null || (temAcento(genero) && !temAcento(atual))) {
+                        generosPorChave.put(chave, genero);
+                    }
+                });
+
+        return generosPorChave.values().stream()
+                .sorted(Comparator.comparing(this::normalizarGenero))
+                .toList();
+    }
+
     // POST /filmes
     @PostMapping
     public ResponseEntity<Void> cadastrar(@RequestBody CadastrarFilmeComando comando) {
@@ -72,7 +96,8 @@ public class FilmeController {
                 id,
                 comando.titulo(),
                 comando.sinopse(),
-                comando.anoLancamento()
+                comando.anoLancamento(),
+                comando.generos()
         );
         atualizarFilme.executar(comandoComId);
         return ResponseEntity.noContent().build();
@@ -83,5 +108,16 @@ public class FilmeController {
     public ResponseEntity<Void> remover(@PathVariable String id) {
         removerFilme.executar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private String normalizarGenero(String genero) {
+        return java.text.Normalizer.normalize(genero, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .trim()
+                .toLowerCase(Locale.ROOT);
+    }
+
+    private boolean temAcento(String valor) {
+        return !normalizarGenero(valor).equals(valor.trim().toLowerCase(Locale.ROOT));
     }
 }

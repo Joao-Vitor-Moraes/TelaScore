@@ -40,6 +40,11 @@ public class FilmeEntity {
     @Column(name = "diretor_id", nullable = false)
     private List<Integer> diretores = new ArrayList<>();
 
+    @ElementCollection
+    @CollectionTable(name = "filme_genero", joinColumns = @JoinColumn(name = "filme_id"))
+    @Column(name = "genero", nullable = false)
+    private List<String> generos = new ArrayList<>();
+
     public FilmeEntity() {}
 
     public String getId() { return id; }
@@ -59,6 +64,9 @@ public class FilmeEntity {
 
     public List<Integer> getDiretores() { return diretores; }
     public void setDiretores(List<Integer> diretores) { this.diretores = diretores; }
+
+    public List<String> getGeneros() { return generos; }
+    public void setGeneros(List<String> generos) { this.generos = generos; }
 
     public String getImagemUrl() { return imagemUrl; }
     public void setImagemUrl(String imagemUrl) { this.imagemUrl = imagemUrl; }

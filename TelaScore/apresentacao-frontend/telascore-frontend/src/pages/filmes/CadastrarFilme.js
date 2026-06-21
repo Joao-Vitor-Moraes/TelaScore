@@ -12,6 +12,7 @@ export default function CadastrarFilme() {
     anoLancamento: '',
     diretorId: '',
     imagemUrl: '',
+    generos: '',
   });
   const [erro, setErro] = useState(null);
   const [enviando, setEnviando] = useState(false);
@@ -29,6 +30,7 @@ export default function CadastrarFilme() {
         ...form,
         anoLancamento: parseInt(form.anoLancamento),
         diretorId: parseInt(form.diretorId),
+        generos: form.generos.split(',').map(g => g.trim()).filter(Boolean),
       });
       navigate('/filmes');
     } catch {
@@ -59,6 +61,11 @@ export default function CadastrarFilme() {
               <div style={styles.campo}>
                 <label style={styles.label}>SINOPSE</label>
                 <textarea style={styles.textarea} name="sinopse" value={form.sinopse} onChange={handleChange} rows={4} placeholder="Descrição do filme..." />
+              </div>
+
+              <div style={styles.campo}>
+                <label style={styles.label}>GENEROS</label>
+                <input style={styles.input} name="generos" value={form.generos} onChange={handleChange} placeholder="Ex: Documentario, Musical" />
               </div>
 
               <div style={styles.linhaDupla}>

@@ -9,8 +9,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.ApplicationRunner;
@@ -33,7 +35,7 @@ public class TmdbCatalogoConfig {
     private static final String CHAVE_PADRAO_DESENVOLVIMENTO = "65683c0b3525f96ddbf4fcba6a7b4a57";
     private static final String IMAGEM_BASE = "https://image.tmdb.org/t/p/w500";
     private static final int PAGINAS_PADRAO = 20;
-    private static final int MAXIMO_PAGINAS = 50;
+    private static final int MAXIMO_PAGINAS = 500;
     private static final int PAGINAS_ESTREIAS = 3;
 
     @Bean
@@ -63,8 +65,10 @@ public class TmdbCatalogoConfig {
             HttpClient cliente = HttpClient.newBuilder()
                     .connectTimeout(Duration.ofSeconds(8))
                     .build();
+            Map<Integer, String> generosTmdb = consultarGeneros(cliente, objectMapper, apiKey);
 
             if (quantidadeJaImportada >= paginas * 15L) {
+                atualizarGenerosExistentes(cliente, objectMapper, apiKey, repositorio, idsExistentes, generosTmdb, paginas);
                 System.out.printf("Catálogo TMDB já possui %d filmes importados.%n", quantidadeJaImportada);
             } else {
                 int importados = 0;
@@ -72,7 +76,7 @@ public class TmdbCatalogoConfig {
                     try {
                         JsonNode resposta = consultarPagina(cliente, objectMapper, apiKey, pagina);
                         for (JsonNode item : resposta.path("results")) {
-                            if (importarFilme(item, repositorio, idsExistentes, titulosExistentes)) {
+                            if (importarFilme(item, repositorio, idsExistentes, titulosExistentes, generosTmdb)) {
                                 importados++;
                             }
                         }
@@ -94,7 +98,7 @@ public class TmdbCatalogoConfig {
                 try {
                     JsonNode resposta = consultarEstreias(cliente, objectMapper, apiKey, pagina, hoje);
                     for (JsonNode item : resposta.path("results")) {
-                        if (importarFilme(item, repositorio, idsExistentes, titulosExistentes)) {
+                        if (importarFilme(item, repositorio, idsExistentes, titulosExistentes, generosTmdb)) {
                             estreias++;
                         }
                     }
@@ -166,11 +170,77 @@ public class TmdbCatalogoConfig {
         return objectMapper.readTree(resposta.body());
     }
 
+    private Map<Integer, String> consultarGeneros(
+            HttpClient cliente,
+            ObjectMapper objectMapper,
+            String apiKey) {
+        try {
+            String url = "https://api.themoviedb.org/3/genre/movie/list"
+                    + "?api_key=" + URLEncoder.encode(apiKey, StandardCharsets.UTF_8)
+                    + "&language=pt-BR";
+            HttpRequest requisicao = HttpRequest.newBuilder(URI.create(url))
+                    .timeout(Duration.ofSeconds(12))
+                    .header("Accept", "application/json")
+                    .GET()
+                    .build();
+            HttpResponse<String> resposta = cliente.send(requisicao, HttpResponse.BodyHandlers.ofString());
+            if (resposta.statusCode() < 200 || resposta.statusCode() >= 300) {
+                return Map.of();
+            }
+
+            Map<Integer, String> generos = new LinkedHashMap<>();
+            for (JsonNode genero : objectMapper.readTree(resposta.body()).path("genres")) {
+                int id = genero.path("id").asInt(0);
+                String nome = texto(genero, "name");
+                if (id > 0 && nome != null) {
+                    generos.put(id, nome);
+                }
+            }
+            return generos;
+        } catch (Exception erro) {
+            System.err.printf("Nao foi possivel carregar os generos do TMDB. Motivo: %s%n", erro.getMessage());
+            return Map.of();
+        }
+    }
+
+    private int atualizarGenerosExistentes(
+            HttpClient cliente,
+            ObjectMapper objectMapper,
+            String apiKey,
+            FilmeRepositorio repositorio,
+            Set<String> idsExistentes,
+            Map<Integer, String> generosTmdb,
+            int paginas) {
+        int atualizados = 0;
+        for (int pagina = 1; pagina <= paginas; pagina++) {
+            try {
+                JsonNode resposta = consultarPagina(cliente, objectMapper, apiKey, pagina);
+                for (JsonNode item : resposta.path("results")) {
+                    int tmdbId = item.path("id").asInt(0);
+                    FilmeId filmeId = new FilmeId(String.valueOf(PREFIXO_ID_TMDB + tmdbId));
+                    if (!idsExistentes.contains(filmeId.getCodigo())) {
+                        continue;
+                    }
+                    Filme filme = repositorio.obter(filmeId);
+                    if (filme != null && filme.getGeneros().isEmpty()) {
+                        filme.setGeneros(generosDoItem(item, generosTmdb));
+                        repositorio.salvar(filme);
+                        atualizados++;
+                    }
+                }
+            } catch (Exception erro) {
+                break;
+            }
+        }
+        return atualizados;
+    }
+
     private boolean importarFilme(
             JsonNode item,
             FilmeRepositorio repositorio,
             Set<String> idsExistentes,
-            Set<String> titulosExistentes) {
+            Set<String> titulosExistentes,
+            Map<Integer, String> generosTmdb) {
         int tmdbId = item.path("id").asInt(0);
         String titulo = texto(item, "title");
         String poster = texto(item, "poster_path");
@@ -196,10 +266,25 @@ public class TmdbCatalogoConfig {
                 List.of());
         filme.setImagemUrl(IMAGEM_BASE + poster);
         filme.setDataEstreia(dataEstreia);
+        filme.setGeneros(generosDoItem(item, generosTmdb));
         repositorio.salvar(filme);
         idsExistentes.add(filmeId.getCodigo());
         titulosExistentes.add(tituloNormalizado);
         return true;
+    }
+
+    private List<String> generosDoItem(JsonNode item, Map<Integer, String> generosTmdb) {
+        if (!item.path("genre_ids").isArray()) {
+            return List.of();
+        }
+        List<String> generos = new java.util.ArrayList<>();
+        for (JsonNode generoId : item.path("genre_ids")) {
+            String nome = generosTmdb.get(generoId.asInt(0));
+            if (nome != null && !nome.isBlank() && !generos.contains(nome)) {
+                generos.add(nome);
+            }
+        }
+        return generos;
     }
 
     private String texto(JsonNode item, String campo) {

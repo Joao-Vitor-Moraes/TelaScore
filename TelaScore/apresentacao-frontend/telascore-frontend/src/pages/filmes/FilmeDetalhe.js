@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
-import { filmeService, avaliacaoService } from '../../services/api';
+import { filmeService, avaliacaoService, metaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 const PREFIXO_ID_TMDB = 2000000;
@@ -68,6 +68,14 @@ export default function FilmeDetalhe() {
     setFilme(filmeAtualizado);
   }
 
+  async function sincronizarMetas() {
+    try {
+      await metaService.listar();
+      window.dispatchEvent(new Event('telascore:notificacoes-atualizadas'));
+    } catch {
+    }
+  }
+
   async function handleAvaliar(e) {
     e.preventDefault();
     try {
@@ -79,6 +87,7 @@ export default function FilmeDetalhe() {
         visibilidade: novaAvaliacao.visibilidade,
       });
       await recarregar();
+      await sincronizarMetas();
       setNovaAvaliacao({ valorNota: 5, comentario: '', visibilidade: 'PUBLICA' });
     } catch {
       alert('Erro ao enviar avaliação.');
@@ -90,6 +99,7 @@ export default function FilmeDetalhe() {
     try {
       await avaliacaoService.remover(avaliacaoId);
       await recarregar();
+      await sincronizarMetas();
     } catch {
       alert('Erro ao remover avaliação.');
     }
@@ -102,6 +112,7 @@ export default function FilmeDetalhe() {
         resenha: edicao.resenha,
       });
       await recarregar();
+      await sincronizarMetas();
       setEditandoId(null);
     } catch {
       alert('Erro ao editar avaliação.');
@@ -129,6 +140,11 @@ export default function FilmeDetalhe() {
           <div style={styles.filmeInfo}>
             <h1 style={styles.filmeTitulo}>{filme.titulo}</h1>
             <p style={styles.filmeSub}>{filme.anoLancamento}{filme.nomeDiretor ? ` · ${filme.nomeDiretor}` : ''}</p>
+            {Boolean(filme.generos?.length) && (
+              <div style={styles.generos}>
+                {filme.generos.map(genero => <span key={genero} style={styles.generoChip}>{genero}</span>)}
+              </div>
+            )}
             <p style={styles.filmeNota}>
               {filme.mediaNotas > 0 ? `⭐ ${filme.mediaNotas.toFixed(1)} de média` : 'Sem avaliações ainda'}
             </p>
@@ -327,6 +343,19 @@ const styles = {
     color: '#f0a500',
     margin: 0,
     fontSize: '14px',
+  },
+  generos: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '6px',
+  },
+  generoChip: {
+    border: '1px solid rgba(255,255,255,0.18)',
+    borderRadius: '999px',
+    color: '#f4f4fb',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    fontSize: '12px',
+    padding: '5px 8px',
   },
   filmeSinopse: {
     color: '#ccc',

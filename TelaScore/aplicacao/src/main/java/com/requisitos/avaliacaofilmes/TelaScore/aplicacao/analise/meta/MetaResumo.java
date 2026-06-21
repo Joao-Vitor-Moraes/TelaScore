@@ -14,7 +14,11 @@ public record MetaResumo(
         String status,
         String statusDescricao,
         boolean metaDoSistema,
-        String tipo) {
+        String tipo,
+        String generoAlvo,
+        boolean notificacaoAtiva,
+        boolean dinamica,
+        String criterioDescricao) {
 
     public static MetaResumo de(Meta meta) {
         return new MetaResumo(
@@ -27,7 +31,18 @@ public record MetaResumo(
                 meta.getStatus().name(),
                 formatarStatus(meta.getStatus().name()),
                 meta.getMetaSistemaId() != null,
-                meta.getTipo().name());
+                meta.getTipo().name(),
+                meta.getGeneroAlvo(),
+                meta.isNotificacaoAtiva(),
+                true,
+                criterio(meta));
+    }
+
+    private static String criterio(Meta meta) {
+        if (meta.getGeneroAlvo() != null && !meta.getGeneroAlvo().isBlank()) {
+            return "Reviews de filmes do genero " + meta.getGeneroAlvo();
+        }
+        return "Reviews publicados";
     }
 
     private static String formatarStatus(String status) {

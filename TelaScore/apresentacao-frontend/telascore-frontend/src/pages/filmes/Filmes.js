@@ -87,7 +87,8 @@ export default function Filmes() {
     return filmes.filter(f =>
       (termo || !TITULOS_FORA_DA_VITRINE.has(f.titulo)) &&
       (f.titulo.toLowerCase().includes(termo) ||
-        String(f.anoLancamento || '').includes(termo))
+        String(f.anoLancamento || '').includes(termo) ||
+        (f.generos || []).some(genero => genero.toLowerCase().includes(termo)))
     );
   }, [filmes, busca]);
 
@@ -165,6 +166,11 @@ export default function Filmes() {
               {destaque.mediaNotas > 0 && <span><FiStar /> {destaque.mediaNotas.toFixed(1)}</span>}
             </div>
             <p>{destaque.sinopse || 'Explore, avalie e organize as histórias que merecem ficar na memória.'}</p>
+            {Boolean(destaque.generos?.length) && (
+              <div className="genre-chip-row">
+                {destaque.generos.slice(0, 4).map(genero => <span key={genero}>{genero}</span>)}
+              </div>
+            )}
             <div className="hero-actions">
               <button className="hero-play" onClick={() => navigate(`/filmes/${destaque.id}`)}><FiPlay /> Ver detalhes</button>
               <button className="hero-info" onClick={() => navigate('/listas')}><FiInfo /> Minhas listas</button>
@@ -220,6 +226,11 @@ export default function Filmes() {
                     )}
                     <div className="poster-card__body">
                       <div className="poster-card__text">
+                        {Boolean(filme.generos?.length) && (
+                          <div className="poster-card__genres">
+                            {filme.generos.slice(0, 3).map(genero => <span key={genero}>{genero}</span>)}
+                          </div>
+                        )}
                         <h3>{filme.titulo}</h3>
                         <p>{filme.anoLancamento}{filme.nomeDiretor ? ` • ${filme.nomeDiretor}` : ''}</p>
                       </div>

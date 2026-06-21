@@ -34,11 +34,17 @@ public class MetaEntity {
     @Column(nullable = false)
     private String tipo = "FILMES";
 
+    @Column(name = "genero_alvo")
+    private String generoAlvo;
+
     @Column(name = "meta_sistema_id")
     private Integer metaSistemaId;
 
     @Column(name = "pontos_concedidos", nullable = false)
     private Boolean pontosConcedidos = false;
+
+    @Column(name = "notificacao_ativa")
+    private Boolean notificacaoAtiva = true;
 
     public MetaEntity() {}
 
@@ -64,8 +70,12 @@ public class MetaEntity {
     public void setStatus(String status) { this.status = status; }
     public String getTipo() { return tipo; }
     public void setTipo(String tipo) { this.tipo = tipo; }
+    public String getGeneroAlvo() { return generoAlvo; }
+    public void setGeneroAlvo(String generoAlvo) { this.generoAlvo = generoAlvo; }
     public Integer getMetaSistemaId() { return metaSistemaId; }
     public void setMetaSistemaId(Integer metaSistemaId) { this.metaSistemaId = metaSistemaId; }
     public Boolean getPontosConcedidos() { return pontosConcedidos; }
     public void setPontosConcedidos(Boolean pontosConcedidos) { this.pontosConcedidos = pontosConcedidos; }
+    public Boolean getNotificacaoAtiva() { return notificacaoAtiva; }
+    public void setNotificacaoAtiva(Boolean notificacaoAtiva) { this.notificacaoAtiva = notificacaoAtiva; }
 }

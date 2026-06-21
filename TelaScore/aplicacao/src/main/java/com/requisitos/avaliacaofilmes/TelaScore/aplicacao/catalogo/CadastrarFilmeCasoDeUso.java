@@ -35,6 +35,7 @@ public class CadastrarFilmeCasoDeUso {
 		
 		Filme filme = new Filme(novoFilmeId, comando.titulo(), comando.sinopse(), comando.anoLancamento(), listaDiretores);
 		filme.setImagemUrl(comando.imagemUrl());
+		filme.setGeneros(comando.generos());
 
 		filmeRepositorio.salvar(filme);
 	}
