@@ -103,12 +103,14 @@ public class ListarMetasPorUsuarioCasoDeUso {
             }
             if (!meta.isPontosConcedidos() && meta.getStatus() == StatusMeta.CONCLUIDA) {
                 meta.marcarPontosConcedidos();
-                Pontos pontos = pontuacao.concederPontos(
-                        meta.getUsuarioId(),
-                        AcaoPontuada.COMPLETAR_META,
-                        estrategias.obter(AcaoPontuada.COMPLETAR_META));
-                if (meta.isNotificacaoAtiva()) {
-                    notificacoes.criar(meta.getUsuarioId(), meta.getId(), meta.getTitulo(), pontos.getQuantidade());
+                if (meta.getMetaSistemaId() != null) {
+                    Pontos pontos = pontuacao.concederPontos(
+                            meta.getUsuarioId(),
+                            AcaoPontuada.COMPLETAR_META,
+                            estrategias.obter(AcaoPontuada.COMPLETAR_META));
+                    if (meta.isNotificacaoAtiva()) {
+                        notificacoes.criar(meta.getUsuarioId(), meta.getId(), meta.getTitulo(), pontos.getQuantidade());
+                    }
                 }
                 salvar = true;
             }

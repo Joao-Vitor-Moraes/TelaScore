@@ -31,13 +31,15 @@ public class AtualizadorMetaComNotificacao extends AtualizadorMetaTemplate {
 
         if (concluiuAgora) {
             meta.marcarPontosConcedidos();
-            Pontos pontos = pontuacao.concederPontos(
-                    meta.getUsuarioId(),
-                    AcaoPontuada.COMPLETAR_META,
-                    estrategias.obter(AcaoPontuada.COMPLETAR_META));
-            pontosGanhos = pontos.getQuantidade();
-            if (meta.isNotificacaoAtiva()) {
-                notificacoes.criar(meta.getUsuarioId(), meta.getId(), meta.getTitulo(), pontosGanhos);
+            if (meta.getMetaSistemaId() != null) {
+                Pontos pontos = pontuacao.concederPontos(
+                        meta.getUsuarioId(),
+                        AcaoPontuada.COMPLETAR_META,
+                        estrategias.obter(AcaoPontuada.COMPLETAR_META));
+                pontosGanhos = pontos.getQuantidade();
+                if (meta.isNotificacaoAtiva()) {
+                    notificacoes.criar(meta.getUsuarioId(), meta.getId(), meta.getTitulo(), pontosGanhos);
+                }
             }
             mensagem = "Meta concluida: " + meta.getTitulo() + ".";
         } else {
