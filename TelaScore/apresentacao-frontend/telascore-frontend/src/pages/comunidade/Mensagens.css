@@ -176,6 +176,27 @@
     color: var(--muted);
 }
 
+.mensagens-perfil-cabecalho {
+    display: grid;
+    justify-items: start;
+    gap: 2px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    color: white;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+}
+
+.mensagens-perfil-cabecalho:disabled {
+    cursor: default;
+}
+
+.mensagens-perfil-cabecalho:not(:disabled):hover h3 {
+    color: var(--brand-light);
+}
+
 .mensagens-alerta {
     padding: 10px 12px;
     border: 1px solid rgba(229, 9, 20, .35);
@@ -211,6 +232,51 @@
     color: white;
 }
 
+.mensagem-linha {
+    display: flex;
+    align-items: flex-end;
+    gap: 9px;
+    max-width: 88%;
+}
+
+.mensagem-linha.meu {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.mensagem-linha.outro {
+    align-self: flex-start;
+}
+
+.mensagem-avatar-button {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+}
+
+.mensagens-avatar {
+    display: block;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .12);
+}
+
+.mensagens-avatar--fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: var(--brand);
+    font-weight: 700;
+}
+
 .mensagem-meta {
     display: flex;
     justify-content: space-between;
@@ -218,6 +284,23 @@
     margin-bottom: 6px;
     color: rgba(255, 255, 255, .66);
     font-size: 11px;
+}
+
+.mensagem-meta button {
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
+}
+
+.mensagem-meta button:hover {
+    color: white;
+    text-decoration: underline;
 }
 
 .chat-balao p {
@@ -262,16 +345,43 @@
 .mensagens-contato {
     width: 100%;
     display: grid;
-    justify-items: start;
-    gap: 2px;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
     border: 1px solid transparent;
     color: white;
     cursor: pointer;
     text-align: left;
 }
 
+.mensagens-contato-texto {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.mensagens-contato-texto span,
+.mensagens-contato-texto small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .mensagens-contato small {
     color: var(--muted);
+}
+
+.mensagens-contato-perfil {
+    padding: 5px 8px;
+    border-radius: 7px;
+    color: var(--brand-light);
+    background: rgba(229, 9, 20, .12);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.mensagens-contato-perfil:hover {
+    background: rgba(229, 9, 20, .2);
 }
 
 .mensagens-contato.ativo {

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FiEdit2, FiMessageCircle, FiSend, FiSmile, FiTrash2, FiUser } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import Navbar from '../../components/Navbar';
@@ -20,8 +21,28 @@ function formatarHorario(mensagem) {
     });
 }
 
+function AvatarMensagem({ usuario, size = 34 }) {
+    const nome = usuario?.apelido || usuario?.nome || 'U';
+    if (usuario?.avatarUrl) {
+        return (
+            <img
+                className="mensagens-avatar"
+                src={usuario.avatarUrl}
+                alt=""
+                style={{ width: size, height: size }}
+            />
+        );
+    }
+    return (
+        <span className="mensagens-avatar mensagens-avatar--fallback" style={{ width: size, height: size }}>
+            {nome.charAt(0).toUpperCase()}
+        </span>
+    );
+}
+
 export default function Mensagens() {
     const { sessao } = useAuth();
+    const navigate = useNavigate();
     const [mensagens, setMensagens] = useState([]);
     const [contatos, setContatos] = useState([]);
     const [chatAtivo, setChatAtivo] = useState(null);
@@ -37,6 +58,17 @@ export default function Mensagens() {
         () => contatos.find((contato) => contato.id === chatAtivo),
         [contatos, chatAtivo]
     );
+
+    const perfilSessao = useMemo(() => ({
+        id: sessao?.id,
+        nome: sessao?.nome || sessao?.apelido || 'Voce',
+        apelido: sessao?.apelido || sessao?.nome || 'voce',
+        avatarUrl: sessao?.avatarUrl
+    }), [sessao]);
+
+    const abrirPerfil = (usuarioId) => {
+        if (usuarioId) navigate(`/usuario/${usuarioId}`);
+    };
 
     useEffect(() => {
         async function carregarAmigos() {
@@ -154,10 +186,15 @@ export default function Mensagens() {
                             <div className="chat-header-icon">
                                 <FiMessageCircle size={20} />
                             </div>
-                            <div>
+                            <button
+                                type="button"
+                                className="mensagens-perfil-cabecalho"
+                                disabled={!usuarioAtual}
+                                onClick={() => abrirPerfil(usuarioAtual?.id)}
+                            >
                                 <h3>{usuarioAtual?.nome || usuarioAtual?.apelido || 'Mensagens privadas'}</h3>
                                 <small>{usuarioAtual ? '@' + (usuarioAtual.apelido || usuarioAtual.nome) : 'Converse com seus amigos'}</small>
-                            </div>
+                            </button>
                         </div>
                     </div>
 
@@ -185,23 +222,36 @@ export default function Mensagens() {
 
                             {!carregandoMensagens && mensagens.map((mensagem) => {
                                 const minha = mensagem.remetenteId === sessao?.id;
+                                const autor = minha ? perfilSessao : usuarioAtual;
                                 return (
-                                    <article key={mensagem.id} className={`chat-balao ${minha ? 'meu' : 'outro'}`}>
-                                        <div className="mensagem-meta">
-                                            <strong>{minha ? 'Voce' : (usuarioAtual?.nome || usuarioAtual?.apelido)}</strong>
-                                            <span>{formatarHorario(mensagem)}</span>
-                                        </div>
-                                        <p>{mensagem.texto}</p>
-                                        {minha && (
-                                            <div className="mensagem-acoes">
-                                                <button type="button" onClick={() => iniciarEdicao(mensagem)}>
-                                                    <FiEdit2 size={12} /> Editar
+                                    <article key={mensagem.id} className={`mensagem-linha ${minha ? 'meu' : 'outro'}`}>
+                                        <button
+                                            type="button"
+                                            className="mensagem-avatar-button"
+                                            onClick={() => abrirPerfil(autor?.id)}
+                                            title="Ver perfil"
+                                        >
+                                            <AvatarMensagem usuario={autor} />
+                                        </button>
+                                        <div className={`chat-balao ${minha ? 'meu' : 'outro'}`}>
+                                            <div className="mensagem-meta">
+                                                <button type="button" onClick={() => abrirPerfil(autor?.id)}>
+                                                    {minha ? 'Voce' : (usuarioAtual?.nome || usuarioAtual?.apelido)}
                                                 </button>
-                                                <button type="button" onClick={() => setConfirmarExclusao(mensagem)}>
-                                                    <FiTrash2 size={12} /> Apagar
-                                                </button>
+                                                <span>{formatarHorario(mensagem)}</span>
                                             </div>
-                                        )}
+                                            <p>{mensagem.texto}</p>
+                                            {minha && (
+                                                <div className="mensagem-acoes">
+                                                    <button type="button" onClick={() => iniciarEdicao(mensagem)}>
+                                                        <FiEdit2 size={12} /> Editar
+                                                    </button>
+                                                    <button type="button" onClick={() => setConfirmarExclusao(mensagem)}>
+                                                        <FiTrash2 size={12} /> Apagar
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </article>
                                 );
                             })}
@@ -224,8 +274,29 @@ export default function Mensagens() {
                                         setMensagemDigitada('');
                                     }}
                                 >
-                                    <span>{contato.nome || contato.apelido}</span>
-                                    <small>@{contato.apelido || contato.nome}</small>
+                                    <AvatarMensagem usuario={contato} size={36} />
+                                    <span className="mensagens-contato-texto">
+                                        <span>{contato.nome || contato.apelido}</span>
+                                        <small>@{contato.apelido || contato.nome}</small>
+                                    </span>
+                                    <span
+                                        role="button"
+                                        tabIndex={0}
+                                        className="mensagens-contato-perfil"
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            abrirPerfil(contato.id);
+                                        }}
+                                        onKeyDown={(event) => {
+                                            if (event.key === 'Enter' || event.key === ' ') {
+                                                event.preventDefault();
+                                                event.stopPropagation();
+                                                abrirPerfil(contato.id);
+                                            }
+                                        }}
+                                    >
+                                        Perfil
+                                    </span>
                                 </button>
                             ))}
                         </aside>
