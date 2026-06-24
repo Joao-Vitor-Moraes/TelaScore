@@ -83,7 +83,7 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdConexao() {
-        throw new UnsupportedOperationException("Geracao de ID de conexao nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(id) FROM conexao");
     }
 
     @Override

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiTarget, FiList, FiArrowLeft, FiCheckCircle, FiClock, FiXCircle } from 'react-icons/fi';
+import { FiTarget, FiList, FiArrowLeft, FiCheckCircle, FiClock, FiXCircle, FiUserPlus, FiUserX, FiUsers } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
-import { usuarioService, metaService, listaService } from '../../services/api';
+import { usuarioService, metaService, listaService, amigoService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import './usuario.css';
 
@@ -14,21 +14,29 @@ export default function PerfilMembro() {
     const [perfil, setPerfil] = useState(null);
     const [metas, setMetas] = useState([]);
     const [listas, setListas] = useState([]);
+    const [statusConexao, setStatusConexao] = useState(null);
     const [carregando, setCarregando] = useState(true);
+    const [salvandoConexao, setSalvandoConexao] = useState(false);
     const [erro, setErro] = useState('');
+    const [erroAcao, setErroAcao] = useState('');
 
     useEffect(() => {
         async function carregar() {
             setCarregando(true);
             try {
-                const [p, m, l] = await Promise.all([
+                const carregamentos = [
                     usuarioService.obterPorId(usuarioId),
                     metaService.listarPorUsuario(usuarioId),
                     listaService.listarPorUsuario(usuarioId, sessao.id),
-                ]);
+                ];
+                if (Number(usuarioId) !== Number(sessao.id)) {
+                    carregamentos.push(amigoService.status(sessao.id, usuarioId));
+                }
+                const [p, m, l, status] = await Promise.all(carregamentos);
                 setPerfil(p);
                 setMetas(Array.isArray(m) ? m : []);
                 setListas(Array.isArray(l) ? l : []);
+                setStatusConexao(status || null);
             } catch {
                 setErro('Não foi possível carregar o perfil deste usuário.');
             } finally {
@@ -37,6 +45,24 @@ export default function PerfilMembro() {
         }
         carregar();
     }, [usuarioId, sessao.id]);
+
+    async function alternarConexao() {
+        setSalvandoConexao(true);
+        setErroAcao('');
+        try {
+            if (statusConexao?.seguindo) {
+                await amigoService.deixarDeSeguir(usuarioId, sessao.id);
+            } else {
+                await amigoService.seguir(sessao.id, usuarioId);
+            }
+            const novoStatus = await amigoService.status(sessao.id, usuarioId);
+            setStatusConexao(novoStatus);
+        } catch (e) {
+            setErroAcao(e.message || 'Não foi possível atualizar a conexão.');
+        } finally {
+            setSalvandoConexao(false);
+        }
+    }
 
     function iconeStatus(status) {
         if (status === 'CONCLUIDA') return <FiCheckCircle style={{ color: '#65dc82' }} />;
@@ -67,6 +93,7 @@ export default function PerfilMembro() {
     }
 
     const inicial = (perfil.apelido || perfil.nome || '?')[0].toUpperCase();
+    const perfilDoUsuarioLogado = Number(usuarioId) === Number(sessao.id);
     const papelDescricao = perfil.papel === 'ADMIN' ? 'Administrador' : 'Cinéfilo';
 
     return (
@@ -80,6 +107,8 @@ export default function PerfilMembro() {
                     <FiArrowLeft /> Voltar
                 </button>
 
+                {erroAcao && <div className="analysis-error" style={{ marginBottom: '16px' }}>{erroAcao}</div>}
+
                 {/* Cabeçalho do perfil */}
                 <div className="admin-card" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '28px', padding: '24px' }}>
                     <div style={{
@@ -90,7 +119,7 @@ export default function PerfilMembro() {
                     }}>
                         {!perfil.avatarUrl && inicial}
                     </div>
-                    <div>
+                    <div style={{ flex: 1 }}>
                         <div className="public-profile-name">
                             <h1 style={{ fontSize: '22px', marginBottom: '4px' }}>{perfil.nome}</h1>
                             <span className={`user-badge ${perfil.papel === 'ADMIN' ? 'is-admin' : 'is-user'}`}>
@@ -102,6 +131,26 @@ export default function PerfilMembro() {
                             <p style={{ color: 'var(--muted)', fontSize: '13px' }}>{perfil.biografia}</p>
                         )}
                     </div>
+                    {!perfilDoUsuarioLogado && (
+                        <div style={{ display: 'grid', gap: '8px', justifyItems: 'end' }}>
+                            {statusConexao?.amigo && (
+                                <span className="user-badge is-user" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                    <FiUsers /> Amigos
+                                </span>
+                            )}
+                            {statusConexao?.seguidoPor && !statusConexao?.amigo && (
+                                <span style={{ color: 'var(--muted)', fontSize: '12px' }}>Segue você</span>
+                            )}
+                            <button
+                                className={statusConexao?.seguindo ? 'btn-secondary' : 'btn-primary'}
+                                onClick={alternarConexao}
+                                disabled={salvandoConexao}
+                            >
+                                {statusConexao?.seguindo ? <FiUserX /> : <FiUserPlus />}
+                                {salvandoConexao ? 'Atualizando...' : statusConexao?.seguindo ? 'Deixar de seguir' : 'Seguir'}
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="public-profile-grid">

@@ -3,14 +3,14 @@ services:
     image: mysql:8.4
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-telascore_db}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-telascore-root}
+      MYSQL_USER: ${MYSQL_USER:-telascore}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-defina-uma-senha}
     ports:
       - "${MYSQL_PORT:-3307}:3306"
     volumes:
-      - telascore_mysql:/var/lib/mysql
+      - telascore_mysql_fresh:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u$${MYSQL_USER} -p$${MYSQL_PASSWORD}"]
@@ -24,12 +24,12 @@ services:
       dockerfile: apresentacao-backend/Dockerfile
     restart: unless-stopped
     environment:
-      DB_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      DB_USER: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
-      TELASCORE_TOKEN_SECRET: ${TELASCORE_TOKEN_SECRET}
+      DB_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE:-telascore_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USER: ${MYSQL_USER:-telascore}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-defina-uma-senha}
+      TELASCORE_TOKEN_SECRET: ${TELASCORE_TOKEN_SECRET:-telascore-token-local}
       TELASCORE_UPLOAD_DIR: /app/uploads/avatars
-      TMDB_API_KEY: ${TMDB_API_KEY}
+      TMDB_API_KEY: ${TMDB_API_KEY:-}
       TMDB_CATALOG_PAGES: ${TMDB_CATALOG_PAGES:-20}
     ports:
       - "${BACKEND_PORT:-8080}:8080"
@@ -44,7 +44,7 @@ services:
       context: ./TelaScore/apresentacao-frontend/telascore-frontend
       args:
         REACT_APP_API_URL: ${REACT_APP_API_URL:-}
-        REACT_APP_TMDB_API_KEY: ${TMDB_API_KEY}
+        REACT_APP_TMDB_API_KEY: ${TMDB_API_KEY:-}
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-3000}:80"
@@ -52,5 +52,5 @@ services:
       - backend
 
 volumes:
-  telascore_mysql:
+  telascore_mysql_fresh:
   telascore_uploads:

@@ -20,7 +20,9 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.Prom
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.RebaixarMembroCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.comunidade.RemoverMembroCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.DeixarDeSeguirCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.ListarConexoesCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.SeguirUsuarioCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.AvaliarDenunciaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.ListarDenunciasPendentesCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.denuncia.ListarDenunciasPorStatusCasoDeUso;
@@ -106,6 +108,12 @@ public class SocialConfig {
     @Bean
     public DeixarDeSeguirCasoDeUso deixarDeSeguirCasoDeUso(ConexaoRepositorio conexaoRepositorio) {
         return new DeixarDeSeguirCasoDeUso(conexaoRepositorio);
+    }
+
+    @Bean
+    public ListarConexoesCasoDeUso listarConexoesCasoDeUso(ConexaoRepositorio conexaoRepositorio,
+                                                           UsuarioRepositorio usuarioRepositorio) {
+        return new ListarConexoesCasoDeUso(conexaoRepositorio, usuarioRepositorio);
     }
 
     @Bean

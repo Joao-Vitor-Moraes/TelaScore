@@ -244,6 +244,10 @@ export const figurinhaService = {
 export const amigoService = {
   seguir: (seguidorId, seguidoId) => request('POST', '/api/conexoes', { seguidorId, seguidoId }),
   deixarDeSeguir: (seguidoId, seguidorId) => request('DELETE', `/api/conexoes/${seguidoId}`, null, { 'X-Usuario-Id': seguidorId }),
+  listarSeguindo: (usuarioId) => request('GET', `/api/conexoes/${usuarioId}/seguindo`),
+  listarSeguidores: (usuarioId) => request('GET', `/api/conexoes/${usuarioId}/seguidores`),
+  listarAmigos: (usuarioId) => request('GET', `/api/conexoes/${usuarioId}/amigos`),
+  status: (seguidorId, seguidoId) => request('GET', `/api/conexoes/status?seguidorId=${seguidorId}&seguidoId=${seguidoId}`),
   buscarPorApelido: (apelido) => request('GET', `/api/identidade/usuario/buscar?apelido=${encodeURIComponent(apelido)}`),
 };
 
