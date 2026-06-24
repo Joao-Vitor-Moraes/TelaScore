@@ -228,10 +228,11 @@ export const quizService = {
 // Mensagens Privadas
 export const mensagemPrivadaService = {
   // Busca o histórico de conversa com um usuário específico
-  listarPorDestinatario: (destinatarioId) => request('GET', `/api/mensagens/privadas/${destinatarioId}`),
+  listarConversa: (usuarioId, amigoId) => request('GET', `/api/mensagens/privadas/${amigoId}?usuarioId=${usuarioId}`),
+  listarPorDestinatario: (destinatarioId, usuarioId) => request('GET', `/api/mensagens/privadas/${destinatarioId}?usuarioId=${usuarioId}`),
   enviar: (dados) => request('POST', '/api/mensagens/privadas', dados),
   editar: (id, dados) => request('PUT', `/api/mensagens/privadas/${id}`, dados),
-  remover: (id) => request('DELETE', `/api/mensagens/privadas/${id}`)
+  remover: (id, usuarioId) => request('DELETE', `/api/mensagens/privadas/${id}?usuarioId=${usuarioId}`)
 };
 
 // Figurinhas

@@ -93,7 +93,7 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdMensagem() {
-        throw new UnsupportedOperationException("Geracao de ID de mensagem nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(id) FROM mensagem");
     }
 
     @Override

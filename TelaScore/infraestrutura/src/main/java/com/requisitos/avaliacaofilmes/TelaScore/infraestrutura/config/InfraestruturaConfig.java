@@ -149,7 +149,7 @@ public class InfraestruturaConfig {
     @Bean
     public MensagemRepositorio mensagemRepositorio() {
         return new MensagemRepositorioLoggingDecorator(
-                new MensagemRepositorioImpl(ConexaoBanco.obterEntityManager()));
+                new MensagemRepositorioImpl());
     }
 
     @Bean
