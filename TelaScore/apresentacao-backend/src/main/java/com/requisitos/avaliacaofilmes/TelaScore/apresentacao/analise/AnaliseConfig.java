@@ -49,7 +49,7 @@ public class AnaliseConfig {
     public ConcederPontosCasoDeUso concederPontosCasoDeUso(
             PontuacaoServico pontuacao,
             EstrategiaPontuacaoFactory estrategias) {
-        return new ConcederPontosCasoDeUso(pontuacao, estrategias.obter(AcaoPontuada.AVALIAR_FILME));
+        return new ConcederPontosCasoDeUso(pontuacao, estrategias);
     }
 
     @Bean
@@ -67,8 +67,10 @@ public class AnaliseConfig {
     @Bean
     public AtualizadorMetaComNotificacao atualizadorMetaComNotificacao(
             MetaRepositorio metas,
-            NotificacaoMetaRepositorio notificacoes) {
-        return new AtualizadorMetaComNotificacao(metas, notificacoes);
+            NotificacaoMetaRepositorio notificacoes,
+            PontuacaoServico pontuacao,
+            EstrategiaPontuacaoFactory estrategias) {
+        return new AtualizadorMetaComNotificacao(metas, notificacoes, pontuacao, estrategias);
     }
 
     @Bean
@@ -97,9 +99,10 @@ public class AnaliseConfig {
     public ListarMetasPorUsuarioCasoDeUso listarMetasPorUsuarioCasoDeUso(
             MetaRepositorio repositorio, MetaSistemaRepositorio sistemas, GeradorId geradorId,
             AvaliacaoRepositorio avaliacaoRepositorio, FilmeRepositorio filmeRepositorio,
-            NotificacaoMetaRepositorio notificacoes) {
+            NotificacaoMetaRepositorio notificacoes, PontuacaoServico pontuacao,
+            EstrategiaPontuacaoFactory estrategias) {
         return new ListarMetasPorUsuarioCasoDeUso(repositorio, sistemas, geradorId,
-                avaliacaoRepositorio, filmeRepositorio, notificacoes);
+                avaliacaoRepositorio, filmeRepositorio, notificacoes, pontuacao, estrategias);
     }
 
     @Bean
@@ -140,8 +143,9 @@ public class AnaliseConfig {
     }
 
     @Bean
-    public ResponderQuizCasoDeUso responderQuizCasoDeUso(QuizRepositorio quizRepositorio) {
-        return new ResponderQuizCasoDeUso(quizRepositorio);
+    public ResponderQuizCasoDeUso responderQuizCasoDeUso(QuizRepositorio quizRepositorio,
+            PontuacaoServico pontuacao, EstrategiaPontuacaoFactory estrategias) {
+        return new ResponderQuizCasoDeUso(quizRepositorio, pontuacao, estrategias);
     }
 
     @Bean

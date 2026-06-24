@@ -11,8 +11,11 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.ListarA
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.ListarConexoesCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.SeguirUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.SeguirUsuarioComando;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.AcaoPontuada;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.PontuacaoServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.conexao.ConexaoRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recompensa.EstrategiaPontuacaoFactory;
 
 import java.util.List;
 
@@ -25,22 +28,38 @@ public class ConexaoController {
     private final ListarConexoesCasoDeUso listarConexoes;
     private final ListarAmigosCasoDeUso listarAmigos;
     private final ConexaoRepositorio conexaoRepositorio;
+    private final PontuacaoServico pontuacaoServico;
+    private final EstrategiaPontuacaoFactory estrategias;
 
     public ConexaoController(SeguirUsuarioCasoDeUso seguirUsuario,
                              DeixarDeSeguirCasoDeUso deixarDeSeguir,
                              ListarConexoesCasoDeUso listarConexoes,
                              ListarAmigosCasoDeUso listarAmigos,
-                             ConexaoRepositorio conexaoRepositorio) {
+                             ConexaoRepositorio conexaoRepositorio,
+                             PontuacaoServico pontuacaoServico,
+                             EstrategiaPontuacaoFactory estrategias) {
         this.seguirUsuario = seguirUsuario;
         this.deixarDeSeguir = deixarDeSeguir;
         this.listarConexoes = listarConexoes;
         this.listarAmigos = listarAmigos;
         this.conexaoRepositorio = conexaoRepositorio;
+        this.pontuacaoServico = pontuacaoServico;
+        this.estrategias = estrategias;
     }
 
     @PostMapping
     public ResponseEntity<Void> seguir(@RequestBody SeguirRequest body) {
+        UsuarioId seguidor = new UsuarioId(body.seguidorId());
+        UsuarioId seguido = new UsuarioId(body.seguidoId());
+        boolean jaSeguia = conexaoRepositorio.buscarConexao(seguidor, seguido) != null;
+        boolean seguidoPor = conexaoRepositorio.buscarConexao(seguido, seguidor) != null;
         seguirUsuario.executar(new SeguirUsuarioComando(body.seguidorId(), body.seguidoId()));
+        if (!jaSeguia && seguidoPor) {
+            pontuacaoServico.concederPontos(seguidor, AcaoPontuada.CONVIDAR_AMIGO,
+                    estrategias.obter(AcaoPontuada.CONVIDAR_AMIGO));
+            pontuacaoServico.concederPontos(seguido, AcaoPontuada.CONVIDAR_AMIGO,
+                    estrategias.obter(AcaoPontuada.CONVIDAR_AMIGO));
+        }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

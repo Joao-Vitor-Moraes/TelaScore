@@ -4,24 +4,40 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.meta.Resultado
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.Meta;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.NotificacaoMetaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.AcaoPontuada;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.EstrategiaPontuacaoProvider;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.Pontos;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.PontuacaoServico;
 
 public class AtualizadorMetaComNotificacao extends AtualizadorMetaTemplate {
     private final NotificacaoMetaRepositorio notificacoes;
+    private final PontuacaoServico pontuacao;
+    private final EstrategiaPontuacaoProvider estrategias;
 
     public AtualizadorMetaComNotificacao(MetaRepositorio metaRepositorio,
-            NotificacaoMetaRepositorio notificacoes) {
+            NotificacaoMetaRepositorio notificacoes,
+            PontuacaoServico pontuacao,
+            EstrategiaPontuacaoProvider estrategias) {
         super(metaRepositorio);
         this.notificacoes = notificacoes;
+        this.pontuacao = pontuacao;
+        this.estrategias = estrategias;
     }
 
     @Override
     protected ResultadoAtualizacaoMeta executarEfeitoColateral(Meta meta, boolean concluiuAgora) {
         String mensagem;
+        int pontosGanhos = 0;
 
         if (concluiuAgora) {
             meta.marcarPontosConcedidos();
+            Pontos pontos = pontuacao.concederPontos(
+                    meta.getUsuarioId(),
+                    AcaoPontuada.COMPLETAR_META,
+                    estrategias.obter(AcaoPontuada.COMPLETAR_META));
+            pontosGanhos = pontos.getQuantidade();
             if (meta.isNotificacaoAtiva()) {
-                notificacoes.criar(meta.getUsuarioId(), meta.getId(), meta.getTitulo());
+                notificacoes.criar(meta.getUsuarioId(), meta.getId(), meta.getTitulo(), pontosGanhos);
             }
             mensagem = "Meta concluida: " + meta.getTitulo() + ".";
         } else {
@@ -37,7 +53,7 @@ public class AtualizadorMetaComNotificacao extends AtualizadorMetaTemplate {
                 meta.getQuantidadeAlvo(),
                 meta.getStatus().name(),
                 mensagem,
-                0,
+                pontosGanhos,
                 0);
     }
 }

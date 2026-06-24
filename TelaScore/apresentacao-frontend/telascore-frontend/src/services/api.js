@@ -252,7 +252,7 @@ export const amigoService = {
   buscarPorApelido: (apelido) => request('GET', `/api/identidade/usuario/buscar?apelido=${encodeURIComponent(apelido)}`),
 };
 
-// Recompensas
+// Nivel
 export const recompensaService = {
   consultarTotal: (usuarioId) => request('GET', `/api/recompensas/total?usuarioId=${usuarioId}`),
   listarHistorico: (usuarioId) => request('GET', `/api/recompensas/historico?usuarioId=${usuarioId}`),

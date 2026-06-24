@@ -18,7 +18,7 @@ const links = [
   { label: 'Solicitações', path: '/solicitacoes' },
   { label: 'Denúncias', path: '/denuncias' },
   { label: 'Quizzes', path: '/quiz' },
-  { label: 'Recompensas', path: '/recompensas' },
+  { label: 'Nivel', path: '/recompensas' },
   { label: 'Mensagens', path: '/mensagens' },
 ];
 

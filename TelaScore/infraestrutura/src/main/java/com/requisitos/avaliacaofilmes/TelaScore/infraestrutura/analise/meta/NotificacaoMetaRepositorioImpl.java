@@ -15,7 +15,7 @@ import jakarta.persistence.EntityTransaction;
 
 public class NotificacaoMetaRepositorioImpl implements NotificacaoMetaRepositorio {
     @Override
-    public void criar(UsuarioId usuarioId, MetaId metaId, String tituloMeta) {
+    public void criar(UsuarioId usuarioId, MetaId metaId, String tituloMeta, int pontosGanhos) {
         EntityManager em = ConexaoBanco.obterEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -24,7 +24,7 @@ public class NotificacaoMetaRepositorioImpl implements NotificacaoMetaRepositori
             entity.setUsuarioId(usuarioId.getId());
             entity.setMetaId(metaId.getId());
             entity.setTituloMeta(tituloMeta);
-            entity.setPontosGanhos(0);
+            entity.setPontosGanhos(pontosGanhos);
             entity.setDataCriacao(LocalDateTime.now());
             entity.setLida(false);
             em.persist(entity);

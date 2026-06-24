@@ -63,7 +63,7 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdRegistroPontuacao() {
-        throw new UnsupportedOperationException("Geracao de ID de registro de pontuacao nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(id) FROM registro_pontuacao");
     }
 
     @Override

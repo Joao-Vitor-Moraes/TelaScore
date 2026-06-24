@@ -1,233 +1,261 @@
-import { useState, useEffect } from 'react';
-import { FiAward, FiStar, FiZap, FiFilm, FiUsers, FiTarget, FiHelpCircle } from 'react-icons/fi';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  FiAward, FiBarChart2, FiCheckCircle, FiFilm, FiHelpCircle, FiList,
+  FiRefreshCw, FiShield, FiStar, FiTarget, FiTrendingUp, FiUsers, FiZap
+} from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import Navbar from '../../components/Navbar';
 import { recompensaService } from '../../services/api';
 import '../analise/analise.css';
 
-const HISTORICO_MOCK = [
-    { id: 1, acao: 'AVALIAR_FILME', pontos: 100, dataRegistro: '2026-06-18T10:30:00' },
-    { id: 2, acao: 'CONVIDAR_AMIGO', pontos: 300, dataRegistro: '2026-06-17T15:00:00' },
-    { id: 3, acao: 'ACERTAR_QUIZ', pontos: 500, dataRegistro: '2026-06-16T09:00:00' },
-    { id: 4, acao: 'CRIAR_LISTA', pontos: 100, dataRegistro: '2026-06-15T20:00:00' },
-];
-
 const ACOES_INFO = {
-    AVALIAR_FILME:  { label: 'Avaliou um filme',   icone: <FiFilm />,      cor: '#aeb8ff', bg: 'rgba(174,184,255,0.09)' },
-    CONVIDAR_AMIGO: { label: 'Convidou um amigo',  icone: <FiUsers />,     cor: '#65dc82', bg: 'rgba(70,211,105,0.09)'  },
-    ACERTAR_QUIZ:   { label: 'Acertou no quiz',    icone: <FiHelpCircle />,cor: '#f6c969', bg: 'rgba(245,180,60,0.09)'  },
-    CRIAR_LISTA:    { label: 'Criou uma lista',    icone: <FiStar />,      cor: '#ff9f7f', bg: 'rgba(255,130,80,0.09)'  },
-    COMPLETAR_META: { label: 'Completou uma meta', icone: <FiTarget />,    cor: '#ff6975', bg: 'rgba(229,9,20,0.09)'    },
+  AVALIAR_FILME: {
+    label: 'Avaliou um filme',
+    descricao: 'Uma nova nota ou resenha publicada.',
+    pontos: 25,
+    icone: FiFilm,
+    cor: '#8fd7ff'
+  },
+  CRIAR_LISTA: {
+    label: 'Criou uma lista',
+    descricao: 'Organizou filmes em uma lista propria.',
+    pontos: 40,
+    icone: FiList,
+    cor: '#ffb86b'
+  },
+  CONVIDAR_AMIGO: {
+    label: 'Fez uma amizade',
+    descricao: 'Quando duas pessoas passam a se seguir.',
+    pontos: 60,
+    icone: FiUsers,
+    cor: '#72e49a'
+  },
+  ACERTAR_QUIZ: {
+    label: 'Concluiu um quiz',
+    descricao: 'Tentativa aprovada em um desafio.',
+    pontos: 80,
+    icone: FiHelpCircle,
+    cor: '#f6d66f'
+  },
+  COMPLETAR_META: {
+    label: 'Completou uma meta',
+    descricao: 'Meta pessoal ou desafio do sistema finalizado.',
+    pontos: 150,
+    icone: FiTarget,
+    cor: '#ff6f8a'
+  }
 };
 
 const NIVEIS = [
-    { nome: 'Iniciante',    minPontos: 0,    cor: '#aaaab3' },
-    { nome: 'Cinéfilo',     minPontos: 500,  cor: '#aeb8ff' },
-    { nome: 'Crítico',      minPontos: 1500, cor: '#65dc82' },
-    { nome: 'Especialista', minPontos: 3000, cor: '#f6c969' },
-    { nome: 'Lendário',     minPontos: 6000, cor: '#ff6975' },
+  { nome: 'Explorador', minPontos: 0, cor: '#aeb4c4', icone: FiStar },
+  { nome: 'Espectador atento', minPontos: 150, cor: '#8fd7ff', icone: FiFilm },
+  { nome: 'Cinefilo', minPontos: 450, cor: '#72e49a', icone: FiZap },
+  { nome: 'Critico', minPontos: 900, cor: '#f6d66f', icone: FiAward },
+  { nome: 'Curador', minPontos: 1600, cor: '#ff9f7f', icone: FiShield },
+  { nome: 'Lenda TelaScore', minPontos: 2600, cor: '#ff6f8a', icone: FiTrendingUp }
 ];
 
 function calcularNivel(total) {
-    let atual = NIVEIS[0];
-    let proximo = NIVEIS[1];
-    for (let i = NIVEIS.length - 1; i >= 0; i--) {
-        if (total >= NIVEIS[i].minPontos) {
-            atual = NIVEIS[i];
-            proximo = NIVEIS[i + 1] || null;
-            break;
-        }
+  let atual = NIVEIS[0];
+  let proximo = NIVEIS[1];
+  for (let i = NIVEIS.length - 1; i >= 0; i--) {
+    if (total >= NIVEIS[i].minPontos) {
+      atual = NIVEIS[i];
+      proximo = NIVEIS[i + 1] || null;
+      break;
     }
-    return { atual, proximo };
-}
-
-function formatarAcao(acao) {
-    return ACOES_INFO[acao] || { label: acao, icone: <FiZap />, cor: '#d0d0d7', bg: 'rgba(255,255,255,0.06)' };
+  }
+  return { atual, proximo };
 }
 
 function formatarData(valor) {
-    if (!valor) return '';
-    const data = new Date(valor);
-    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).format(data);
+  if (!valor) return '';
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return '';
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(data);
+}
+
+function infoDaAcao(acao) {
+  return ACOES_INFO[acao] || {
+    label: acao,
+    descricao: 'Atividade concluida no TelaScore.',
+    pontos: 0,
+    icone: FiCheckCircle,
+    cor: '#d6d8e4'
+  };
 }
 
 export default function Recompensas() {
-    const { sessao } = useAuth();
-    const [totalPontos, setTotalPontos] = useState(0);
-    const [historico, setHistorico] = useState([]);
-    const [carregando, setCarregando] = useState(true);
+  const { sessao } = useAuth();
+  const [totalPontos, setTotalPontos] = useState(0);
+  const [historico, setHistorico] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState('');
 
-    useEffect(() => {
-        async function carregar() {
-            setCarregando(true);
-            try {
-                const [total, lista] = await Promise.all([
-                    recompensaService.consultarTotal(sessao?.id),
-                    recompensaService.listarHistorico(sessao?.id),
-                ]);
-                setTotalPontos(total || 0);
-                setHistorico(lista?.length > 0 ? lista : HISTORICO_MOCK);
-            } catch (error) {
-                console.error('Erro ao carregar recompensas:', error);
-                setTotalPontos(1000);
-                setHistorico(HISTORICO_MOCK);
-            } finally {
-                setCarregando(false);
-            }
-        }
-        if (sessao?.id) carregar();
-    }, [sessao]);
+  const carregar = useCallback(async () => {
+    if (!sessao?.id) return;
+    setCarregando(true);
+    setErro('');
+    try {
+      const [total, lista] = await Promise.all([
+        recompensaService.consultarTotal(sessao.id),
+        recompensaService.listarHistorico(sessao.id),
+      ]);
+      setTotalPontos(Number(total) || 0);
+      setHistorico(Array.isArray(lista) ? lista : []);
+    } catch {
+      setTotalPontos(0);
+      setHistorico([]);
+      setErro('Nao foi possivel carregar seu progresso agora.');
+    } finally {
+      setCarregando(false);
+    }
+  }, [sessao?.id]);
 
-    const { atual: nivelAtual, proximo: nivelProximo } = calcularNivel(totalPontos);
-    const progressoNivel = nivelProximo
-        ? Math.min(((totalPontos - nivelAtual.minPontos) / (nivelProximo.minPontos - nivelAtual.minPontos)) * 100, 100)
-        : 100;
+  useEffect(() => {
+    carregar();
+  }, [carregar]);
 
-    return (
-        <div className="analysis-page">
-            <Navbar />
-            <main className="goals-container" style={{ margin: '0 auto', paddingTop: '28px' }}>
+  const { atual: nivelAtual, proximo: nivelProximo } = calcularNivel(totalPontos);
+  const IconeNivel = nivelAtual.icone;
+  const progressoNivel = nivelProximo
+    ? Math.min(((totalPontos - nivelAtual.minPontos) / (nivelProximo.minPontos - nivelAtual.minPontos)) * 100, 100)
+    : 100;
+  const faltam = nivelProximo ? Math.max(nivelProximo.minPontos - totalPontos, 0) : 0;
 
-                {/* Cabeçalho */}
-                <div className="goals-heading" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <p style={{ color: 'var(--brand)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>
-                        Seu Progresso
-                    </p>
-                    <h2 className="page-title" style={{ fontSize: '32px', margin: '0 0 10px 0' }}>
-                        Recompensas
-                    </h2>
-                    <p className="page-description">
-                        Ganhe pontos assistindo filmes, completando metas e interagindo com a comunidade.
-                    </p>
+  const pontosRecentes = useMemo(() => {
+    const seteDias = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return historico
+      .filter(item => new Date(item.dataRegistro).getTime() >= seteDias)
+      .reduce((total, item) => total + (Number(item.pontos) || 0), 0);
+  }, [historico]);
+
+  const acoesUnicas = useMemo(() => new Set(historico.map(item => item.acao)).size, [historico]);
+
+  return (
+    <div className="analysis-page level-page">
+      <Navbar />
+      <main className="goals-container level-shell">
+        <section className="level-hero">
+          <div className="level-hero__content">
+            <p className="page-eyebrow">Progresso</p>
+            <h1 className="page-title">Nivel TelaScore</h1>
+            <p className="page-description">
+              Seu nivel cresce conforme voce avalia filmes, cria listas, vence quizzes, conclui metas e faz amizades.
+            </p>
+          </div>
+          <button className="goal-deadline-button" onClick={carregar} disabled={carregando}>
+            <FiRefreshCw /> Atualizar
+          </button>
+        </section>
+
+        {erro && <div className="analysis-error">{erro}</div>}
+
+        <section className="level-status">
+          <div className="level-emblem" style={{ '--level-color': nivelAtual.cor }}>
+            <IconeNivel />
+          </div>
+          <div className="level-status__body">
+            <div className="level-status__title">
+              <div>
+                <span>Nivel atual</span>
+                <h2>{nivelAtual.nome}</h2>
+              </div>
+              <strong>{totalPontos.toLocaleString('pt-BR')} pts</strong>
             </div>
+            <div className="level-progress">
+              <div style={{ width: `${progressoNivel}%`, background: `linear-gradient(90deg, ${nivelAtual.cor}, ${nivelProximo?.cor || nivelAtual.cor})` }} />
+            </div>
+            <p>
+              {nivelProximo
+                ? `Faltam ${faltam.toLocaleString('pt-BR')} pontos para ${nivelProximo.nome}.`
+                : 'Voce chegou ao maior nivel disponivel.'}
+            </p>
+          </div>
+        </section>
 
-                {/* Cards de resumo */}
-                <div className="goals-summary" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginTop: '30px' }}>
-                    <div className="goals-summary__item goals-summary__item--points">
-                        <FiAward size={39} />
-                        <div>
-                            <strong>{totalPontos.toLocaleString('pt-BR')}</strong>
-                            <span>Pontos totais</span>
-                        </div>
-                    </div>
-                    <div className="goals-summary__item">
-                        <FiZap size={39} />
-                        <div>
-                            <strong style={{ color: nivelAtual.cor }}>{nivelAtual.nome}</strong>
-                            <span>Nível atual</span>
-                        </div>
-                    </div>
-                    <div className="goals-summary__item">
-                        <FiStar size={39} />
-                        <div>
-                            <strong>{historico.length}</strong>
-                            <span>Ações realizadas</span>
-                        </div>
-                    </div>
-                </div>
+        <section className="level-summary">
+          <article>
+            <FiAward />
+            <strong>{totalPontos.toLocaleString('pt-BR')}</strong>
+            <span>Pontos totais</span>
+          </article>
+          <article>
+            <FiBarChart2 />
+            <strong>{historico.length}</strong>
+            <span>Atividades pontuadas</span>
+          </article>
+          <article>
+            <FiTrendingUp />
+            <strong>{pontosRecentes.toLocaleString('pt-BR')}</strong>
+            <span>Pontos nos ultimos 7 dias</span>
+          </article>
+          <article>
+            <FiCheckCircle />
+            <strong>{acoesUnicas}</strong>
+            <span>Tipos de conquista</span>
+          </article>
+        </section>
 
-                {/* Card de nível */}
-                <div className="goal-card" style={{ marginTop: '24px', minHeight: 'auto' }}>
-                    <div className="goal-card__top">
-                        <div className="goal-card__icon" style={{ color: nivelAtual.cor, background: `${nivelAtual.cor}18` }}>
-                            <FiAward />
-                        </div>
-                        <div className="system-goal-pill" style={{ color: nivelAtual.cor }}>
-                            {nivelAtual.nome}
-                        </div>
-                    </div>
-                    <div className="goal-card__content">
-                        <h2 style={{ margin: '0 0 16px' }}>
-                            {nivelProximo ? `Próximo nível: ${nivelProximo.nome}` : 'Nível máximo atingido!'}
-                        </h2>
-                        <div className="goal-card__progress-label">
-                            <span>{totalPontos.toLocaleString('pt-BR')} pts</span>
-                            <strong>{nivelProximo ? `${nivelProximo.minPontos.toLocaleString('pt-BR')} pts` : '🏆'}</strong>
-                        </div>
-                        <div className="goal-card__track">
-                            <div style={{ width: `${progressoNivel}%`, background: `linear-gradient(90deg, ${nivelAtual.cor}, ${nivelProximo?.cor || nivelAtual.cor})` }} />
-                        </div>
-                        {nivelProximo && (
-                            <p style={{ color: 'var(--muted)', fontSize: '12px', marginTop: '10px' }}>
-                                Faltam <strong style={{ color: 'white' }}>{(nivelProximo.minPontos - totalPontos).toLocaleString('pt-BR')} pontos</strong> para {nivelProximo.nome}
-                            </p>
-                        )}
-                    </div>
-                </div>
+        <section className="level-section">
+          <div className="level-section__heading">
+            <h2>Como subir de nivel</h2>
+            <span>Pontuacao por atividade concluida</span>
+          </div>
+          <div className="level-rule-grid">
+            {Object.entries(ACOES_INFO).map(([acao, info]) => {
+              const Icone = info.icone;
+              return (
+                <article key={acao} style={{ '--rule-color': info.cor }}>
+                  <div><Icone /></div>
+                  <strong>{info.label}</strong>
+                  <p>{info.descricao}</p>
+                  <span>+{info.pontos} pts</span>
+                </article>
+              );
+            })}
+          </div>
+        </section>
 
-                {/* Como ganhar pontos */}
-                <h3 style={{ fontSize: '18px', margin: '36px 0 16px', color: 'white' }}>Como ganhar pontos</h3>
-                <div className="goals-grid">
-                    {Object.entries(ACOES_INFO).map(([chave, info]) => (
-                        <article key={chave} className="goal-card" style={{ minHeight: 'auto', padding: '20px' }}>
-                            <div className="goal-card__top" style={{ marginBottom: '12px' }}>
-                                <div className="goal-card__icon" style={{ color: info.cor, background: info.bg }}>
-                                    {info.icone}
-                                </div>
-                            </div>
-                            <div className="goal-card__content">
-                                <h2 style={{ fontSize: '15px', margin: '0 0 6px' }}>{info.label}</h2>
-                                <p style={{ color: 'var(--muted)', fontSize: '12px', margin: 0 }}>
-                                    {chave === 'COMPLETAR_META' ? (
-                                        <strong style={{ color: info.cor }}>Sem pontos</strong>
-                                    ) : (
-                                        <>+ <strong style={{ color: info.cor }}>
-                                            {chave === 'CONVIDAR_AMIGO' ? '300' : chave === 'ACERTAR_QUIZ' ? '500' : '100'} pts
-                                        </strong></>
-                                    )}
-                                </p>
-                            </div>
-                        </article>
-                    ))}
-                </div>
+        <section className="level-section">
+          <div className="level-section__heading">
+            <h2>Historico</h2>
+            <span>Ultimas atividades que renderam pontos</span>
+          </div>
 
-                {/* Histórico */}
-                <h3 style={{ fontSize: '18px', margin: '36px 0 16px', color: 'white' }}>Histórico de pontos</h3>
-
-                {carregando ? (
-                    <p style={{ color: 'var(--muted)' }}>Carregando...</p>
-                ) : historico.length === 0 ? (
-                    <div className="recommendations-empty">
-                        <FiAward />
-                        <p>Nenhum ponto ganho ainda</p>
-                        <span>Comece avaliando filmes, respondendo quizzes ou convidando amigos.</span>
+          {carregando ? (
+            <div className="recommendations-empty"><FiAward /><p>Carregando progresso...</p></div>
+          ) : historico.length === 0 ? (
+            <div className="level-empty">
+              <FiStar />
+              <h2>Nenhum ponto ainda</h2>
+              <p>Avalie um filme, crie uma lista ou conclua um quiz para iniciar seu nivel.</p>
+            </div>
+          ) : (
+            <div className="level-history">
+              {historico.map(item => {
+                const info = infoDaAcao(item.acao);
+                const Icone = info.icone;
+                return (
+                  <article key={item.id} style={{ '--history-color': info.cor }}>
+                    <div className="level-history__icon"><Icone /></div>
+                    <div>
+                      <strong>{info.label}</strong>
+                      <span>{formatarData(item.dataRegistro)}</span>
                     </div>
-                ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {historico.map(item => {
-                            const info = formatarAcao(item.acao);
-                            return (
-                                <div
-                                    key={item.id}
-                                    style={{
-                                        display: 'flex', alignItems: 'center', gap: '16px',
-                                        padding: '16px 20px', borderRadius: '14px',
-                                        border: '1px solid var(--line)',
-                                        background: 'linear-gradient(145deg, #1b1b22, #101014)',
-                                    }}
-                                >
-                                    <div style={{
-                                        display: 'grid', placeItems: 'center',
-                                        width: '40px', height: '40px', borderRadius: '11px',
-                                        color: info.cor, background: info.bg, flexShrink: 0
-                                    }}>
-                                        {info.icone}
-                                    </div>
-                                    <div style={{ flex: 1 }}>
-                                        <p style={{ margin: 0, fontSize: '14px', fontWeight: 600 }}>{info.label}</p>
-                                        <p style={{ margin: '3px 0 0', fontSize: '12px', color: 'var(--muted)' }}>
-                                            {formatarData(item.dataRegistro)}
-                                        </p>
-                                    </div>
-                                    <strong style={{ color: info.cor, fontSize: '16px', flexShrink: 0 }}>
-                                        +{item.pontos} pts
-                                    </strong>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-            </main>
-        </div>
-    );
+                    <em>+{Number(item.pontos || 0).toLocaleString('pt-BR')} pts</em>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </main>
+    </div>
+  );
 }

@@ -8,6 +8,10 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarFilmeC
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarAvaliacoesPorFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ObterAvaliacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverAvaliacaoCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.AcaoPontuada;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.PontuacaoServico;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recompensa.EstrategiaPontuacaoFactory;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,23 +35,31 @@ public class AvaliacaoController {
     private final AtualizarAvaliacaoCasoDeUso atualizarAvaliacao;
     private final RemoverAvaliacaoCasoDeUso removerAvaliacao;
     private final ListarAvaliacoesPorFilmeCasoDeUso listarPorFilme;
+    private final PontuacaoServico pontuacaoServico;
+    private final EstrategiaPontuacaoFactory estrategias;
 
     public AvaliacaoController(AvaliarFilmeCasoDeUso avaliarFilme,
                                 ObterAvaliacaoCasoDeUso obterAvaliacao,
                                 AtualizarAvaliacaoCasoDeUso atualizarAvaliacao,
                                 RemoverAvaliacaoCasoDeUso removerAvaliacao,
-                                ListarAvaliacoesPorFilmeCasoDeUso listarPorFilme) {
+                                ListarAvaliacoesPorFilmeCasoDeUso listarPorFilme,
+                                PontuacaoServico pontuacaoServico,
+                                EstrategiaPontuacaoFactory estrategias) {
         this.avaliarFilme = avaliarFilme;
         this.obterAvaliacao = obterAvaliacao;
         this.atualizarAvaliacao = atualizarAvaliacao;
         this.removerAvaliacao = removerAvaliacao;
         this.listarPorFilme = listarPorFilme;
+        this.pontuacaoServico = pontuacaoServico;
+        this.estrategias = estrategias;
     }
 
     // POST /avaliacoes
     @PostMapping
     public ResponseEntity<Void> avaliar(@RequestBody AvaliarFilmeComando comando) {
         avaliarFilme.executar(comando);
+        pontuacaoServico.concederPontos(new UsuarioId(comando.usuarioId()), AcaoPontuada.AVALIAR_FILME,
+                estrategias.obter(AcaoPontuada.AVALIAR_FILME));
         return ResponseEntity.status(201).build();
     }
 

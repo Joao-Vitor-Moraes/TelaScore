@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiTarget, FiList, FiArrowLeft, FiCheckCircle, FiClock, FiXCircle, FiUserPlus, FiUserX, FiUsers } from 'react-icons/fi';
+import { FiTarget, FiList, FiArrowLeft, FiAward, FiCheckCircle, FiClock, FiXCircle, FiUserPlus, FiUserX, FiUsers } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
-import { usuarioService, metaService, listaService, amigoService } from '../../services/api';
+import { usuarioService, metaService, listaService, amigoService, recompensaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import './usuario.css';
+
+const NIVEIS_PERFIL = [
+    { nome: 'Explorador', minPontos: 0, cor: '#aeb4c4' },
+    { nome: 'Espectador atento', minPontos: 150, cor: '#8fd7ff' },
+    { nome: 'Cinefilo', minPontos: 450, cor: '#72e49a' },
+    { nome: 'Critico', minPontos: 900, cor: '#f6d66f' },
+    { nome: 'Curador', minPontos: 1600, cor: '#ff9f7f' },
+    { nome: 'Lenda TelaScore', minPontos: 2600, cor: '#ff6f8a' }
+];
 
 export default function PerfilMembro() {
     const { usuarioId } = useParams();
@@ -14,6 +23,7 @@ export default function PerfilMembro() {
     const [perfil, setPerfil] = useState(null);
     const [metas, setMetas] = useState([]);
     const [listas, setListas] = useState([]);
+    const [totalPontos, setTotalPontos] = useState(0);
     const [statusConexao, setStatusConexao] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const [salvandoConexao, setSalvandoConexao] = useState(false);
@@ -28,14 +38,16 @@ export default function PerfilMembro() {
                     usuarioService.obterPorId(usuarioId),
                     metaService.listarPorUsuario(usuarioId),
                     listaService.listarPorUsuario(usuarioId, sessao.id),
+                    recompensaService.consultarTotal(usuarioId).catch(() => 0),
                 ];
                 if (Number(usuarioId) !== Number(sessao.id)) {
                     carregamentos.push(amigoService.status(sessao.id, usuarioId));
                 }
-                const [p, m, l, status] = await Promise.all(carregamentos);
+                const [p, m, l, pontos, status] = await Promise.all(carregamentos);
                 setPerfil(p);
                 setMetas(Array.isArray(m) ? m : []);
                 setListas(Array.isArray(l) ? l : []);
+                setTotalPontos(Number(pontos) || 0);
                 setStatusConexao(status || null);
             } catch {
                 setErro('Não foi possível carregar o perfil deste usuário.');
@@ -95,6 +107,10 @@ export default function PerfilMembro() {
     const inicial = (perfil.apelido || perfil.nome || '?')[0].toUpperCase();
     const perfilDoUsuarioLogado = Number(usuarioId) === Number(sessao.id);
     const papelDescricao = perfil.papel === 'ADMIN' ? 'Administrador' : 'Cinéfilo';
+    const { atual: nivelAtual, proximo: nivelProximo } = calcularNivelPerfil(totalPontos);
+    const progressoNivel = nivelProximo
+        ? Math.min(((totalPontos - nivelAtual.minPontos) / (nivelProximo.minPontos - nivelAtual.minPontos)) * 100, 100)
+        : 100;
 
     return (
         <div className="cinema-page">
@@ -131,8 +147,26 @@ export default function PerfilMembro() {
                             <p style={{ color: 'var(--muted)', fontSize: '13px' }}>{perfil.biografia}</p>
                         )}
                     </div>
-                    {!perfilDoUsuarioLogado && (
-                        <div style={{ display: 'grid', gap: '8px', justifyItems: 'end' }}>
+                    <div style={{ display: 'grid', gap: '10px', justifyItems: 'end', minWidth: '190px' }}>
+                        <div style={{
+                            width: '100%',
+                            padding: '12px',
+                            border: '1px solid var(--line)',
+                            borderRadius: '8px',
+                            background: 'rgba(255,255,255,0.04)'
+                        }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: nivelAtual.cor, fontSize: '12px', fontWeight: 800 }}>
+                                <FiAward /> {nivelAtual.nome}
+                            </span>
+                            <strong style={{ display: 'block', color: 'white', marginTop: '6px', fontSize: '18px' }}>
+                                {totalPontos.toLocaleString('pt-BR')} pts
+                            </strong>
+                            <div style={{ height: '6px', marginTop: '8px', borderRadius: '999px', background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                                <div style={{ width: `${progressoNivel}%`, height: '100%', background: nivelAtual.cor }} />
+                            </div>
+                        </div>
+                        {!perfilDoUsuarioLogado && (
+                            <>
                             {statusConexao?.amigo && (
                                 <span className="user-badge is-user" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                                     <FiUsers /> Amigos
@@ -149,8 +183,9 @@ export default function PerfilMembro() {
                                 {statusConexao?.seguindo ? <FiUserX /> : <FiUserPlus />}
                                 {salvandoConexao ? 'Atualizando...' : statusConexao?.seguindo ? 'Deixar de seguir' : 'Seguir'}
                             </button>
-                        </div>
-                    )}
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 <div className="public-profile-grid">
@@ -231,4 +266,17 @@ export default function PerfilMembro() {
             </main>
         </div>
     );
+}
+
+function calcularNivelPerfil(total) {
+    let atual = NIVEIS_PERFIL[0];
+    let proximo = NIVEIS_PERFIL[1];
+    for (let i = NIVEIS_PERFIL.length - 1; i >= 0; i--) {
+        if (total >= NIVEIS_PERFIL[i].minPontos) {
+            atual = NIVEIS_PERFIL[i];
+            proximo = NIVEIS_PERFIL[i + 1] || null;
+            break;
+        }
+    }
+    return { atual, proximo };
 }

@@ -4,6 +4,15 @@ import Navbar from '../../components/Navbar';
 import { metaService, usuarioService } from '../../services/api';
 import './usuario.css';
 
+const NIVEIS_USUARIO = [
+    { nome: 'Explorador', minPontos: 0, cor: '#aeb4c4' },
+    { nome: 'Espectador atento', minPontos: 150, cor: '#8fd7ff' },
+    { nome: 'Cinefilo', minPontos: 450, cor: '#72e49a' },
+    { nome: 'Critico', minPontos: 900, cor: '#f6d66f' },
+    { nome: 'Curador', minPontos: 1600, cor: '#ff9f7f' },
+    { nome: 'Lenda TelaScore', minPontos: 2600, cor: '#ff6f8a' }
+];
+
 const camposOcultos = new Set(['id', 'senha', 'token', 'tipoToken', 'expiraEmSegundos']);
 
 const rotulos = {
@@ -140,6 +149,10 @@ export default function MeuUsuario() {
     }, [usuario]);
 
     const avatarPreview = editando ? form.avatarUrl : usuario?.avatarUrl;
+    const { atual: nivelAtual, proximo: nivelProximo } = calcularNivelUsuario(totalPontos);
+    const progressoNivel = nivelProximo
+        ? Math.min(((totalPontos - nivelAtual.minPontos) / (nivelProximo.minPontos - nivelAtual.minPontos)) * 100, 100)
+        : 100;
 
     return (
         <div className="cinema-page user-page">
@@ -196,7 +209,10 @@ export default function MeuUsuario() {
                                 )}
                                 <span className="user-points">
                                     <FiAward />
-                                    {totalPontos} pontos
+                                    {nivelAtual.nome} - {totalPontos} pontos
+                                </span>
+                                <span style={{ display: 'block', width: 'min(320px, 100%)', height: '6px', marginTop: '8px', borderRadius: '999px', background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                                    <span style={{ display: 'block', width: `${progressoNivel}%`, height: '100%', background: nivelAtual.cor }} />
                                 </span>
                             </div>
                         </section>
@@ -318,4 +334,17 @@ function formDeUsuario(usuario) {
         biografia: usuario?.biografia ?? '',
         avatarUrl: usuario?.avatarUrl ?? '',
     };
+}
+
+function calcularNivelUsuario(total) {
+    let atual = NIVEIS_USUARIO[0];
+    let proximo = NIVEIS_USUARIO[1];
+    for (let i = NIVEIS_USUARIO.length - 1; i >= 0; i--) {
+        if (total >= NIVEIS_USUARIO[i].minPontos) {
+            atual = NIVEIS_USUARIO[i];
+            proximo = NIVEIS_USUARIO[i + 1] || null;
+            break;
+        }
+    }
+    return { atual, proximo };
 }
