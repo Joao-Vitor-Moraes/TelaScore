@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiBell, FiChevronDown, FiFilm, FiLogOut, FiMenu, FiShield, FiUser, FiX } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
@@ -22,15 +22,37 @@ const links = [
   { label: 'Mensagens', path: '/mensagens' },
 ];
 
+const NAV_SCROLL_KEY = 'telascore:navbar-scroll-left';
+
 export default function Navbar() {
   const [perfilAberto, setPerfilAberto] = useState(false);
   const [mobileAberto, setMobileAberto] = useState(false);
   const [usuario, setUsuario] = useState(null);
   const [notificacoes, setNotificacoes] = useState([]);
   const [notificacoesAbertas, setNotificacoesAbertas] = useState(false);
+  const navRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { sessao, logout } = useAuth();
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return undefined;
+
+    const salvo = Number(window.sessionStorage.getItem(NAV_SCROLL_KEY));
+    if (!Number.isNaN(salvo)) {
+      window.requestAnimationFrame(() => {
+        nav.scrollLeft = salvo;
+      });
+    }
+
+    const guardarPosicao = () => {
+      window.sessionStorage.setItem(NAV_SCROLL_KEY, String(nav.scrollLeft));
+    };
+
+    nav.addEventListener('scroll', guardarPosicao, { passive: true });
+    return () => nav.removeEventListener('scroll', guardarPosicao);
+  }, []);
 
   useEffect(() => {
     let ativo = true;
@@ -98,6 +120,9 @@ export default function Navbar() {
   }, [sessao?.id]);
 
   const navegar = path => {
+    if (navRef.current) {
+      window.sessionStorage.setItem(NAV_SCROLL_KEY, String(navRef.current.scrollLeft));
+    }
     navigate(path);
     setPerfilAberto(false);
     setNotificacoesAbertas(false);
@@ -151,7 +176,7 @@ export default function Navbar() {
             <span className="brand__name">TelaScore</span>
           </button>
 
-          <nav className="desktop-nav">
+          <nav className="desktop-nav" ref={navRef}>
             {links.map(link => {
               const path = link.label === 'Solicitações' ? rotaSolicitacoes : link.path;
               const ativo = location.pathname === path || (path !== '/filmes' && location.pathname.startsWith(`${path}/`));

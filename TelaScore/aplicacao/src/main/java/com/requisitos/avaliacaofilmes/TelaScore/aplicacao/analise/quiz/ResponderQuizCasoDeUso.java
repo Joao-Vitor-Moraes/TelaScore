@@ -20,7 +20,7 @@ public class ResponderQuizCasoDeUso {
         this.quizRepositorio = quizRepositorio;
     }
 
-    public void executar(ResponderQuizComando comando) {
+    public Resultado executar(ResponderQuizComando comando) {
         // 1. Busca o quiz original no repositório
         QuizId quizId = new QuizId(comando.quizId());
         Quiz quiz = quizRepositorio.obter(quizId);
@@ -73,5 +73,9 @@ public class ResponderQuizCasoDeUso {
 
         // 4. Salva a tentativa através do repositório
         quizRepositorio.salvarTentativa(tentativa);
+
+        return new Resultado(contadorAcertos, totalPerguntas, pontuacaoFinal, tentativa.foiAprovado());
     }
+
+    public record Resultado(int acertos, int totalPerguntas, int pontuacao, boolean aprovado) {}
 }

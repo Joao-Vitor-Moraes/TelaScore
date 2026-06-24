@@ -1,519 +1,422 @@
-import { useState, useEffect } from 'react';
-import { FiPlayCircle, FiAward, FiArrowRight, FiRotateCcw, FiHelpCircle, FiCheckCircle, FiXCircle, FiTrash2 } from 'react-icons/fi';
-import { useAuth } from '../../context/AuthContext'; 
+import { useEffect, useMemo, useState } from 'react';
+import {
+  FiAlertCircle, FiArrowLeft, FiArrowRight, FiAward, FiCheckCircle, FiEdit3,
+  FiHelpCircle, FiPlayCircle, FiPlus, FiRefreshCw, FiSearch, FiTrash2, FiX, FiXCircle
+} from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
-import { quizService } from '../../services/api'; // <-- Importando a API!
-import './analise.css'; 
+import { useAuth } from '../../context/AuthContext';
+import { quizService } from '../../services/api';
+import './analise.css';
 
-// DADOS FALSOS (MOCK) - Usado como Plano B se o servidor Java estiver offline
-const QUIZZES_MOCK = [
-    {
-        id: 1,
-        autorId: 1, 
-        titulo: "Mestre do Cinema: Christopher Nolan",
-        descricao: "Você realmente entendeu Interestelar e A Origem? Teste seus neurônios!",
-        perguntas: [ 
-            {
-                enunciado: "Em 'Interestelar', qual é o nome do robô?",
-                alternativas: [
-                    { texto: "JARVIS", correta: false }, { texto: "TARS", correta: true }
-                ]
-            }
-        ]
-    },
-    {
-        id: 2,
-        autorId: 99, 
-        titulo: "Universo Clássico: O Poderoso Chefão",
-        descricao: "Prove que você conhece a família Corleone.",
-        perguntas: [ 
-            {
-                enunciado: "Quem assume a família?",
-                alternativas: [
-                    { texto: "Michael", correta: true }, { texto: "Fredo", correta: false }
-                ]
-            }
-        ]
-    }
-];
+const quizInicial = { titulo: '', descricao: '', perguntas: [] };
+const perguntaInicial = {
+  enunciado: '',
+  alternativas: [
+    { texto: '', correta: true },
+    { texto: '', correta: false }
+  ]
+};
 
 export default function Quiz() {
-    const { sessao } = useAuth();
-    
-    // Estados do Banco de Dados
-    const [listaQuizzes, setListaQuizzes] = useState([]);
-    
-    // Estados do Jogo
-    const [quizAtivo, setQuizAtivo] = useState(null);
-    const [perguntaAtual, setPerguntaAtual] = useState(0);
-    const [respostaSelecionada, setRespostaSelecionada] = useState(null);
-    const [pontuacao, setPontuacao] = useState(0);
-    const [concluido, setConcluido] = useState(false);
-    
-    // Estados de Criação
-    const [modoCriacao, setModoCriacao] = useState(false);
-    const [novoQuiz, setNovoQuiz] = useState({ titulo: '', descricao: '', perguntas: [] });
-    const [criandoPergunta, setCriandoPergunta] = useState(false);
-    const [perguntaEdit, setPerguntaEdit] = useState({ 
-        enunciado: '', 
-        alternativas: [{ texto: '', correta: false }, { texto: '', correta: false }] 
+  const { sessao } = useAuth();
+  const [quizzes, setQuizzes] = useState([]);
+  const [busca, setBusca] = useState('');
+  const [erro, setErro] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [carregando, setCarregando] = useState(true);
+
+  const [modoCriacao, setModoCriacao] = useState(false);
+  const [novoQuiz, setNovoQuiz] = useState(quizInicial);
+  const [perguntaEdit, setPerguntaEdit] = useState(perguntaInicial);
+  const [salvando, setSalvando] = useState(false);
+
+  const [quizAtivo, setQuizAtivo] = useState(null);
+  const [perguntaAtual, setPerguntaAtual] = useState(0);
+  const [respostas, setRespostas] = useState({});
+  const [respostaSelecionada, setRespostaSelecionada] = useState('');
+  const [resultado, setResultado] = useState(null);
+  const [registrandoResultado, setRegistrandoResultado] = useState(false);
+  const [quizParaExcluir, setQuizParaExcluir] = useState(null);
+
+  useEffect(() => {
+    carregarQuizzes();
+  }, []);
+
+  async function carregarQuizzes() {
+    setCarregando(true);
+    try {
+      setErro('');
+      const dados = await quizService.listar();
+      setQuizzes(Array.isArray(dados) ? dados : []);
+    } catch (e) {
+      setErro('Nao foi possivel carregar os quizzes agora.');
+      setQuizzes([]);
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  const quizzesFiltrados = useMemo(() => {
+    const termo = busca.trim().toLowerCase();
+    return quizzes.filter(quiz => {
+      if (!termo) return true;
+      return quiz.titulo?.toLowerCase().includes(termo) || quiz.descricao?.toLowerCase().includes(termo);
     });
+  }, [busca, quizzes]);
 
-    // 1. INTEGRAÇÃO: BUSCAR QUIZZES DO JAVA AO ABRIR A TELA
-    useEffect(() => {
-        async function carregarQuizzes() {
-            try {
-                const dadosServidor = await quizService.listar();
-                setListaQuizzes(dadosServidor && dadosServidor.length > 0 ? dadosServidor : QUIZZES_MOCK);
-            } catch (error) {
-                console.error("Erro ao buscar quizzes do servidor:", error);
-                setListaQuizzes(QUIZZES_MOCK); // Plano B (Fallback)
-            }
-        }
-        carregarQuizzes();
-    }, []);
+  const perguntaValida = perguntaEdit.enunciado.trim()
+    && perguntaEdit.alternativas.length >= 2
+    && perguntaEdit.alternativas.every(alt => alt.texto.trim())
+    && perguntaEdit.alternativas.filter(alt => alt.correta).length === 1;
 
-    const atualizarTextoAlternativa = (index, texto) => {
-        const novasAlt = [...perguntaEdit.alternativas];
-        novasAlt[index].texto = texto;
-        setPerguntaEdit({ ...perguntaEdit, alternativas: novasAlt });
-    };
+  const quizValido = novoQuiz.titulo.trim() && novoQuiz.perguntas.length > 0;
 
-    const marcarComoCorreta = (index) => {
-        const novasAlt = perguntaEdit.alternativas.map((alt, i) => ({
-            ...alt, correta: i === index
-        }));
-        setPerguntaEdit({ ...perguntaEdit, alternativas: novasAlt });
-    };
+  function alterarAlternativa(index, texto) {
+    setPerguntaEdit({
+      ...perguntaEdit,
+      alternativas: perguntaEdit.alternativas.map((alt, i) => i === index ? { ...alt, texto } : alt)
+    });
+  }
 
-    const adicionarAlternativa = () => {
-        setPerguntaEdit({ ...perguntaEdit, alternativas: [...perguntaEdit.alternativas, { texto: '', correta: false }] });
-    };
+  function marcarCorreta(index) {
+    setPerguntaEdit({
+      ...perguntaEdit,
+      alternativas: perguntaEdit.alternativas.map((alt, i) => ({ ...alt, correta: i === index }))
+    });
+  }
 
-    const salvarPerguntaNova = () => {
-        setNovoQuiz({ ...novoQuiz, perguntas: [...novoQuiz.perguntas, perguntaEdit] });
-        setCriandoPergunta(false);
-        setPerguntaEdit({ enunciado: '', alternativas: [{ texto: '', correta: false }, { texto: '', correta: false }] });
-    };
+  function adicionarAlternativa() {
+    setPerguntaEdit({
+      ...perguntaEdit,
+      alternativas: [...perguntaEdit.alternativas, { texto: '', correta: false }]
+    });
+  }
 
-    const temMaisDeUmaAlternativa = perguntaEdit.alternativas.length > 1;
-    const temAlternativaCorreta = perguntaEdit.alternativas.some(alt => alt.correta);
-    const todasTemTexto = perguntaEdit.alternativas.every(alt => alt.texto.trim() !== '') && perguntaEdit.enunciado.trim() !== '';
-    const perguntaValida = temMaisDeUmaAlternativa && temAlternativaCorreta && todasTemTexto;
+  function removerAlternativa(index) {
+    const alternativas = perguntaEdit.alternativas.filter((_, i) => i !== index);
+    const temCorreta = alternativas.some(alt => alt.correta);
+    setPerguntaEdit({
+      ...perguntaEdit,
+      alternativas: alternativas.map((alt, i) => ({ ...alt, correta: temCorreta ? alt.correta : i === 0 }))
+    });
+  }
 
-    // 2. INTEGRAÇÃO: ENVIAR QUIZ NOVO PRO JAVA
-    const finalizarPublicacao = async () => {
-        const payload = {
-            titulo: novoQuiz.titulo,
-            descricao: novoQuiz.descricao,
-            perguntas: novoQuiz.perguntas,
-            autorId: sessao?.id || 1 
-        };
-        
-        try {
-            // Tenta salvar no banco de dados real
-            const quizSalvo = await quizService.criar(payload);
-            setListaQuizzes([quizSalvo || { ...payload, id: Date.now() }, ...listaQuizzes]);
-            alert("Quiz publicado com sucesso!"); 
-        } catch (error) {
-            console.error("Erro ao publicar:", error);
-            // Plano B: Salva apenas visualmente na tela se o servidor falhar
-            setListaQuizzes([{ ...payload, id: Date.now() }, ...listaQuizzes]);
-            alert("Aviso: O quiz foi criado apenas localmente pois o servidor falhou.");
-        }
-        
-        setModoCriacao(false);
-        setNovoQuiz({ titulo: '', descricao: '', perguntas: [] });
-    };
+  function adicionarPergunta() {
+    if (!perguntaValida) return;
+    setNovoQuiz({ ...novoQuiz, perguntas: [...novoQuiz.perguntas, perguntaEdit] });
+    setPerguntaEdit(perguntaInicial);
+  }
 
-    // 3. INTEGRAÇÃO: DELETAR DO JAVA
-    const deletarQuiz = async (idQuizParaDeletar) => {
-        if (window.confirm("Tem certeza que deseja excluir este quiz? Esta ação não poderá ser desfeita.")) {
-            try {
-                await quizService.remover(idQuizParaDeletar);
-                setListaQuizzes(listaQuizzes.filter(quiz => quiz.id !== idQuizParaDeletar));
-            } catch (error) {
-                console.error("Erro ao deletar:", error);
-                // Plano B: Deleta visualmente mesmo se der erro no servidor
-                setListaQuizzes(listaQuizzes.filter(quiz => quiz.id !== idQuizParaDeletar));
-            }
-        }
-    };
+  function removerPergunta(index) {
+    setNovoQuiz({ ...novoQuiz, perguntas: novoQuiz.perguntas.filter((_, i) => i !== index) });
+  }
 
-    const iniciarQuiz = (quiz) => {
-        setQuizAtivo(quiz);
-        setPerguntaAtual(0);
-        setRespostaSelecionada(null);
-        setPontuacao(0);
-        setConcluido(false);
-    };
+  async function publicarQuiz() {
+    if (!quizValido) return;
+    setSalvando(true);
+    try {
+      const criado = await quizService.criar({
+        id: 0,
+        titulo: novoQuiz.titulo.trim(),
+        descricao: novoQuiz.descricao.trim(),
+        perguntas: novoQuiz.perguntas
+      });
+      setQuizzes([criado, ...quizzes]);
+      setNovoQuiz(quizInicial);
+      setPerguntaEdit(perguntaInicial);
+      setModoCriacao(false);
+      setFeedback('Quiz publicado com sucesso.');
+    } catch (e) {
+      setErro(e.message || 'Nao foi possivel publicar o quiz.');
+    } finally {
+      setSalvando(false);
+    }
+  }
 
-    const responder = (indexAlternativa, isCorreta) => {
-        setRespostaSelecionada(indexAlternativa);
-        if (isCorreta) setPontuacao(pontuacao + 1);
-    };
+  async function confirmarExclusao() {
+    if (!quizParaExcluir) return;
+    try {
+      await quizService.remover(quizParaExcluir.id);
+      setQuizzes(quizzes.filter(quiz => quiz.id !== quizParaExcluir.id));
+      setQuizParaExcluir(null);
+      setFeedback('Quiz removido.');
+    } catch (e) {
+      setErro(e.message || 'Nao foi possivel remover o quiz.');
+    }
+  }
 
-    const proximaPergunta = () => {
-        const proximoIndex = perguntaAtual + 1;
-        if (proximoIndex < quizAtivo.perguntas.length) {
-            setPerguntaAtual(proximoIndex);
-            setRespostaSelecionada(null);
-        } else {
-            setConcluido(true);
-        }
-    };
+  function iniciarQuiz(quiz) {
+    setQuizAtivo(quiz);
+    setPerguntaAtual(0);
+    setRespostaSelecionada('');
+    setRespostas({});
+    setResultado(null);
+    setErro('');
+    setFeedback('');
+  }
 
-    const progressoAtual = quizAtivo ? (perguntaAtual / quizAtivo.perguntas.length) * 100 : 0;
+  function escolherResposta(texto) {
+    const pergunta = quizAtivo.perguntas[perguntaAtual];
+    setRespostaSelecionada(texto);
+    setRespostas({ ...respostas, [pergunta.enunciado]: texto });
+  }
 
-    return (
-        <div className="analysis-page">
-            <Navbar />
-            <main className="goals-container" style={{ margin: '0 auto' }}>
-                
-                {/* TELA DE LISTAGEM DOS QUIZZES */}
-                {!quizAtivo && !modoCriacao && (
-                    <>
-                        <div className="goals-heading" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div>
-                                <h2 className="page-title" style={{ fontSize: '32px', margin: '0 0 10px 0' }}>Quizzes TelaScore</h2>
-                                <p className="page-description">Escolha um desafio, responda perguntas e teste seu nível cinéfilo!</p>
-                            </div>
-                            <button 
-                                className="goal-deadline-button" 
-                                style={{ background: 'var(--brand)', color: 'white', padding: '12px 24px', fontSize: '15px' }}
-                                onClick={() => setModoCriacao(true)}
-                            >
-                                + Criar Quiz
-                            </button>
-                        </div>
+  async function avancar() {
+    if (!respostaSelecionada) return;
+    const proxima = perguntaAtual + 1;
+    if (proxima < quizAtivo.perguntas.length) {
+      setPerguntaAtual(proxima);
+      setRespostaSelecionada(respostas[quizAtivo.perguntas[proxima].enunciado] || '');
+      return;
+    }
 
-                        <div className="goals-grid" style={{ marginTop: '30px' }}>
-                            {listaQuizzes.map(quiz => (
-                                <article key={quiz.id} className="goal-card">
-                                    <div className="goal-card__top">
-                                        <div className="goal-card__icon">
-                                            <FiHelpCircle />
-                                        </div>
-                                        <div className="system-goal-pill">
-                                            {quiz.perguntas?.length || 0} Perguntas
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="goal-card__content">
-                                        <h2>{quiz.titulo}</h2>
-                                        <p style={{ color: 'var(--muted)', fontSize: '13px', lineHeight: '1.5' }}>
-                                            {quiz.descricao}
-                                        </p>
-                                    </div>
+    setRegistrandoResultado(true);
+    try {
+      const respostaBackend = await quizService.responder(quizAtivo.id, {
+        usuarioId: sessao?.id,
+        respostas
+      });
+      setResultado(respostaBackend);
+    } catch (e) {
+      setErro(e.message || 'Nao foi possivel finalizar sua tentativa agora.');
+    } finally {
+      setRegistrandoResultado(false);
+    }
+  }
 
-                                    <div className="goal-card__actions" style={{ marginTop: '10px' }}>
-                                        <button 
-                                            className="goal-deadline-button" 
-                                            style={{ background: 'var(--brand)', color: 'white', width: '100%', justifyContent: 'center', padding: '12px', fontSize: '14px' }}
-                                            onClick={() => iniciarQuiz(quiz)}
-                                        >
-                                            <FiPlayCircle size={18} /> Jogar Agora
-                                        </button>
+  function voltarLista() {
+    setQuizAtivo(null);
+    setResultado(null);
+    setPerguntaAtual(0);
+    setRespostaSelecionada('');
+    setRespostas({});
+  }
 
-                                        {(sessao?.id === quiz.autorId || sessao?.papel === 'ADMIN') && (
-                                            <button 
-                                                className="goal-deadline-button" 
-                                                style={{ background: 'transparent', color: '#ff6975', border: '1px solid #ff6975', width: '100%', justifyContent: 'center', padding: '12px', fontSize: '14px', marginTop: '10px' }}
-                                                onClick={() => deletarQuiz(quiz.id)}
-                                            >
-                                                <FiTrash2 size={18} /> Excluir Quiz
-                                            </button>
-                                        )}
-                                    </div>
-                                </article>
-                            ))}
-                        </div>
-                    </>
-                )}
+  const pergunta = quizAtivo?.perguntas?.[perguntaAtual];
+  const progresso = quizAtivo ? ((perguntaAtual + (respostaSelecionada ? 1 : 0)) / quizAtivo.perguntas.length) * 100 : 0;
+  const alternativaCorreta = pergunta?.alternativas?.find(alt => alt.correta)?.texto;
+  const podeGerenciar = sessao?.papel === 'ADMIN' || sessao?.papel === 'AUTOR';
 
-                {/* TELA DE CRIAÇÃO DE NOVO QUIZ */}
-                {modoCriacao && !criandoPergunta && (
-                    <div className="goal-card" style={{ maxWidth: '650px', margin: '40px auto' }}>
-                        <div className="goal-card__content">
-                            <h2 style={{ fontSize: '1.5rem', marginBottom: '20px' }}>Novo Quiz</h2>
-                            
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Título do Quiz</label>
-                                    <input 
-                                        type="text" 
-                                        placeholder="Ex: Conhecimentos sobre Harry Potter"
-                                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
-                                        value={novoQuiz.titulo}
-                                        onChange={(e) => setNovoQuiz({...novoQuiz, titulo: e.target.value})}
-                                    />
-                                </div>
+  return (
+    <div className="analysis-page quiz-page">
+      <Navbar />
+      <main className="goals-container quiz-shell">
+        {!quizAtivo && !modoCriacao && (
+          <>
+            <div className="goals-heading quiz-heading">
+              <div>
+                <p className="page-eyebrow">Desafios</p>
+                <h1 className="page-title">Quizzes TelaScore</h1>
+                <p className="page-description">Crie, responda e acompanhe desafios de cinema.</p>
+              </div>
+              {podeGerenciar && (
+                <button className="btn-primary" onClick={() => setModoCriacao(true)}>
+                  <FiPlus /> Criar quiz
+                </button>
+              )}
+            </div>
 
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Descrição (opcional)</label>
-                                    <textarea 
-                                        placeholder="Descreva seu quiz..."
-                                        rows="3"
-                                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: 'white', resize: 'vertical' }}
-                                        value={novoQuiz.descricao}
-                                        onChange={(e) => setNovoQuiz({...novoQuiz, descricao: e.target.value})}
-                                    />
-                                </div>
-                                
-                                <div style={{ border: '2px dashed rgba(255,255,255,0.2)', padding: '20px', borderRadius: '12px', marginTop: '10px' }}>
-                                    {novoQuiz.perguntas.length === 0 ? (
-                                        <div style={{ textAlign: 'center' }}>
-                                            <p style={{ color: 'var(--muted)', marginBottom: '15px' }}>Nenhuma pergunta adicionada ainda.</p>
-                                            <button 
-                                                className="goal-deadline-button" 
-                                                style={{ background: 'white', color: 'black', margin: '0 auto' }}
-                                                onClick={() => setCriandoPergunta(true)}
-                                            >
-                                                + Adicionar Pergunta
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                            {novoQuiz.perguntas.map((p, index) => (
-                                                <div key={index} style={{ background: 'rgba(255,255,255,0.05)', padding: '12px 15px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                                    <strong style={{ color: 'var(--brand)' }}>Pergunta {index + 1}:</strong> {p.enunciado}
-                                                </div>
-                                            ))}
-                                            <button 
-                                                className="goal-deadline-button" 
-                                                style={{ background: 'transparent', border: '1px dashed rgba(255,255,255,0.2)', color: 'white', width: '100%', justifyContent: 'center', marginTop: '10px' }}
-                                                onClick={() => setCriandoPergunta(true)}
-                                            >
-                                                + Adicionar Outra Pergunta
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+            <div className="quiz-toolbar">
+              <label>
+                <FiSearch />
+                <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar por titulo ou descricao..." />
+                {busca && <button onClick={() => setBusca('')}><FiX /></button>}
+              </label>
+              <button className="goal-deadline-button" onClick={carregarQuizzes}><FiRefreshCw /> Atualizar</button>
+            </div>
 
-                        <div className="goal-card__actions" style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
-                            <button 
-                                className="goal-deadline-button" 
-                                style={{ flex: 1, padding: '12px', justifyContent: 'center' }}
-                                onClick={() => setModoCriacao(false)}
-                            >
-                                Cancelar
-                            </button>
-                            <button 
-                                className="goal-deadline-button" 
-                                style={{ flex: 1, padding: '12px', justifyContent: 'center', background: 'var(--brand)', color: 'white', opacity: novoQuiz.perguntas.length === 0 ? 0.5 : 1 }}
-                                disabled={novoQuiz.perguntas.length === 0}
-                                onClick={finalizarPublicacao} 
-                            >
-                                Publicar Quiz
-                            </button>
-                        </div>
-                        {novoQuiz.perguntas.length === 0 && (
-                            <p style={{ textAlign: 'center', color: '#ff6975', fontSize: '12px', marginTop: '15px' }}>
-                                Você precisa adicionar ao menos uma pergunta para publicar.
-                            </p>
-                        )}
+            {erro && <div className="analysis-error">{erro}</div>}
+            {feedback && <div className="analysis-feedback">{feedback}</div>}
+
+            {carregando ? (
+              <div className="recommendations-empty"><FiHelpCircle /><p>Carregando quizzes...</p></div>
+            ) : quizzesFiltrados.length === 0 ? (
+              <div className="quiz-empty">
+                <FiHelpCircle />
+                <h2>Nenhum quiz encontrado</h2>
+                <p>Crie o primeiro desafio para ele aparecer aqui.</p>
+              </div>
+            ) : (
+              <div className="quiz-grid">
+                {quizzesFiltrados.map(quiz => (
+                  <article key={quiz.id} className="quiz-card">
+                    <div className="quiz-card__top">
+                      <span><FiHelpCircle /></span>
+                      <small>{quiz.perguntas?.length || 0} perguntas</small>
                     </div>
-                )}
-
-                {/* TELA DE CRIAÇÃO DE NOVA PERGUNTA */}
-                {modoCriacao && criandoPergunta && (
-                    <div className="goal-card" style={{ maxWidth: '650px', margin: '40px auto' }}>
-                        <div className="goal-card__content">
-                            <button onClick={() => setCriandoPergunta(false)} style={{ background: 'none', border: 'none', color: 'var(--muted)', marginBottom: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                ← Voltar
-                            </button>
-                            <h2 style={{ fontSize: '1.5rem', marginBottom: '20px' }}>Nova Pergunta</h2>
-                            
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Texto da Pergunta</label>
-                                    <input 
-                                        type="text" 
-                                        placeholder="Digite sua pergunta aqui..."
-                                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
-                                        value={perguntaEdit.enunciado}
-                                        onChange={(e) => setPerguntaEdit({...perguntaEdit, enunciado: e.target.value})}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Alternativas</label>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                        {perguntaEdit.alternativas.map((alt, index) => (
-                                            <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.02)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                                <input 
-                                                    type="radio" 
-                                                    name="altCorreta" 
-                                                    checked={alt.correta}
-                                                    onChange={() => marcarComoCorreta(index)}
-                                                    style={{ cursor: 'pointer', width: '18px', height: '18px', accentColor: 'var(--brand)' }}
-                                                />
-                                                <input 
-                                                    type="text" 
-                                                    placeholder={`Alternativa ${index + 1}`}
-                                                    style={{ flex: 1, background: 'transparent', border: 'none', color: 'white', outline: 'none' }}
-                                                    value={alt.texto}
-                                                    onChange={(e) => atualizarTextoAlternativa(index, e.target.value)}
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <button 
-                                        onClick={adicionarAlternativa}
-                                        style={{ background: 'transparent', border: '1px dashed rgba(255,255,255,0.2)', color: 'white', padding: '10px', borderRadius: '8px', width: '100%', marginTop: '10px', cursor: 'pointer' }}
-                                    >
-                                        + Adicionar Alternativa
-                                    </button>
-                                </div>
-
-                                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '8px', marginTop: '10px' }}>
-                                    <p style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '8px' }}>Regras para a pergunta:</p>
-                                    <ul style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '5px', paddingLeft: '20px' }}>
-                                        <li style={{ color: temMaisDeUmaAlternativa ? '#65dc82' : '#ff6975' }}>Deve ter mais de 1 alternativa</li>
-                                        <li style={{ color: temAlternativaCorreta ? '#65dc82' : '#ff6975' }}>Deve ter 1 (apenas uma) alternativa correta</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="goal-card__actions" style={{ marginTop: '20px' }}>
-                            <button 
-                                className="goal-deadline-button" 
-                                style={{ width: '100%', padding: '14px', justifyContent: 'center', background: 'var(--brand)', color: 'white', opacity: perguntaValida ? 1 : 0.5 }}
-                                disabled={!perguntaValida}
-                                onClick={salvarPerguntaNova}
-                            >
-                                Salvar Pergunta
-                            </button>
-                        </div>
+                    <h2>{quiz.titulo}</h2>
+                    <p>{quiz.descricao || 'Sem descricao.'}</p>
+                    <div className="quiz-card__actions">
+                      <button className="btn-primary" onClick={() => iniciarQuiz(quiz)}>
+                        <FiPlayCircle /> Jogar
+                      </button>
+                      {podeGerenciar && (
+                        <button className="quiz-danger-button" onClick={() => setQuizParaExcluir(quiz)}>
+                          <FiTrash2 /> Excluir
+                        </button>
+                      )}
                     </div>
-                )}
+                  </article>
+                ))}
+              </div>
+            )}
+          </>
+        )}
 
-                {/* JOGO EM ANDAMENTO */}
-                {quizAtivo && !concluido && (
-                    <div className="goal-card" style={{ maxWidth: '650px', margin: '40px auto' }}>
-                        
-                        <div className="goal-card__top">
-                            <div className="goal-card__icon">
-                                <FiHelpCircle />
-                            </div>
-                            <div className="system-goal-pill">
-                                PERGUNTA {perguntaAtual + 1} DE {quizAtivo.perguntas.length}
-                            </div>
-                        </div>
+        {modoCriacao && (
+          <section className="quiz-builder">
+            <div className="quiz-builder__header">
+              <button className="goal-deadline-button" onClick={() => setModoCriacao(false)}><FiArrowLeft /> Voltar</button>
+              <div>
+                <p className="page-eyebrow">Editor</p>
+                <h1 className="page-title">Criar quiz</h1>
+              </div>
+            </div>
 
-                        <div className="goal-card__content">
-                            <div className="goal-card__progress-label">
-                                <span>Progresso do Quiz</span>
-                                <strong>{Math.round(progressoAtual)}%</strong>
-                            </div>
-                            <div className="goal-card__track" style={{ marginBottom: '30px' }}>
-                                <div style={{ width: `${progressoAtual}%` }}></div>
-                            </div>
+            {erro && <div className="analysis-error">{erro}</div>}
 
-                            <h2 style={{ fontSize: '1.4rem', marginBottom: '30px' }}>
-                                {quizAtivo.perguntas[perguntaAtual].enunciado}
-                            </h2>
+            <div className="quiz-builder__grid">
+              <div className="quiz-builder__panel">
+                <label>
+                  <span>Titulo</span>
+                  <input value={novoQuiz.titulo} onChange={e => setNovoQuiz({ ...novoQuiz, titulo: e.target.value })} placeholder="Ex: Cinema dos anos 2000" />
+                </label>
+                <label>
+                  <span>Descricao</span>
+                  <textarea value={novoQuiz.descricao} onChange={e => setNovoQuiz({ ...novoQuiz, descricao: e.target.value })} placeholder="Conte o tema do desafio..." />
+                </label>
+              </div>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                {quizAtivo.perguntas[perguntaAtual].alternativas.map((alt, index) => {
-                                    
-                                    let backgroundBotao = 'rgba(255, 255, 255, .045)';
-                                    let corBorda = 'rgba(255, 255, 255, .13)';
-                                    let icone = null;
+              <div className="quiz-builder__panel">
+                <h2><FiEdit3 /> Nova pergunta</h2>
+                <label>
+                  <span>Enunciado</span>
+                  <input value={perguntaEdit.enunciado} onChange={e => setPerguntaEdit({ ...perguntaEdit, enunciado: e.target.value })} placeholder="Digite a pergunta..." />
+                </label>
 
-                                    if (respostaSelecionada !== null) {
-                                        if (alt.correta) {
-                                            backgroundBotao = 'rgba(70, 211, 105, .09)';
-                                            corBorda = 'rgba(70, 211, 105, .45)';
-                                            icone = <FiCheckCircle color="#65dc82" />;
-                                        } else if (respostaSelecionada === index) {
-                                            backgroundBotao = 'rgba(229, 9, 20, .09)';
-                                            corBorda = 'rgba(229, 9, 20, .45)';
-                                            icone = <FiXCircle color="#ff6975" />;
-                                        }
-                                    }
-
-                                    return (
-                                        <button 
-                                            key={index} 
-                                            disabled={respostaSelecionada !== null}
-                                            onClick={() => responder(index, alt.correta)}
-                                            style={{ 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
-                                                justifyContent: 'space-between',
-                                                padding: '16px 20px', 
-                                                background: backgroundBotao,
-                                                border: `1px solid ${corBorda}`,
-                                                borderRadius: '12px',
-                                                color: 'white',
-                                                cursor: respostaSelecionada === null ? 'pointer' : 'default',
-                                                textAlign: 'left',
-                                                fontSize: '15px',
-                                                transition: 'all 0.2s ease'
-                                            }}
-                                            onMouseOver={(e) => { if(respostaSelecionada === null) e.target.style.background = 'rgba(255, 255, 255, .08)' }}
-                                            onMouseOut={(e) => { if(respostaSelecionada === null) e.target.style.background = backgroundBotao }}
-                                        >
-                                            <span>{alt.texto}</span>
-                                            {icone}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        {respostaSelecionada !== null && (
-                            <div className="goal-card__actions" style={{ marginTop: '30px' }}>
-                                <button 
-                                    className="goal-deadline-button" 
-                                    style={{ background: 'var(--brand)', color: 'white', width: '100%', justifyContent: 'center', padding: '14px', fontSize: '15px' }} 
-                                    onClick={proximaPergunta}
-                                >
-                                    {perguntaAtual + 1 === quizAtivo.perguntas.length ? 'VER RESULTADO' : 'PRÓXIMA PERGUNTA'} <FiArrowRight />
-                                </button>
-                            </div>
-                        )}
+                <div className="quiz-options-editor">
+                  {perguntaEdit.alternativas.map((alt, index) => (
+                    <div key={index} className="quiz-option-edit">
+                      <input type="radio" checked={alt.correta} onChange={() => marcarCorreta(index)} />
+                      <input value={alt.texto} onChange={e => alterarAlternativa(index, e.target.value)} placeholder={`Alternativa ${index + 1}`} />
+                      {perguntaEdit.alternativas.length > 2 && (
+                        <button onClick={() => removerAlternativa(index)}><FiX /></button>
+                      )}
                     </div>
-                )}
+                  ))}
+                </div>
 
-                {/* RESULTADO FINAL */}
-                {concluido && (
-                    <div className="goal-card" style={{ maxWidth: '500px', margin: '40px auto', alignItems: 'center', textAlign: 'center' }}>
-                        
-                        <div className="goal-card__icon" style={{ width: '80px', height: '80px', fontSize: '40px', marginBottom: '20px', color: '#f6c969', background: 'rgba(245, 180, 60, .09)' }}>
-                            <FiAward />
-                        </div>
-                        
-                        <div className="goal-card__content">
-                            <h2>Quiz Concluído!</h2>
-                            <p style={{ color: 'var(--muted)', fontSize: '15px', marginTop: '10px' }}>
-                                Você acertou <strong style={{ color: 'white' }}>{pontuacao}</strong> de <strong style={{ color: 'white' }}>{quizAtivo.perguntas.length}</strong> perguntas.
-                            </p>
-                        </div>
-                        
-                        <div className="goal-card__actions" style={{ justifyContent: 'center', gap: '15px', width: '100%', marginTop: '30px' }}>
-                            <button 
-                                className="goal-deadline-button" 
-                                style={{ flex: 1, justifyContent: 'center', padding: '12px' }} 
-                                onClick={() => { setQuizAtivo(null); setConcluido(false); setPerguntaAtual(0); }}
-                            >
-                                Voltar à lista
-                            </button>
-                            <button 
-                                className="goal-deadline-button" 
-                                style={{ flex: 1, justifyContent: 'center', padding: '12px', background: 'white', color: 'black' }} 
-                                onClick={() => iniciarQuiz(quizAtivo)}
-                            >
-                                <FiRotateCcw /> Jogar de Novo
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </main>
+                <div className="quiz-builder__actions">
+                  <button className="goal-deadline-button" onClick={adicionarAlternativa}><FiPlus /> Alternativa</button>
+                  <button className="btn-primary" disabled={!perguntaValida} onClick={adicionarPergunta}><FiPlus /> Adicionar pergunta</button>
+                </div>
+              </div>
+            </div>
+
+            <section className="quiz-question-list">
+              <div>
+                <h2>Perguntas adicionadas</h2>
+                <small>{novoQuiz.perguntas.length} pergunta(s)</small>
+              </div>
+              {novoQuiz.perguntas.length === 0 ? (
+                <p>Nenhuma pergunta adicionada ainda.</p>
+              ) : novoQuiz.perguntas.map((p, index) => (
+                <article key={`${p.enunciado}-${index}`}>
+                  <strong>{index + 1}. {p.enunciado}</strong>
+                  <button onClick={() => removerPergunta(index)}><FiTrash2 /></button>
+                </article>
+              ))}
+            </section>
+
+            <div className="quiz-publish-bar">
+              <button className="goal-deadline-button" onClick={() => setModoCriacao(false)}>Cancelar</button>
+              <button className="btn-primary" disabled={!quizValido || salvando} onClick={publicarQuiz}>
+                {salvando ? 'Publicando...' : 'Publicar quiz'}
+              </button>
+            </div>
+          </section>
+        )}
+
+        {quizAtivo && !resultado && pergunta && (
+          <section className="quiz-player">
+            <button className="goal-deadline-button" onClick={voltarLista}><FiArrowLeft /> Sair</button>
+            <div className="quiz-player__card">
+              <div className="quiz-player__header">
+                <div>
+                  <p className="page-eyebrow">Pergunta {perguntaAtual + 1} de {quizAtivo.perguntas.length}</p>
+                  <h1>{quizAtivo.titulo}</h1>
+                </div>
+                <span>{Math.round(progresso)}%</span>
+              </div>
+              <div className="goal-card__track"><div style={{ width: `${progresso}%` }} /></div>
+              <h2>{pergunta.enunciado}</h2>
+
+              <div className="quiz-answer-grid">
+                {pergunta.alternativas.map(alt => {
+                  const selecionada = respostaSelecionada === alt.texto;
+                  const revelada = Boolean(respostaSelecionada);
+                  const classe = revelada && alt.correta ? 'is-correct' : revelada && selecionada ? 'is-wrong' : '';
+                  return (
+                    <button key={alt.texto} className={`${selecionada ? 'is-selected' : ''} ${classe}`} disabled={revelada} onClick={() => escolherResposta(alt.texto)}>
+                      <span>{alt.texto}</span>
+                      {revelada && alt.correta && <FiCheckCircle />}
+                      {revelada && selecionada && !alt.correta && <FiXCircle />}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {respostaSelecionada && (
+                <div className="quiz-answer-feedback">
+                  {respostaSelecionada === alternativaCorreta ? <FiCheckCircle /> : <FiAlertCircle />}
+                  <span>{respostaSelecionada === alternativaCorreta ? 'Resposta correta.' : `Resposta correta: ${alternativaCorreta}`}</span>
+                </div>
+              )}
+
+              <button className="btn-primary quiz-next-button" disabled={!respostaSelecionada || registrandoResultado} onClick={avancar}>
+                {registrandoResultado ? 'Registrando...' : perguntaAtual + 1 === quizAtivo.perguntas.length ? 'Ver resultado' : 'Proxima pergunta'} <FiArrowRight />
+              </button>
+            </div>
+          </section>
+        )}
+
+        {quizAtivo && resultado && (
+          <section className="quiz-result">
+            <div className="quiz-result__icon"><FiAward /></div>
+            <p className="page-eyebrow">Resultado registrado</p>
+            <h1>{resultado.aprovado ? 'Mandou bem!' : 'Quase la'}</h1>
+            <p>Voce acertou <strong>{resultado.acertos}</strong> de <strong>{resultado.totalPerguntas}</strong> perguntas.</p>
+            <div className="quiz-result__score">
+              <span>{Math.round(resultado.percentual)}%</span>
+              <small>{resultado.pontuacao} pontos</small>
+            </div>
+            <div className="quiz-result__actions">
+              <button className="goal-deadline-button" onClick={voltarLista}>Voltar para lista</button>
+              <button className="btn-primary" onClick={() => iniciarQuiz(quizAtivo)}><FiRefreshCw /> Jogar de novo</button>
+            </div>
+          </section>
+        )}
+      </main>
+
+      {quizParaExcluir && (
+        <div className="analysis-modal-backdrop" onMouseDown={() => setQuizParaExcluir(null)}>
+          <section className="analysis-modal news-confirm-modal" role="dialog" aria-modal="true" onMouseDown={e => e.stopPropagation()}>
+            <button className="analysis-modal__close" onClick={() => setQuizParaExcluir(null)}><FiX /></button>
+            <div className="analysis-modal__header">
+              <span><FiTrash2 /></span>
+              <div><p className="page-eyebrow">Exclusao</p><h2>Remover quiz?</h2></div>
+            </div>
+            <div className="news-confirm-modal__body">
+              <p>Esse quiz sera apagado permanentemente.</p>
+              <strong>{quizParaExcluir.titulo}</strong>
+            </div>
+            <div className="analysis-modal__footer">
+              <button className="btn-secondary" onClick={() => setQuizParaExcluir(null)}>Cancelar</button>
+              <button className="btn-primary" onClick={confirmarExclusao}>Apagar quiz</button>
+            </div>
+          </section>
         </div>
-    );
+      )}
+    </div>
+  );
 }

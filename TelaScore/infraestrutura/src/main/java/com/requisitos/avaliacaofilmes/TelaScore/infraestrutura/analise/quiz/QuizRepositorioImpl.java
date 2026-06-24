@@ -1,8 +1,16 @@
 package com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz;
 
-import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.*;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.Alternativa;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.Pergunta;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.Quiz;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.TentativaQuiz;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
-import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.*;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.AlternativaEntity;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.PerguntaEntity;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.QuizEntity;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.TentativaQuizEntity;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 
@@ -16,36 +24,13 @@ public class QuizRepositorioImpl implements QuizRepositorio {
     @Override
     public void salvar(Quiz quiz) {
         QuizEntity entity = new QuizEntity();
-        
-        // Define o ID se o quiz já existir no banco (para caso de atualização/merge)
-        if (quiz.getId() != null) {
-            entity.setId(quiz.getId().getId());
-        }
+        entity.setId(quiz.getId().getId());
         entity.setTitulo(quiz.getTitulo());
         entity.setDescricao(quiz.getDescricao());
+        entity.setPerguntas(quiz.getPerguntas().stream()
+                .map(this::mapearPerguntaEntity)
+                .toList());
 
-        // CONVERSÃO: Transforma o Domínio (Quiz -> Pergunta) em Entidades JPA
-        List<PerguntaEntity> perguntasEntities = quiz.getPerguntas().stream().map(pDom -> {
-            PerguntaEntity pEntity = new PerguntaEntity();
-            
-            // AQUI ESTÁ O AJUSTE: Usando getEnunciado() que existe no seu Domínio!
-            pEntity.setTexto(pDom.getEnunciado()); 
-
-            // Transforma as Alternativas do Domínio para Entidades JPA
-            List<AlternativaEntity> alternativasEntities = pDom.getAlternativas().stream().map(aDom -> {
-                AlternativaEntity aEntity = new AlternativaEntity();
-                aEntity.setTexto(aDom.getTexto());
-                aEntity.setCorreta(aDom.isCorreta());
-                return aEntity;
-            }).collect(java.util.stream.Collectors.toList());
-
-            pEntity.setAlternativas(alternativasEntities);
-            return pEntity;
-        }).collect(java.util.stream.Collectors.toList());
-
-        entity.setPerguntas(perguntasEntities);
-
-        // Faz a mágica acontecer no MySQL através do Hibernate nativo do projeto
         entityManager.getTransaction().begin();
         if (entityManager.find(QuizEntity.class, entity.getId()) != null) {
             entityManager.merge(entity);
@@ -56,33 +41,26 @@ public class QuizRepositorioImpl implements QuizRepositorio {
     }
 
     @Override
-    public Quiz obter(QuizId id) { 
+    public Quiz obter(QuizId id) {
         QuizEntity entity = entityManager.find(QuizEntity.class, id.getId());
-        if (entity == null) return null;
-        
-        // Instancia o Quiz usando o construtor exato do seu domínio (id, titulo, descricao)
-        Quiz quiz = new Quiz(
-            new QuizId(entity.getId()),
-            entity.getTitulo(),
-            entity.getDescricao()
-        );
+        return entity == null ? null : mapearDominio(entity);
+    }
 
-        // Reconstroi as perguntas em árvore e injeta usando .adicionarPergunta()
-        entity.getPerguntas().forEach(perguntaEntity -> {
-            List<Alternativa> alternativasDominio = perguntaEntity.getAlternativas().stream().map(altEntity -> {
-                return new Alternativa(altEntity.getTexto(), altEntity.isCorreta());
-            }).collect(java.util.stream.Collectors.toList());
-
-            Pergunta perguntaDominio = new Pergunta(perguntaEntity.getTexto(), alternativasDominio);
-            quiz.adicionarPergunta(perguntaDominio);
-        });
-
-        return quiz;
+    @Override
+    public List<Quiz> listar() {
+        return entityManager.createQuery("SELECT q FROM QuizEntity q ORDER BY q.id DESC", QuizEntity.class)
+                .getResultList()
+                .stream()
+                .map(this::mapearDominio)
+                .toList();
     }
 
     @Override
     public void remover(QuizId id) {
         entityManager.getTransaction().begin();
+        entityManager.createQuery("DELETE FROM TentativaQuizEntity t WHERE t.quizId = :quizId")
+                .setParameter("quizId", id.getId())
+                .executeUpdate();
         QuizEntity entity = entityManager.find(QuizEntity.class, id.getId());
         if (entity != null) {
             entityManager.remove(entity);
@@ -93,11 +71,10 @@ public class QuizRepositorioImpl implements QuizRepositorio {
     @Override
     public void salvarTentativa(TentativaQuiz tentativa) {
         TentativaQuizEntity entity = new TentativaQuizEntity(
-            tentativa.getQuizId().getId(),
-            tentativa.getUsuarioId().getId(),
-            tentativa.getAcertos(),
-            tentativa.getDataTentativa()
-        );
+                tentativa.getQuizId().getId(),
+                tentativa.getUsuarioId().getId(),
+                tentativa.getAcertos(),
+                tentativa.getDataTentativa());
 
         entityManager.getTransaction().begin();
         entityManager.persist(entity);
@@ -107,23 +84,49 @@ public class QuizRepositorioImpl implements QuizRepositorio {
     @Override
     public List<TentativaQuiz> buscarTentativasPorUsuario(UsuarioId usuarioId) {
         List<TentativaQuizEntity> resultados = entityManager.createQuery(
-            "SELECT t FROM TentativaQuizEntity t WHERE t.usuarioId = :usrId ORDER BY t.dataTentativa DESC", 
-            TentativaQuizEntity.class)
-            .setParameter("usrId", usuarioId.getId())
-            .getResultList();
+                "SELECT t FROM TentativaQuizEntity t WHERE t.usuarioId = :usrId ORDER BY t.dataTentativa DESC",
+                TentativaQuizEntity.class)
+                .setParameter("usrId", usuarioId.getId())
+                .getResultList();
 
         return resultados.stream().map(entity -> {
             Long totalPerguntas = entityManager.createQuery(
-                "SELECT COUNT(p) FROM QuizEntity q JOIN q.perguntas p WHERE q.id = :qId", Long.class)
-                .setParameter("qId", entity.getQuizId())
-                .getSingleResult();
+                    "SELECT COUNT(p) FROM QuizEntity q JOIN q.perguntas p WHERE q.id = :qId", Long.class)
+                    .setParameter("qId", entity.getQuizId())
+                    .getSingleResult();
 
             return new TentativaQuiz(
-                new QuizId(entity.getQuizId()),
-                new UsuarioId(entity.getUsuarioId()),
-                entity.getPontuacao(),
-                totalPerguntas.intValue()
-            );
-        }).collect(java.util.stream.Collectors.toList());
+                    new QuizId(entity.getQuizId()),
+                    new UsuarioId(entity.getUsuarioId()),
+                    entity.getPontuacao(),
+                    totalPerguntas.intValue());
+        }).toList();
+    }
+
+    private PerguntaEntity mapearPerguntaEntity(Pergunta pergunta) {
+        PerguntaEntity entity = new PerguntaEntity();
+        entity.setTexto(pergunta.getEnunciado());
+        entity.setAlternativas(pergunta.getAlternativas().stream()
+                .map(this::mapearAlternativaEntity)
+                .toList());
+        return entity;
+    }
+
+    private AlternativaEntity mapearAlternativaEntity(Alternativa alternativa) {
+        AlternativaEntity entity = new AlternativaEntity();
+        entity.setTexto(alternativa.getTexto());
+        entity.setCorreta(alternativa.isCorreta());
+        return entity;
+    }
+
+    private Quiz mapearDominio(QuizEntity entity) {
+        Quiz quiz = new Quiz(new QuizId(entity.getId()), entity.getTitulo(), entity.getDescricao());
+        entity.getPerguntas().forEach(perguntaEntity -> {
+            List<Alternativa> alternativas = perguntaEntity.getAlternativas().stream()
+                    .map(alt -> new Alternativa(alt.getTexto(), alt.isCorreta()))
+                    .toList();
+            quiz.adicionarPergunta(new Pergunta(perguntaEntity.getTexto(), alternativas));
+        });
+        return quiz;
     }
 }

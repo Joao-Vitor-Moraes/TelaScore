@@ -221,6 +221,7 @@ export const quizService = {
   listar: () => request('GET', '/api/quizzes'),
   obter: (id) => request('GET', `/api/quizzes/${id}`),
   criar: (dados) => request('POST', '/api/quizzes', dados),
+  responder: (id, dados) => request('POST', `/api/quizzes/${id}/tentativas`, dados),
   remover: (id) => request('DELETE', `/api/quizzes/${id}`)
 };
 
