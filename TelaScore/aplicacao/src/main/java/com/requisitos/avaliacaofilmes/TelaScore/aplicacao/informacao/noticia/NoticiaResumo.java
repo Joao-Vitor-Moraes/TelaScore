@@ -9,5 +9,8 @@ public record NoticiaResumo(
         int autorId,
         String autorApelido,
         LocalDateTime dataPublicacao,
-        String categoria
+        String categoria,
+        String filmeId,
+        String filmeTitulo,
+        String filmeImagemUrl
 ) {}

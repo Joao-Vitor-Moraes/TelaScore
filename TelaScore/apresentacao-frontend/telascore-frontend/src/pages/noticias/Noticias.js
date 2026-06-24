@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-    FiFileText, FiPlus, FiSearch, FiX, FiClock, FiTag, FiTrash2, FiUser
+    FiFileText, FiPlus, FiSearch, FiX, FiClock, FiTag, FiTrash2, FiUser, FiFilm
 } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
-import { noticiaService, usuarioService } from '../../services/api';
+import { filmeService, noticiaService, usuarioService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Noticias() {
@@ -16,7 +16,13 @@ export default function Noticias() {
 
     const [noticiaAtiva, setNoticiaAtiva] = useState(null);
     const [modalCriarAberto, setModalCriarAberto] = useState(false);
-    const [formCriar, setFormCriar] = useState({ titulo: '', conteudo: '', categoria: 'LANCAMENTO' });
+    const [formCriar, setFormCriar] = useState({ titulo: '', conteudo: '', categoria: 'LANCAMENTO', filmeId: '' });
+    const [filmes, setFilmes] = useState([]);
+    const [buscaFilme, setBuscaFilme] = useState('');
+    const [seletorFilmeAberto, setSeletorFilmeAberto] = useState(false);
+    const [noticiaParaExcluir, setNoticiaParaExcluir] = useState(null);
+    const [filmeEmPainel, setFilmeEmPainel] = useState(null);
+    const [carregandoFilmePainel, setCarregandoFilmePainel] = useState(false);
 
     const [erro, setErro] = useState('');
     const [feedback, setFeedback] = useState('');
@@ -37,6 +43,12 @@ export default function Noticias() {
         }
         verificarPapelNoCarregamento();
     }, [sessao]);
+
+    useEffect(() => {
+        filmeService.listar()
+            .then(lista => setFilmes(Array.isArray(lista) ? lista : []))
+            .catch(() => setFilmes([]));
+    }, []);
 
     const carregarNoticias = useCallback(async () => {
         try {
@@ -70,9 +82,12 @@ export default function Noticias() {
                 autorId: sessao.id,
                 titulo: formCriar.titulo,
                 conteudo: formCriar.conteudo,
-                categoria: formCriar.categoria
+                categoria: formCriar.categoria,
+                filmeId: formCriar.filmeId || null
             });
-            setFormCriar({ titulo: '', conteudo: '', categoria: 'LANCAMENTO' });
+            setFormCriar({ titulo: '', conteudo: '', categoria: 'LANCAMENTO', filmeId: '' });
+            setBuscaFilme('');
+            setSeletorFilmeAberto(false);
             setModalCriarAberto(false);
             setFeedback('Notícia publicada com sucesso no portal!');
             await carregarNoticias();
@@ -83,15 +98,16 @@ export default function Noticias() {
         }
     }
 
-    async function handleExcluirNoticia(id) {
-        if (!window.confirm('Deseja apagar esta publicação permanentemente do sistema?')) return;
+    async function confirmarExcluirNoticia() {
+        if (!noticiaParaExcluir) return;
         try {
-            await noticiaService.remover(id);
-            setFeedback('Publicação removida.');
-            if (noticiaAtiva?.id === id) setNoticiaAtiva(null);
+            await noticiaService.remover(noticiaParaExcluir.id);
+            setFeedback('Publicacao removida.');
+            if (noticiaAtiva?.id === noticiaParaExcluir.id) setNoticiaAtiva(null);
+            setNoticiaParaExcluir(null);
             await carregarNoticias();
         } catch (e) {
-            setErro('Falha ao excluir a notícia.');
+            setErro('Falha ao excluir a noticia.');
         }
     }
 
@@ -110,6 +126,51 @@ export default function Noticias() {
     }
 
     const podeRedigir = papelAtual === 'ADMIN' || papelAtual === 'AUTOR';
+    const termoFilme = buscaFilme.trim().toLowerCase();
+    const filmesFiltrados = filmes
+        .filter(f => {
+            return !termoFilme || f.titulo?.toLowerCase().includes(termoFilme) || String(f.anoLancamento || '').includes(termoFilme);
+        })
+        .sort((a, b) => (a.titulo || '').localeCompare(b.titulo || '', 'pt-BR'));
+    const filmeSelecionado = filmes.find(f => String(f.id) === String(formCriar.filmeId));
+
+    function selecionarFilme(filme) {
+        setFormCriar({ ...formCriar, filmeId: String(filme.id) });
+        setBuscaFilme(`${filme.titulo}${filme.anoLancamento ? ` (${filme.anoLancamento})` : ''}`);
+        setSeletorFilmeAberto(false);
+    }
+
+    function limparFilmeSelecionado() {
+        setFormCriar({ ...formCriar, filmeId: '' });
+        setBuscaFilme('');
+        setSeletorFilmeAberto(true);
+    }
+
+    async function abrirPainelFilme(noticia) {
+        if (!noticia?.filmeId) return;
+        setCarregandoFilmePainel(true);
+        setFilmeEmPainel({
+            id: noticia.filmeId,
+            titulo: noticia.filmeTitulo,
+            imagemUrl: noticia.filmeImagemUrl
+        });
+        try {
+            const detalhes = await filmeService.obter(noticia.filmeId);
+            setFilmeEmPainel(detalhes || {
+                id: noticia.filmeId,
+                titulo: noticia.filmeTitulo,
+                imagemUrl: noticia.filmeImagemUrl
+            });
+        } catch (e) {
+            setFilmeEmPainel({
+                id: noticia.filmeId,
+                titulo: noticia.filmeTitulo,
+                imagemUrl: noticia.filmeImagemUrl
+            });
+        } finally {
+            setCarregandoFilmePainel(false);
+        }
+    }
 
     return (
         <div className="cinema-page">
@@ -162,10 +223,15 @@ export default function Noticias() {
                                                 <span><FiUser /> @{n.autorApelido || `Autor #${n.autorId}`}</span>
                                                 <span><FiClock /> {formatarData(n.dataPublicacao)}</span>
                                             </small>
+                                            {n.filmeTitulo && (
+                                                <button type="button" className="news-movie-pill" onClick={(e) => { e.stopPropagation(); abrirPainelFilme(n); }}>
+                                                    <FiFilm size={12} /> {n.filmeTitulo}
+                                                </button>
+                                            )}
                                         </div>
                                         {(sessao.id === n.autorId || papelAtual === 'ADMIN') && (
                                             <div className="admin-actions">
-                                                <button className="recommend-reject" style={{ padding: '8px' }} onClick={() => handleExcluirNoticia(n.id)}>
+                                                <button className="recommend-reject" style={{ padding: '8px' }} onClick={() => setNoticiaParaExcluir(n)}>
                                                     <FiTrash2 />
                                                 </button>
                                             </div>
@@ -195,6 +261,18 @@ export default function Noticias() {
                             <p style={{ fontSize: '15px', lineHeight: '1.6', color: 'rgba(255,255,255,0.85)', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                                 {noticiaAtiva.conteudo}
                             </p>
+                            {noticiaAtiva.filmeTitulo && (
+                                <button type="button" className="news-movie-preview" onClick={() => abrirPainelFilme(noticiaAtiva)}>
+                                    {noticiaAtiva.filmeImagemUrl && (
+                                        <img src={noticiaAtiva.filmeImagemUrl} alt="" />
+                                    )}
+                                    <div>
+                                        <span className="page-eyebrow" style={{ fontSize: '10px' }}>Filme mencionado</span>
+                                        <h3 style={{ margin: '4px 0 0', fontSize: '15px' }}>{noticiaAtiva.filmeTitulo}</h3>
+                                        <small>Ver detalhes do filme</small>
+                                    </div>
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>
@@ -224,6 +302,57 @@ export default function Noticias() {
                                     </select>
                                 </label>
                             </div>
+                            <label className="movie-combobox-label">
+                                <span>Filme mencionado</span>
+                                <div className="movie-combobox">
+                                    <FiSearch className="movie-combobox__icon" />
+                                    <input
+                                        placeholder="Digite para procurar ou escolha um filme..."
+                                        value={buscaFilme}
+                                        onFocus={() => setSeletorFilmeAberto(true)}
+                                        onBlur={() => setTimeout(() => setSeletorFilmeAberto(false), 120)}
+                                        onChange={e => {
+                                            setBuscaFilme(e.target.value);
+                                            setFormCriar({ ...formCriar, filmeId: '' });
+                                            setSeletorFilmeAberto(true);
+                                        }}
+                                    />
+                                    {(buscaFilme || formCriar.filmeId) && (
+                                        <button type="button" className="movie-combobox__clear" onMouseDown={e => e.preventDefault()} onClick={limparFilmeSelecionado}>
+                                            <FiX />
+                                        </button>
+                                    )}
+                                    {seletorFilmeAberto && (
+                                        <div className="movie-combobox__menu">
+                                            <button type="button" className={!formCriar.filmeId ? 'is-selected' : ''} onMouseDown={e => e.preventDefault()} onClick={() => {
+                                                setFormCriar({ ...formCriar, filmeId: '' });
+                                                setBuscaFilme('');
+                                                setSeletorFilmeAberto(false);
+                                            }}>
+                                                <span>Nenhum filme mencionado</span>
+                                            </button>
+                                            {filmesFiltrados.map(filme => (
+                                                <button
+                                                    type="button"
+                                                    key={filme.id}
+                                                    className={String(formCriar.filmeId) === String(filme.id) ? 'is-selected' : ''}
+                                                    onMouseDown={e => e.preventDefault()}
+                                                    onClick={() => selecionarFilme(filme)}
+                                                >
+                                                    <span>{filme.titulo}</span>
+                                                    {filme.anoLancamento && <small>{filme.anoLancamento}</small>}
+                                                </button>
+                                            ))}
+                                            {filmesFiltrados.length === 0 && (
+                                                <p>Nenhum filme encontrado.</p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                                <small className="movie-combobox__hint">
+                                    {filmeSelecionado ? `Selecionado: ${filmeSelecionado.titulo}` : `${filmes.length} filmes disponiveis para mencionar`}
+                                </small>
+                            </label>
                             <label>
                                 <span>Corpo da Notícia</span>
                                 <textarea style={{ background: '#151518', color: '#fff', border: '1px solid var(--line)', borderRadius: '8px', padding: '12px', minHeight: '180px', fontFamily: 'inherit', resize: 'vertical' }} placeholder="Escreva o conteúdo integral da matéria aqui..." value={formCriar.conteudo} onChange={e => setFormCriar({ ...formCriar, conteudo: e.target.value })} required />
@@ -233,6 +362,65 @@ export default function Noticias() {
                                 <button className="btn-primary" disabled={carregando}>{carregando ? 'Publicando...' : 'Publicar Matéria'}</button>
                             </div>
                         </form>
+                    </section>
+                </div>
+            )}
+
+            {noticiaParaExcluir && (
+                <div className="analysis-modal-backdrop" onMouseDown={() => setNoticiaParaExcluir(null)}>
+                    <section className="analysis-modal news-confirm-modal" role="dialog" aria-modal="true" onMouseDown={e => e.stopPropagation()}>
+                        <button className="analysis-modal__close" onClick={() => setNoticiaParaExcluir(null)}><FiX /></button>
+                        <div className="analysis-modal__header">
+                            <span><FiTrash2 /></span>
+                            <div>
+                                <p className="page-eyebrow">Exclusao</p>
+                                <h2>Remover noticia?</h2>
+                            </div>
+                        </div>
+                        <div className="news-confirm-modal__body">
+                            <p>Essa publicacao sera apagada permanentemente do mural.</p>
+                            <strong>{noticiaParaExcluir.titulo}</strong>
+                        </div>
+                        <div className="analysis-modal__footer">
+                            <button type="button" className="btn-secondary" onClick={() => setNoticiaParaExcluir(null)}>Cancelar</button>
+                            <button type="button" className="btn-primary" onClick={confirmarExcluirNoticia}>Apagar noticia</button>
+                        </div>
+                    </section>
+                </div>
+            )}
+
+            {filmeEmPainel && (
+                <div className="analysis-modal-backdrop" onMouseDown={() => setFilmeEmPainel(null)}>
+                    <section className="analysis-modal news-film-panel" role="dialog" aria-modal="true" onMouseDown={e => e.stopPropagation()}>
+                        <button className="analysis-modal__close" onClick={() => setFilmeEmPainel(null)}><FiX /></button>
+                        <div className="news-film-panel__poster">
+                            {filmeEmPainel.imagemUrl ? (
+                                <img src={filmeEmPainel.imagemUrl} alt="" />
+                            ) : (
+                                <div><FiFilm /></div>
+                            )}
+                        </div>
+                        <div className="news-film-panel__content">
+                            <p className="page-eyebrow">Filme mencionado</p>
+                            <h2>{filmeEmPainel.titulo}</h2>
+                            <div className="news-film-panel__meta">
+                                {filmeEmPainel.anoLancamento && <span>{filmeEmPainel.anoLancamento}</span>}
+                                {filmeEmPainel.nomeDiretor && <span>{filmeEmPainel.nomeDiretor}</span>}
+                                {Number(filmeEmPainel.mediaNotas) > 0 && <span>Nota {Number(filmeEmPainel.mediaNotas).toFixed(1)}</span>}
+                            </div>
+                            {Array.isArray(filmeEmPainel.generos) && filmeEmPainel.generos.length > 0 && (
+                                <div className="news-film-panel__genres">
+                                    {filmeEmPainel.generos.map(genero => <span key={genero}>{genero}</span>)}
+                                </div>
+                            )}
+                            {carregandoFilmePainel ? (
+                                <p className="news-film-panel__loading">Carregando detalhes do filme...</p>
+                            ) : (
+                                <p className="news-film-panel__synopsis">
+                                    {filmeEmPainel.sinopse || 'Sem sinopse cadastrada para este filme.'}
+                                </p>
+                            )}
+                        </div>
                     </section>
                 </div>
             )}

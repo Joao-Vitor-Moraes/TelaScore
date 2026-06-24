@@ -1,5 +1,6 @@
 package com.requisitos.avaliacaofilmes.TelaScore.aplicacao.informacao.noticia;
 
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.GeradorId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.CategoriaNoticia;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.Noticia;
@@ -8,18 +9,19 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.Notic
 
 public class AdicionarNoticiaCasoDeUso {
     private final NoticiaServico servico;
+    private final GeradorId geradorId;
 
-    public AdicionarNoticiaCasoDeUso(NoticiaServico servico) {
+    public AdicionarNoticiaCasoDeUso(NoticiaServico servico, GeradorId geradorId) {
         this.servico = servico;
+        this.geradorId = geradorId;
     }
 
     public void executar(AdicionarNoticiaComando comando) {
-        int idGarantido = (int) (Math.random() * 9000) + 1;
-        NoticiaId novoId = new NoticiaId(idGarantido);
+        NoticiaId novoId = new NoticiaId(geradorId.gerarProximoIdNoticia());
         UsuarioId autorId = new UsuarioId(comando.autorId());
         CategoriaNoticia categoria = CategoriaNoticia.valueOf(comando.categoria().toUpperCase());
 
-        Noticia noticia = new Noticia(novoId, autorId, comando.titulo(), comando.conteudo(), categoria);
+        Noticia noticia = new Noticia(novoId, autorId, comando.titulo(), comando.conteudo(), categoria, comando.filmeId());
 
         servico.publicarNoticia(noticia);
     }

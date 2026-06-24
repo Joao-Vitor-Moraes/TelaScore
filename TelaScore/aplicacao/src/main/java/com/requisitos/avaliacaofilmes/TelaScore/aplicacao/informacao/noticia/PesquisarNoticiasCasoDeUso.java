@@ -26,7 +26,10 @@ public class PesquisarNoticiasCasoDeUso {
                         n.getAutorId().getId(),
                         n.getAutorApelido(),
                         n.getDataPublicacao(),
-                        n.getCategoria().name()))
+                        n.getCategoria().name(),
+                        n.getFilmeId(),
+                        n.getFilmeTitulo(),
+                        n.getFilmeImagemUrl()))
                 .toList();
     }
 }
