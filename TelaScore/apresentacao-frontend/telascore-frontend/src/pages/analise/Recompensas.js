@@ -111,7 +111,7 @@ export default function Recompensas() {
     } catch {
       setTotalPontos(0);
       setHistorico([]);
-      setErro('Nao foi possivel carregar seu progresso agora.');
+      setErro('Não foi possível carregar seu progresso agora.');
     } finally {
       setCarregando(false);
     }
@@ -144,9 +144,9 @@ export default function Recompensas() {
         <section className="level-hero">
           <div className="level-hero__content">
             <p className="page-eyebrow">Progresso</p>
-            <h1 className="page-title">Nivel TelaScore</h1>
+            <h1 className="page-title">Nível TelaScore</h1>
             <p className="page-description">
-              Seu nivel cresce conforme voce avalia filmes, cria listas, vence quizzes, conclui metas e faz amizades.
+              Seu nível cresce conforme você avalia filmes, cria listas, vence quizzes, conclui metas e faz amizades.
             </p>
           </div>
           <button className="goal-deadline-button" onClick={carregar} disabled={carregando}>
@@ -163,7 +163,7 @@ export default function Recompensas() {
           <div className="level-status__body">
             <div className="level-status__title">
               <div>
-                <span>Nivel atual</span>
+                <span>Nível atual</span>
                 <h2>{nivelAtual.nome}</h2>
               </div>
               <strong>{totalPontos.toLocaleString('pt-BR')} pts</strong>
@@ -174,7 +174,7 @@ export default function Recompensas() {
             <p>
               {nivelProximo
                 ? `Faltam ${faltam.toLocaleString('pt-BR')} pontos para ${nivelProximo.nome}.`
-                : 'Voce chegou ao maior nivel disponivel.'}
+                : 'Você chegou ao maior nível disponível.'}
             </p>
           </div>
         </section>

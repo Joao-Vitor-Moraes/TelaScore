@@ -195,7 +195,7 @@ export default function Login() {
         </form>
 
         <p style={styles.trocar}>
-          {modo === 'login' ? 'Nao tem conta?' : 'Ja tem conta?'}{' '}
+          {modo === 'login' ? 'Não tem conta?' : 'Já tem conta?'}{' '}
           <button className="login-switch-button" onClick={alternarModo}>
             {modo === 'login' ? 'Registre-se' : 'Entre aqui'}
           </button>

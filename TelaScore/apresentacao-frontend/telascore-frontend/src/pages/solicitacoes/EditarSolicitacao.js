@@ -139,7 +139,7 @@ const styles = {
   conteudo: { maxWidth: '680px', margin: '0 auto', padding: '24px 32px' },
   voltar: { background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '20px', padding: 0, marginBottom: '16px' },
   feedbackBox: {
-    backgroundColor: '#f97316' + '11', border: '1px solid #f97316',
+    backgroundColor: '#f9731611', border: '1px solid #f97316',
     borderRadius: '8px', padding: '14px 16px', marginBottom: '20px',
   },
   feedbackLabel: { fontSize: '11px', fontWeight: 'bold', color: '#f97316', letterSpacing: '1px', display: 'block', marginBottom: '6px' },

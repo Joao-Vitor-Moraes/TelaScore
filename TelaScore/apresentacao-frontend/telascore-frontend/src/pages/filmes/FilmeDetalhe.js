@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
+import { useAppDialog } from '../../components/AppDialog';
 import { filmeService, avaliacaoService, metaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -20,6 +21,7 @@ export default function FilmeDetalhe() {
   const [editandoId, setEditandoId] = useState(null);
   const [edicao, setEdicao] = useState({ valorNota: 5, resenha: '' });
   const [trailerKey, setTrailerKey] = useState(null);
+  const { confirmar, avisar, Dialog } = useAppDialog();
 
   useEffect(() => {
     filmeService.obter(id).then(async (dadosFilme) => {
@@ -90,18 +92,23 @@ export default function FilmeDetalhe() {
       await sincronizarMetas();
       setNovaAvaliacao({ valorNota: 5, comentario: '', visibilidade: 'PUBLICA' });
     } catch {
-      alert('Erro ao enviar avaliação.');
+      avisar({ titulo: 'Avaliação não enviada', mensagem: 'Não foi possível salvar sua avaliação agora.' });
     }
   }
 
   async function handleRemoverAvaliacao(avaliacaoId) {
-    if (!window.confirm('Remover esta avaliação?')) return;
+    const podeRemover = await confirmar({
+      titulo: 'Remover avaliação',
+      mensagem: 'Sua avaliação será apagada deste filme.',
+      textoConfirmar: 'Remover',
+    });
+    if (!podeRemover) return;
     try {
       await avaliacaoService.remover(avaliacaoId);
       await recarregar();
       await sincronizarMetas();
     } catch {
-      alert('Erro ao remover avaliação.');
+      avisar({ titulo: 'Avaliação não removida', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
@@ -115,7 +122,7 @@ export default function FilmeDetalhe() {
       await sincronizarMetas();
       setEditandoId(null);
     } catch {
-      alert('Erro ao editar avaliação.');
+      avisar({ titulo: 'Edição não salva', mensagem: 'Não foi possível atualizar sua avaliação.' });
     }
   }
 
@@ -127,6 +134,7 @@ export default function FilmeDetalhe() {
 
   return (
     <div style={styles.pagina}>
+      {Dialog}
       <Navbar />
       <div style={styles.conteudo}>
 

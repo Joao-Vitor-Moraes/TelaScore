@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
+import { useAppDialog } from '../../components/AppDialog';
 import { listaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -10,6 +11,7 @@ export default function EditarLista() {
   const { id } = useParams();
   const [form, setForm] = useState(null);
   const [erro, setErro] = useState(null);
+  const { confirmar, Dialog } = useAppDialog();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,7 +31,12 @@ export default function EditarLista() {
   }
 
   async function handleDeletar() {
-    if (!window.confirm('Tem certeza que deseja deletar esta lista?')) return;
+    const podeDeletar = await confirmar({
+      titulo: 'Deletar lista',
+      mensagem: 'A lista será apagada permanentemente.',
+      textoConfirmar: 'Deletar',
+    });
+    if (!podeDeletar) return;
     try {
       await listaService.remover(id, USUARIO_ID);
       navigate('/listas');
@@ -60,6 +67,7 @@ export default function EditarLista() {
 
   return (
     <div style={styles.pagina}>
+      {Dialog}
       <Navbar />
       <div style={styles.conteudo}>
         <h2 style={styles.titulo}>EDITAR LISTA</h2>

@@ -28,7 +28,7 @@ export default function CriarEvento() {
   useEffect(() => {
     comunidadeService.buscarComunidadesDoUsuario(USUARIO_ID).then(setComunidades).catch(() => setComunidades([]));
     eventoService.amigos(USUARIO_ID).then(setAmigos).catch(() => setAmigos([]));
-  }, []);
+  }, [USUARIO_ID]);
 
   function handleChange(e) {
     const { name, value } = e.target;

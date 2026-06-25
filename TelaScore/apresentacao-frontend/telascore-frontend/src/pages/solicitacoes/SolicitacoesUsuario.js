@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
+import { useAppDialog } from '../../components/AppDialog';
 import { solicitacaoService } from '../../services/api';
 import { FiUser, FiFilter, FiCheck, FiX, FiClock } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
@@ -29,6 +30,7 @@ export default function SolicitacoesUsuario() {
   const [carregando, setCarregando] = useState(true);
   const [filtro, setFiltro] = useState(null);
   const [filtroAberto, setFiltroAberto] = useState(false);
+  const { confirmar, avisar, Dialog } = useAppDialog();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function SolicitacoesUsuario() {
       .then(setSolicitacoes)
       .catch(() => {})
       .finally(() => setCarregando(false));
-  }, []);
+  }, [USUARIO_ID]);
 
   const visiveis = solicitacoes.filter(s => !ocultos.includes(s.id));
 
@@ -48,18 +50,24 @@ export default function SolicitacoesUsuario() {
       });
 
   async function handleCancelar(id) {
-    if (!window.confirm('Cancelar esta solicitação?')) return;
+    const podeCancelar = await confirmar({
+      titulo: 'Cancelar solicitação',
+      mensagem: 'Esta solicitação sairá da fila de análise.',
+      textoConfirmar: 'Cancelar solicitação',
+    });
+    if (!podeCancelar) return;
     try {
       await solicitacaoService.cancelar(id, USUARIO_ID);
       const dados = await solicitacaoService.listarPorSolicitante(USUARIO_ID);
       setSolicitacoes(dados);
     } catch {
-      alert('Erro ao cancelar.');
+      avisar({ titulo: 'Solicitação não cancelada', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
   return (
     <div style={styles.pagina}>
+      {Dialog}
       <Navbar />
       <div style={styles.conteudo}>
 

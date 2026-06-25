@@ -5,6 +5,7 @@ import {
     FiLogOut, FiSend, FiTrash2, FiShield, FiUserX, FiUserCheck, FiUser
 } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
+import { useAppDialog } from '../../components/AppDialog';
 import { comunidadeService, usuarioService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import './comunidades.css';
@@ -13,6 +14,7 @@ export default function Comunidades() {
     const { sessao } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const { confirmar, Dialog } = useAppDialog();
     const [comunidades, setComunidades] = useState([]);
     const [minhasComunidades, setMinhasComunidades] = useState([]);
     const [usuariosMap, setUsuariosMap] = useState({});
@@ -232,7 +234,12 @@ export default function Comunidades() {
     }
 
     async function handleExcluirComunidade(comunidadeId) {
-        if (!window.confirm('Tem certeza que deseja apagar esta comunidade permanentemente?')) return;
+        const podeExcluir = await confirmar({
+            titulo: 'Apagar comunidade',
+            mensagem: 'A comunidade será encerrada permanentemente.',
+            textoConfirmar: 'Apagar',
+        });
+        if (!podeExcluir) return;
         try {
             await comunidadeService.excluirComunidade(extrairIdString(comunidadeId), sessao.id);
             setComunidadeAtiva(null);
@@ -260,6 +267,7 @@ export default function Comunidades() {
 
     return (
         <div className="cinema-page">
+            {Dialog}
             <Navbar />
             <main className="cinema-container goals-container">
                 <div className="goals-heading">

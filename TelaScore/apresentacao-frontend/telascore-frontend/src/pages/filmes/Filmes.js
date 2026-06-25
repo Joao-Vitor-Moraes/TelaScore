@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiEdit2, FiFilm, FiInfo, FiPlay, FiPlus, FiSearch, FiStar, FiTrash2 } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
+import { useAppDialog } from '../../components/AppDialog';
 import { filmeService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import './filmes.css';
@@ -50,6 +51,7 @@ export default function Filmes() {
   const [trailerKey, setTrailerKey] = useState(null);
   const [trailerPronto, setTrailerPronto] = useState(false);
   const [mostrarTrailer, setMostrarTrailer] = useState(false);
+  const { confirmar, avisar, Dialog } = useAppDialog();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -127,17 +129,23 @@ export default function Filmes() {
   }, [filtrados]);
 
   async function handleRemover(id) {
-    if (!window.confirm('Remover este filme?')) return;
+    const podeRemover = await confirmar({
+      titulo: 'Remover filme',
+      mensagem: 'Este filme será removido do catálogo.',
+      textoConfirmar: 'Remover',
+    });
+    if (!podeRemover) return;
     try {
       await filmeService.remover(id);
       setFilmes(prev => prev.filter(f => f.id !== id));
     } catch {
-      alert('Erro ao remover filme.');
+      avisar({ titulo: 'Não foi possível remover', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
   return (
     <div className="cinema-page catalog-page">
+      {Dialog}
       <Navbar />
 
       {destaque && (

@@ -64,7 +64,7 @@ export default function Quiz() {
       const dados = await quizService.listar();
       setQuizzes(Array.isArray(dados) ? dados : []);
     } catch (e) {
-      setErro('Nao foi possivel carregar os quizzes agora.');
+      setErro('Não foi possível carregar os quizzes agora.');
       setQuizzes([]);
     } finally {
       setCarregando(false);
@@ -142,7 +142,7 @@ export default function Quiz() {
       setModoCriacao(false);
       setFeedback('Quiz publicado com sucesso.');
     } catch (e) {
-      setErro(e.message || 'Nao foi possivel publicar o quiz.');
+      setErro(e.message || 'Não foi possível publicar o quiz.');
     } finally {
       setSalvando(false);
     }
@@ -156,7 +156,7 @@ export default function Quiz() {
       setQuizParaExcluir(null);
       setFeedback('Quiz removido.');
     } catch (e) {
-      setErro(e.message || 'Nao foi possivel remover o quiz.');
+      setErro(e.message || 'Não foi possível remover o quiz.');
     }
   }
 
@@ -193,7 +193,7 @@ export default function Quiz() {
       });
       setResultado(respostaBackend);
     } catch (e) {
-      setErro(e.message || 'Nao foi possivel finalizar sua tentativa agora.');
+      setErro(e.message || 'Não foi possível finalizar sua tentativa agora.');
     } finally {
       setRegistrandoResultado(false);
     }
@@ -234,7 +234,7 @@ export default function Quiz() {
             <div className="quiz-toolbar">
               <label>
                 <FiSearch />
-                <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar por titulo ou descricao..." />
+                <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar por título ou descrição..." />
                 {busca && <button onClick={() => setBusca('')}><FiX /></button>}
               </label>
               <button className="goal-deadline-button" onClick={carregarQuizzes}><FiRefreshCw /> Atualizar</button>
@@ -260,7 +260,7 @@ export default function Quiz() {
                       <small>{quiz.perguntas?.length || 0} perguntas</small>
                     </div>
                     <h2>{quiz.titulo}</h2>
-                    <p>{quiz.descricao || 'Sem descricao.'}</p>
+                    <p>{quiz.descricao || 'Sem descrição.'}</p>
                     <div className="quiz-card__actions">
                       <button className="btn-primary" onClick={() => iniciarQuiz(quiz)}>
                         <FiPlayCircle /> Jogar
@@ -293,11 +293,11 @@ export default function Quiz() {
             <div className="quiz-builder__grid">
               <div className="quiz-builder__panel">
                 <label>
-                  <span>Titulo</span>
+                  <span>Título</span>
                   <input value={novoQuiz.titulo} onChange={e => setNovoQuiz({ ...novoQuiz, titulo: e.target.value })} placeholder="Ex: Cinema dos anos 2000" />
                 </label>
                 <label>
-                  <span>Descricao</span>
+                  <span>Descrição</span>
                   <textarea value={novoQuiz.descricao} onChange={e => setNovoQuiz({ ...novoQuiz, descricao: e.target.value })} placeholder="Conte o tema do desafio..." />
                 </label>
               </div>
@@ -389,7 +389,7 @@ export default function Quiz() {
               )}
 
               <button className="btn-primary quiz-next-button" disabled={!respostaSelecionada || registrandoResultado} onClick={avancar}>
-                {registrandoResultado ? 'Registrando...' : perguntaAtual + 1 === quizAtivo.perguntas.length ? 'Ver resultado' : 'Proxima pergunta'} <FiArrowRight />
+                {registrandoResultado ? 'Registrando...' : perguntaAtual + 1 === quizAtivo.perguntas.length ? 'Ver resultado' : 'Próxima pergunta'} <FiArrowRight />
               </button>
             </div>
           </section>
@@ -399,8 +399,8 @@ export default function Quiz() {
           <section className="quiz-result">
             <div className="quiz-result__icon"><FiAward /></div>
             <p className="page-eyebrow">Resultado registrado</p>
-            <h1>{resultado.aprovado ? 'Mandou bem!' : 'Quase la'}</h1>
-            <p>Voce acertou <strong>{resultado.acertos}</strong> de <strong>{resultado.totalPerguntas}</strong> perguntas.</p>
+            <h1>{resultado.aprovado ? 'Mandou bem!' : 'Quase lá'}</h1>
+            <p>Você acertou <strong>{resultado.acertos}</strong> de <strong>{resultado.totalPerguntas}</strong> perguntas.</p>
             <div className="quiz-result__score">
               <span>{Math.round(resultado.percentual)}%</span>
               <small>{resultado.pontuacao} pontos</small>

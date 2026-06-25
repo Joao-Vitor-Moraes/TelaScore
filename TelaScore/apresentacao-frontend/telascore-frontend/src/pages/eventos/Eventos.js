@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FiCalendar, FiClock, FiTrash2, FiCheck, FiX, FiGlobe, FiUsers, FiLock } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
+import { useAppDialog } from '../../components/AppDialog';
 import { eventoService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -29,13 +30,14 @@ export default function Eventos() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
   const [sucesso, setSucesso] = useState(location.state?.sucesso ?? null);
+  const { confirmar, avisar, Dialog } = useAppDialog();
 
-  function carregar() {
+  const carregar = useCallback(() => {
     return eventoService.listar(USUARIO_ID)
       .then(setEventos)
       .catch(() => setErro('Erro ao carregar eventos.'))
       .finally(() => setCarregando(false));
-  }
+  }, [USUARIO_ID]);
 
   useEffect(() => {
     carregar();
@@ -44,15 +46,20 @@ export default function Eventos() {
       const t = setTimeout(() => setSucesso(null), 4000);
       return () => clearTimeout(t);
     }
-  }, []);
+  }, [carregar, location.state?.sucesso]);
 
   async function handleCancelar(id) {
-    if (!window.confirm('Cancelar este evento?')) return;
+    const podeCancelar = await confirmar({
+      titulo: 'Cancelar evento',
+      mensagem: 'O evento deixará de aparecer para os participantes.',
+      textoConfirmar: 'Cancelar evento',
+    });
+    if (!podeCancelar) return;
     try {
       await eventoService.cancelar(id);
       setEventos(prev => prev.filter(e => e.id !== id));
     } catch {
-      alert('Erro ao cancelar evento.');
+      avisar({ titulo: 'Evento não cancelado', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
@@ -61,12 +68,13 @@ export default function Eventos() {
       await eventoService.responder(id, USUARIO_ID, resposta);
       await carregar();
     } catch {
-      alert('Erro ao registrar sua resposta.');
+      avisar({ titulo: 'Resposta não registrada', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
   return (
     <div style={styles.pagina}>
+      {Dialog}
       <Navbar />
       <div style={styles.conteudo}>
         <div style={styles.cabecalho}>

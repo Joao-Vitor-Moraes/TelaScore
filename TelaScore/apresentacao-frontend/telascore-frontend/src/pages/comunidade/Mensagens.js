@@ -61,7 +61,7 @@ export default function Mensagens() {
 
     const perfilSessao = useMemo(() => ({
         id: sessao?.id,
-        nome: sessao?.nome || sessao?.apelido || 'Voce',
+        nome: sessao?.nome || sessao?.apelido || 'Você',
         apelido: sessao?.apelido || sessao?.nome || 'voce',
         avatarUrl: sessao?.avatarUrl
     }), [sessao]);
@@ -85,7 +85,7 @@ export default function Mensagens() {
                 });
             } catch (error) {
                 console.error('Erro ao carregar amigos:', error);
-                setErro(error.message || 'Nao foi possivel carregar seus amigos.');
+                setErro(error.message || 'Não foi possível carregar seus amigos.');
                 setContatos([]);
                 setChatAtivo(null);
             } finally {
@@ -109,7 +109,7 @@ export default function Mensagens() {
                 setMensagens(Array.isArray(historico) ? historico : []);
             } catch (error) {
                 console.error('Erro ao carregar conversa:', error);
-                setErro(error.message || 'Nao foi possivel carregar esta conversa.');
+                setErro(error.message || 'Não foi possível carregar esta conversa.');
                 setMensagens([]);
             } finally {
                 setCarregandoMensagens(false);
@@ -148,7 +148,7 @@ export default function Mensagens() {
             setMostrarFigurinhas(false);
         } catch (error) {
             console.error('Erro ao salvar mensagem:', error);
-            setErro(error.message || 'Nao foi possivel salvar a mensagem.');
+            setErro(error.message || 'Não foi possível salvar a mensagem.');
         }
     };
 
@@ -161,7 +161,7 @@ export default function Mensagens() {
             setConfirmarExclusao(null);
         } catch (error) {
             console.error('Erro ao apagar mensagem:', error);
-            setErro(error.message || 'Nao foi possivel apagar a mensagem.');
+            setErro(error.message || 'Não foi possível apagar a mensagem.');
         }
     };
 
@@ -236,7 +236,7 @@ export default function Mensagens() {
                                         <div className={`chat-balao ${minha ? 'meu' : 'outro'}`}>
                                             <div className="mensagem-meta">
                                                 <button type="button" onClick={() => abrirPerfil(autor?.id)}>
-                                                    {minha ? 'Voce' : (usuarioAtual?.nome || usuarioAtual?.apelido)}
+                                                    {minha ? 'Você' : (usuarioAtual?.nome || usuarioAtual?.apelido)}
                                                 </button>
                                                 <span>{formatarHorario(mensagem)}</span>
                                             </div>

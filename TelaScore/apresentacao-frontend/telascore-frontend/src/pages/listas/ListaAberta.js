@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FiArrowLeft, FiEdit2, FiShare2, FiMoreVertical, FiPlusCircle } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
+import { useAppDialog } from '../../components/AppDialog';
 import { listaService, avaliacaoService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -18,6 +19,7 @@ export default function ListaAberta() {
   const [menuAberto, setMenuAberto] = useState(false);
   const [modalColaborador, setModalColaborador] = useState(false);
   const [colaboradorId, setColaboradorId] = useState('');
+  const { confirmar, avisar, Dialog } = useAppDialog();
   const dragId = useRef(null);
   const navigate = useNavigate();
 
@@ -28,7 +30,7 @@ export default function ListaAberta() {
     ])
       .then(([l, i]) => { setLista(l); setItens(i); })
       .catch(() => setErro('Erro ao carregar lista.'));
-  }, [id]);
+  }, [id, USUARIO_ID]);
 
   function handleDragStart(filmeId) {
     dragId.current = filmeId;
@@ -44,12 +46,17 @@ export default function ListaAberta() {
   }
 
   async function handleRemover(filmeId) {
-    if (!window.confirm('Remover este filme da lista?')) return;
+    const podeRemover = await confirmar({
+      titulo: 'Remover filme da lista',
+      mensagem: 'O filme sairá desta lista, mas continuará no catálogo.',
+      textoConfirmar: 'Remover',
+    });
+    if (!podeRemover) return;
     try {
       await listaService.removerFilme(id, filmeId, USUARIO_ID);
       setItens(prev => prev.filter(i => i.filmeId !== filmeId));
     } catch {
-      alert('Erro ao remover filme.');
+      avisar({ titulo: 'Não foi possível remover', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
@@ -59,7 +66,7 @@ export default function ListaAberta() {
       await listaService.tornarColaborativa(id, USUARIO_ID);
       setLista(prev => ({ ...prev, colaborativa: true }));
     } catch {
-      alert('Erro ao tornar lista colaborativa.');
+      avisar({ titulo: 'Não foi possível alterar a lista', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
@@ -71,17 +78,22 @@ export default function ListaAberta() {
       setModalColaborador(false);
       setColaboradorId('');
     } catch {
-      alert('Erro ao adicionar colaborador. Verifique o ID informado.');
+      avisar({ titulo: 'Colaborador não adicionado', mensagem: 'Verifique o ID informado e tente novamente.' });
     }
   }
 
   async function handleRemoverColaborador(colaboradorIdParaRemover) {
-    if (!window.confirm(`Remover colaborador ID ${colaboradorIdParaRemover}?`)) return;
+    const podeRemover = await confirmar({
+      titulo: 'Remover colaborador',
+      mensagem: `Remover o colaborador ID ${colaboradorIdParaRemover} desta lista?`,
+      textoConfirmar: 'Remover',
+    });
+    if (!podeRemover) return;
     try {
       await listaService.removerColaborador(id, colaboradorIdParaRemover, USUARIO_ID);
       setLista(prev => ({ ...prev, colaboradores: prev.colaboradores.filter(c => c !== colaboradorIdParaRemover) }));
     } catch {
-      alert('Erro ao remover colaborador.');
+      avisar({ titulo: 'Não foi possível remover', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
@@ -126,6 +138,7 @@ export default function ListaAberta() {
 
   return (
     <>
+    {Dialog}
     <div style={styles.pagina}>
       <Navbar />
       <div style={styles.conteudo}>

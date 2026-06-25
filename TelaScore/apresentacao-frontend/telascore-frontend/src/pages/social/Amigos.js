@@ -63,7 +63,7 @@ export default function Amigos() {
             setSeguindo(normalizarLista(listaSeguindo));
             setSeguidores(normalizarLista(listaSeguidores));
         } catch (e) {
-            setErro(e.message || 'Nao foi possivel carregar suas conexoes.');
+            setErro(e.message || 'Não foi possível carregar suas conexões.');
             setAmigos([]);
             setSeguindo([]);
             setSeguidores([]);
@@ -89,7 +89,7 @@ export default function Amigos() {
             const resultado = await amigoService.buscarPorApelido(termo);
             setResultadosBusca(normalizarLista(resultado).filter(u => u.id !== sessao?.id));
         } catch (e) {
-            setErro(e.message || 'Nao foi possivel buscar usuarios.');
+            setErro(e.message || 'Não foi possível buscar usuários.');
             setResultadosBusca([]);
         } finally {
             setBuscando(false);
@@ -103,7 +103,7 @@ export default function Amigos() {
             await amigoService.seguir(sessao.id, usuarioId);
             await carregarConexoes();
         } catch (e) {
-            setErro(e.message || 'Nao foi possivel seguir este usuario.');
+            setErro(e.message || 'Não foi possível seguir este usuário.');
         } finally {
             setAcaoId(null);
         }
@@ -116,7 +116,7 @@ export default function Amigos() {
             await amigoService.deixarDeSeguir(usuarioId, sessao.id);
             await carregarConexoes();
         } catch (e) {
-            setErro(e.message || 'Nao foi possivel deixar de seguir este usuario.');
+            setErro(e.message || 'Não foi possível deixar de seguir este usuário.');
         } finally {
             setAcaoId(null);
         }
@@ -248,7 +248,7 @@ export default function Amigos() {
 
                         {resultadosBusca.length === 0 && termoBusca.trim().length >= 2 && !buscando && (
                             <div style={{ textAlign: 'center', padding: '40px', color: 'var(--muted)' }}>
-                                <p>Nenhum usuario encontrado para "<strong style={{ color: 'white' }}>{termoBusca}</strong>".</p>
+                                <p>Nenhum usuário encontrado para "<strong style={{ color: 'white' }}>{termoBusca}</strong>".</p>
                             </div>
                         )}
                     </>

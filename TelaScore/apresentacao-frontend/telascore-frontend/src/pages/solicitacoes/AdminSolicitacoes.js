@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
+import { useAppDialog } from '../../components/AppDialog';
 import { solicitacaoService } from '../../services/api';
 import { FiSearch, FiFilter } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
@@ -14,6 +15,7 @@ export default function AdminSolicitacoes() {
   const [buscaAberta, setBuscaAberta] = useState(false);
   const [feedbackAberto, setFeedbackAberto] = useState(null);
   const [feedbackTexto, setFeedbackTexto] = useState('');
+  const { confirmar, avisar, Dialog } = useAppDialog();
 
   async function carregar() {
     setCarregando(true);
@@ -34,17 +36,22 @@ export default function AdminSolicitacoes() {
       await solicitacaoService.avaliar(id, ADM_ID, true);
       carregar();
     } catch {
-      alert('Erro ao aceitar.');
+      avisar({ titulo: 'Solicitação não aceita', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
   async function handleRecusar(id) {
-    if (!window.confirm('Recusar esta solicitação?')) return;
+    const podeRecusar = await confirmar({
+      titulo: 'Recusar solicitação',
+      mensagem: 'A solicitação será marcada como rejeitada.',
+      textoConfirmar: 'Recusar',
+    });
+    if (!podeRecusar) return;
     try {
       await solicitacaoService.avaliar(id, ADM_ID, false);
       carregar();
     } catch {
-      alert('Erro ao recusar.');
+      avisar({ titulo: 'Solicitação não recusada', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
@@ -56,7 +63,7 @@ export default function AdminSolicitacoes() {
       setFeedbackTexto('');
       carregar();
     } catch {
-      alert('Erro ao enviar feedback.');
+      avisar({ titulo: 'Feedback não enviado', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
@@ -68,6 +75,7 @@ export default function AdminSolicitacoes() {
 
   return (
     <div style={styles.pagina}>
+      {Dialog}
       <Navbar />
       <NavbarAdmin />
       <div style={styles.conteudo}>

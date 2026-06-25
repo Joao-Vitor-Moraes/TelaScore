@@ -1236,6 +1236,106 @@
   white-space: nowrap;
 }
 
+.app-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, .68);
+  backdrop-filter: blur(8px);
+}
+
+.app-dialog {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: white;
+  background: linear-gradient(145deg, rgba(28, 28, 35, .98), rgba(10, 10, 14, .98));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .46);
+}
+
+.app-dialog__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, .04);
+  cursor: pointer;
+}
+
+.app-dialog__icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-size: 22px;
+  margin-bottom: 14px;
+}
+
+.app-dialog__icon.is-perigo {
+  color: #ff6b76;
+  background: rgba(229, 9, 20, .14);
+}
+
+.app-dialog__icon.is-info {
+  color: #65dc82;
+  background: rgba(101, 220, 130, .12);
+}
+
+.app-dialog h2 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0;
+}
+
+.app-dialog p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.app-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.app-dialog__button {
+  min-height: 38px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.app-dialog__button.is-secondary {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, .06);
+}
+
+.app-dialog__button.is-perigo {
+  background: var(--brand);
+}
+
+.app-dialog__button.is-info {
+  background: #15803d;
+}
+
 .nav-link {
   position: relative;
   border: 0;
@@ -2079,5 +2179,143 @@
 
   .level-history em {
     grid-column: 2;
+  }
+}
+
+@media (max-width: 1100px) {
+  .cinema-container,
+  .hub-shell,
+  .level-shell {
+    width: min(100% - 32px, 1120px);
+  }
+
+  .goals-heading,
+  .catalog-toolbar,
+  .quiz-heading,
+  .level-hero {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  .cinema-container {
+    padding: 26px 16px;
+  }
+
+  .goals-heading,
+  .catalog-toolbar,
+  .quiz-heading,
+  .level-hero,
+  .catalog-section__heading,
+  .quiz-publish-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .goals-heading__actions,
+  .catalog-toolbar__actions,
+  .hero-actions,
+  .quiz-card__actions,
+  .quiz-builder__actions,
+  .quiz-result__actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .goals-heading__actions > *,
+  .catalog-toolbar__actions > *,
+  .quiz-card__actions > *,
+  .quiz-builder__actions > *,
+  .quiz-result__actions > * {
+    flex: 1 1 180px;
+    justify-content: center;
+  }
+
+  .page-title {
+    font-size: 26px;
+  }
+
+  .catalog-search,
+  .recommendations-filters label,
+  .quiz-toolbar label {
+    max-width: none;
+    width: 100%;
+  }
+
+  .poster-grid,
+  .quiz-grid,
+  .admin-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-dialog__actions {
+    flex-direction: column-reverse;
+  }
+
+  .app-dialog__button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .cinema-container,
+  .hub-shell,
+  .level-shell {
+    width: min(100% - 24px, 1120px);
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .site-header__inner {
+    min-height: 58px;
+    gap: 8px;
+  }
+
+  .profile-avatar,
+  .brand__mark {
+    width: 32px;
+    height: 32px;
+  }
+
+  .mobile-dropdown,
+  .notification-dropdown,
+  .profile-wrap .header-dropdown {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    top: 62px;
+    width: auto;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .poster-grid,
+  .quiz-grid,
+  .admin-list,
+  .level-summary,
+  .level-rule-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .poster-card,
+  .quiz-card,
+  .admin-card,
+  .hub-card {
+    min-width: 0;
+  }
+
+  .hub-hero {
+    gap: 14px;
+  }
+
+  .hub-hero__icon {
+    width: 46px;
+    height: 46px;
+  }
+
+  .app-dialog {
+    padding: 20px;
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { FiCalendar, FiBell, FiBellOff, FiTrash2, FiList, FiGrid, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
+import { useAppDialog } from '../../components/AppDialog';
 import { calendarioService, filmeService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -30,6 +31,7 @@ export default function Calendario() {
   const [erro, setErro] = useState(null);
   const [salvandoId, setSalvandoId] = useState(null);
   const [view, setView] = useState('lista');
+  const { confirmar, avisar, Dialog } = useAppDialog();
   const [cursor, setCursor] = useState(() => {
     const d = new Date();
     return { ano: d.getFullYear(), mes: d.getMonth() };
@@ -57,7 +59,7 @@ export default function Calendario() {
       })
       .catch(() => setErro('Erro ao carregar o calendário.'))
       .finally(() => setCarregando(false));
-  }, []);
+  }, [USUARIO_ID]);
 
   const hoje = hojeISO();
   const idsSeguidos = useMemo(
@@ -119,17 +121,22 @@ export default function Calendario() {
       await calendarioService.alternarLembrete(USUARIO_ID, filmeId);
       await carregarCalendario();
     } catch {
-      alert('Erro ao alterar o lembrete.');
+      avisar({ titulo: 'Lembrete não alterado', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
   async function handleRemover(filmeId) {
-    if (!window.confirm('Deixar de acompanhar esta estreia?')) return;
+    const podeRemover = await confirmar({
+      titulo: 'Deixar de acompanhar',
+      mensagem: 'Esta estreia sairá do seu calendário.',
+      textoConfirmar: 'Remover',
+    });
+    if (!podeRemover) return;
     try {
       await calendarioService.removerFilme(USUARIO_ID, filmeId);
       await carregarCalendario();
     } catch {
-      alert('Erro ao remover do calendário.');
+      avisar({ titulo: 'Não foi possível remover', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
@@ -140,6 +147,7 @@ export default function Calendario() {
 
   return (
     <div style={styles.pagina}>
+      {Dialog}
       <Navbar />
       <div style={styles.conteudo}>
         <div style={styles.cabecalho}>

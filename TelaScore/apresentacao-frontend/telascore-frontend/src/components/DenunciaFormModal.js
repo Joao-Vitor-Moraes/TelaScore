@@ -51,7 +51,7 @@ export default function DenunciaFormModal({
     }
 
     if (!form.descricao.trim()) {
-      setErro('Informe uma descricao para a denuncia.');
+      setErro('Informe uma descrição para a denúncia.');
       return;
     }
 

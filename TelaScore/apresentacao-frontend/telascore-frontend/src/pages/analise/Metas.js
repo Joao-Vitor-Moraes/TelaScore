@@ -257,7 +257,7 @@ export default function Metas() {
       }
       window.dispatchEvent(new Event('telascore:notificacoes-atualizadas'));
       setFeedback(proximoEstado
-        ? 'Notificacoes ativadas para esta meta.'
+        ? 'Notificações ativadas para esta meta.'
         : 'Meta em modo silencioso.');
     } catch (e) {
       setErro(e.message);
@@ -332,8 +332,8 @@ export default function Metas() {
                     <div className="goal-card__manage">
                       <button className={`goal-notify-button ${notificacaoAtiva ? 'is-active' : 'is-silent'}`}
                         onClick={() => alternarSinoMeta(meta)}
-                        title={notificacaoAtiva ? 'Notificacoes ligadas' : 'Modo silencioso'}
-                        aria-label={notificacaoAtiva ? 'Desativar notificacoes da meta' : 'Ativar notificacoes da meta'}>
+                        title={notificacaoAtiva ? 'Notificações ligadas' : 'Modo silencioso'}
+                        aria-label={notificacaoAtiva ? 'Desativar notificações da meta' : 'Ativar notificações da meta'}>
                         {notificacaoAtiva ? <FiBell /> : <FiBellOff />}
                       </button>
                       {!meta.metaDoSistema && (

@@ -102,7 +102,7 @@ export default function Noticias() {
         if (!noticiaParaExcluir) return;
         try {
             await noticiaService.remover(noticiaParaExcluir.id);
-            setFeedback('Publicacao removida.');
+            setFeedback('Publicação removida.');
             if (noticiaAtiva?.id === noticiaParaExcluir.id) setNoticiaAtiva(null);
             setNoticiaParaExcluir(null);
             await carregarNoticias();

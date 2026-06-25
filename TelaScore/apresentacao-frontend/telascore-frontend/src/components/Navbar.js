@@ -58,16 +58,16 @@ export default function Navbar() {
             chave: `recomendacao-${recomendacao.id}`,
             tipoNotificacao: 'RECOMENDACAO',
             titulo: recomendacao.tituloConteudo || tituloConteudoRecomendado(recomendacao),
-            subtitulo: `Recomendado por @${recomendacao.remetenteApelido || 'usuario'}`,
+            subtitulo: `Recomendado por @${recomendacao.remetenteApelido || 'usuário'}`,
             rota: '/recomendacoes',
           }));
         const notificacoesSistema = sistema.map(notificacao => ({
           ...notificacao,
           chave: `sistema-${notificacao.id}`,
           tipoNotificacao: notificacao.tipo || 'META',
-          titulo: notificacao.titulo || 'Notificacao',
+          titulo: notificacao.titulo || 'Notificação',
           subtitulo: subtituloNotificacao(notificacao.tipo || 'META'),
-          mensagem: notificacao.mensagem || `${notificacao.tituloMeta} - status: concluida.`,
+          mensagem: notificacao.mensagem || `${notificacao.tituloMeta} - status: concluída.`,
           dataGeracao: notificacao.dataCriacao,
           rota: notificacao.rota || '/metas',
         }));
@@ -116,7 +116,7 @@ export default function Navbar() {
     navigate('/login');
   }
 
-  const nomeExibicao = usuario?.nome || (sessao?.papel === 'ADMIN' ? 'Administrador' : 'Usuario');
+  const nomeExibicao = usuario?.nome || (sessao?.papel === 'ADMIN' ? 'Administrador' : 'Usuário');
   const detalheExibicao = usuario?.apelido ? `@${usuario.apelido.replace(/^@/, '')}` : usuario?.papel;
   const inicial = (usuario?.apelido || usuario?.nome || '?').trim().charAt(0).toUpperCase();
 
@@ -171,7 +171,7 @@ export default function Navbar() {
           <div className="notification-wrap">
             <button
               className={`header-icon ${notificacoesAbertas ? 'is-active' : ''}`}
-              aria-label={`Notificacoes${notificacoes.length ? `: ${notificacoes.length} novas` : ''}`}
+              aria-label={`Notificações${notificacoes.length ? `: ${notificacoes.length} novas` : ''}`}
               onClick={() => {
                 setNotificacoesAbertas(abertas => !abertas);
                 setPerfilAberto(false);
@@ -186,14 +186,14 @@ export default function Navbar() {
               <div className="header-dropdown notification-dropdown">
                 <div className="notification-heading">
                   <div>
-                    <strong>Notificacoes</strong>
+                    <strong>Notificações</strong>
                     <span>{notificacoes.length ? `${notificacoes.length} nova${notificacoes.length > 1 ? 's' : ''}` : 'Tudo em dia'}</span>
                   </div>
                   <FiBell />
                 </div>
                 <div className="notification-list">
                   {notificacoes.length === 0 ? (
-                    <div className="notification-empty">Nenhuma notificacao nova por enquanto.</div>
+                    <div className="notification-empty">Nenhuma notificação nova por enquanto.</div>
                   ) : notificacoes.slice(0, 5).map(notificacao => (
                     <button
                       key={notificacao.chave}
@@ -203,7 +203,7 @@ export default function Navbar() {
                       <span className="notification-dot" />
                       <span className="notification-content">
                         <strong>{notificacao.titulo}</strong>
-                        <span>{notificacao.subtitulo || 'Atualizacao do sistema'}</span>
+                        <span>{notificacao.subtitulo || 'Atualização do sistema'}</span>
                         {notificacao.mensagem && <small>"{notificacao.mensagem}"</small>}
                         <time>{formatarDataNotificacao(notificacao.dataGeracao)}</time>
                       </span>
@@ -236,7 +236,7 @@ export default function Navbar() {
                 <button className="dropdown-action" onClick={() => navegar('/hub/perfil')}><FiUser /> Perfil e conta</button>
                 <button className="dropdown-action" onClick={() => navegar('/meuusuario')}><FiUser /> Meu perfil</button>
                 {sessao?.papel === 'ADMIN' && (
-                  <button className="dropdown-action" onClick={() => navegar('/admin/solicitacoes')}><FiShield /> Administracao</button>
+                  <button className="dropdown-action" onClick={() => navegar('/admin/solicitacoes')}><FiShield /> Administração</button>
                 )}
                 <button className="dropdown-action danger" onClick={handleLogout}><FiLogOut /> Sair</button>
               </div>
@@ -251,18 +251,18 @@ export default function Navbar() {
 function subtituloNotificacao(tipo) {
   const subtitulos = {
     META: 'Conquista nas suas metas',
-    META_SISTEMA: 'Nova meta disponivel',
+    META_SISTEMA: 'Nova meta disponível',
     MENSAGEM: 'Mensagem privada',
-    AMIZADE: 'Nova conexao social',
-    SOLICITACAO: 'Atualizacao de solicitacao',
-    RECOMENDACAO_RESPOSTA: 'Resposta de recomendacao',
+    AMIZADE: 'Nova conexão social',
+    SOLICITACAO: 'Atualização de solicitação',
+    RECOMENDACAO_RESPOSTA: 'Resposta de recomendação',
   };
-  return subtitulos[tipo] || 'Atualizacao do sistema';
+  return subtitulos[tipo] || 'Atualização do sistema';
 }
 
 function tituloConteudoRecomendado(recomendacao) {
   if (recomendacao.tipoConteudo === 'FILME') return `Filme #${recomendacao.conteudoId}`;
-  return 'Conteudo recomendado';
+  return 'Conteúdo recomendado';
 }
 
 function formatarDataNotificacao(valor) {
