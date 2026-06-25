@@ -1,6 +1,7 @@
 package com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.noticia.entidades;
 
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuario.entidades.UsuarioEntity;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.filme.entidades.FilmeEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -27,6 +28,10 @@ public class NoticiaEntity {
     @Column(nullable = false)
     private String categoria;
 
+    @ManyToOne
+    @JoinColumn(name = "filme_id")
+    private FilmeEntity filme;
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -44,4 +49,7 @@ public class NoticiaEntity {
 
     public String getCategoria() { return categoria; }
     public void setCategoria(String categoria) { this.categoria = categoria; }
+
+    public FilmeEntity getFilme() { return filme; }
+    public void setFilme(FilmeEntity filme) { this.filme = filme; }
 }

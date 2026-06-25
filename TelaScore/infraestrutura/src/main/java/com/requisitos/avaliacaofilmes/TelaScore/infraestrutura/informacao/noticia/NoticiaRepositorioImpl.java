@@ -7,6 +7,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.Notic
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia.NoticiaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.informacao.noticia.entidades.NoticiaEntity;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuario.entidades.UsuarioEntity;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.catalogo.filme.entidades.FilmeEntity;
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.config.ConexaoBanco;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -37,6 +38,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
 
             UsuarioEntity autorRef = em.getReference(UsuarioEntity.class, noticia.getAutorId().getId());
             entity.setAutor(autorRef);
+            entity.setFilme(noticia.getFilmeId() == null ? null : em.getReference(FilmeEntity.class, noticia.getFilmeId()));
 
             em.merge(entity);
             em.getTransaction().commit();
@@ -50,7 +52,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
         EntityManager em = obterEntityManager();
         try {
             List<NoticiaEntity> resultados = em.createQuery(
-                            "SELECT n FROM NoticiaEntity n LEFT JOIN FETCH n.autor WHERE n.id = :id", NoticiaEntity.class)
+                            "SELECT n FROM NoticiaEntity n LEFT JOIN FETCH n.autor LEFT JOIN FETCH n.filme WHERE n.id = :id", NoticiaEntity.class)
                     .setParameter("id", id.getId())
                     .getResultList();
 
@@ -60,15 +62,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
             int autorId = entity.getAutor() != null ? entity.getAutor().getId() : 0;
             String apelido = entity.getAutor() != null ? entity.getAutor().getApelido() : "Desconhecido";
 
-            return new Noticia(
-                    new NoticiaId(entity.getId()),
-                    new UsuarioId(autorId),
-                    apelido,
-                    entity.getTitulo(),
-                    entity.getConteudo(),
-                    entity.getDataPublicacao(),
-                    mapearCategoriaSafe(entity.getCategoria())
-            );
+            return mapearDominio(entity, autorId, apelido);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -97,7 +91,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
         EntityManager em = obterEntityManager();
         try {
             List<NoticiaEntity> entidades = em.createQuery(
-                            "SELECT n FROM NoticiaEntity n LEFT JOIN FETCH n.autor ORDER BY n.dataPublicacao DESC", NoticiaEntity.class)
+                            "SELECT n FROM NoticiaEntity n LEFT JOIN FETCH n.autor LEFT JOIN FETCH n.filme ORDER BY n.dataPublicacao DESC", NoticiaEntity.class)
                     .setMaxResults(limite)
                     .getResultList();
             return mapearLista(entidades);
@@ -114,7 +108,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
         EntityManager em = obterEntityManager();
         try {
             List<NoticiaEntity> entidades = em.createQuery(
-                            "SELECT n FROM NoticiaEntity n LEFT JOIN FETCH n.autor WHERE n.autor.id = :autorId ORDER BY n.dataPublicacao DESC", NoticiaEntity.class)
+                            "SELECT n FROM NoticiaEntity n LEFT JOIN FETCH n.autor LEFT JOIN FETCH n.filme WHERE n.autor.id = :autorId ORDER BY n.dataPublicacao DESC", NoticiaEntity.class)
                     .setParameter("autorId", autorId.getId())
                     .getResultList();
             return mapearLista(entidades);
@@ -130,7 +124,7 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
     public List<Noticia> buscarPorFiltros(String termo, CategoriaNoticia categoria) {
         EntityManager em = obterEntityManager();
         try {
-            StringBuilder jpql = new StringBuilder("SELECT n FROM NoticiaEntity n LEFT JOIN FETCH n.autor WHERE 1=1");
+            StringBuilder jpql = new StringBuilder("SELECT n FROM NoticiaEntity n LEFT JOIN FETCH n.autor LEFT JOIN FETCH n.filme WHERE 1=1");
             if (termo != null && !termo.trim().isEmpty()) {
                 jpql.append(" AND (n.titulo LIKE :termo OR n.conteudo LIKE :termo)");
             }
@@ -164,20 +158,28 @@ public class NoticiaRepositorioImpl implements NoticiaRepositorio {
                 int autorId = entity.getAutor() != null ? entity.getAutor().getId() : 0;
                 String apelido = entity.getAutor() != null ? entity.getAutor().getApelido() : "Desconhecido";
 
-                listaDominio.add(new Noticia(
-                        new NoticiaId(entity.getId()),
-                        new UsuarioId(autorId),
-                        apelido,
-                        entity.getTitulo(),
-                        entity.getConteudo(),
-                        entity.getDataPublicacao(),
-                        mapearCategoriaSafe(entity.getCategoria())
-                ));
+                listaDominio.add(mapearDominio(entity, autorId, apelido));
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
         }
         return listaDominio;
+    }
+
+    private Noticia mapearDominio(NoticiaEntity entity, int autorId, String apelido) {
+        FilmeEntity filme = entity.getFilme();
+        return new Noticia(
+                new NoticiaId(entity.getId()),
+                new UsuarioId(autorId),
+                apelido,
+                entity.getTitulo(),
+                entity.getConteudo(),
+                entity.getDataPublicacao(),
+                mapearCategoriaSafe(entity.getCategoria()),
+                filme != null ? filme.getId() : null,
+                filme != null ? filme.getTitulo() : null,
+                filme != null ? filme.getImagemUrl() : null
+        );
     }
 
     private CategoriaNoticia mapearCategoriaSafe(String valor) {

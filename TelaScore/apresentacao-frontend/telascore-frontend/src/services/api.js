@@ -1,18 +1,11 @@
+import { obterTokenSessao } from './sessaoStorage';
+
 const BASE_URL = process.env.REACT_APP_API_URL !== undefined
     ? process.env.REACT_APP_API_URL
     : 'http://localhost:8080';
 
-function getToken() {
-  try {
-    const raw = localStorage.getItem('telascore_sessao');
-    return raw ? JSON.parse(raw).token : null;
-  } catch {
-    return null;
-  }
-}
-
 async function request(method, path, body, extraHeaders = {}) {
-  const token = getToken();
+  const token = obterTokenSessao();
   const options = {
     method,
     headers: {
@@ -38,7 +31,7 @@ async function request(method, path, body, extraHeaders = {}) {
 }
 
 async function upload(path, file) {
-  const token = getToken();
+  const token = obterTokenSessao();
   const formData = new FormData();
   formData.append('arquivo', file);
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -221,16 +214,18 @@ export const quizService = {
   listar: () => request('GET', '/api/quizzes'),
   obter: (id) => request('GET', `/api/quizzes/${id}`),
   criar: (dados) => request('POST', '/api/quizzes', dados),
+  responder: (id, dados) => request('POST', `/api/quizzes/${id}/tentativas`, dados),
   remover: (id) => request('DELETE', `/api/quizzes/${id}`)
 };
 
 // Mensagens Privadas
 export const mensagemPrivadaService = {
   // Busca o histórico de conversa com um usuário específico
-  listarPorDestinatario: (destinatarioId) => request('GET', `/api/mensagens/privadas/${destinatarioId}`),
+  listarConversa: (usuarioId, amigoId) => request('GET', `/api/mensagens/privadas/${amigoId}?usuarioId=${usuarioId}`),
+  listarPorDestinatario: (destinatarioId, usuarioId) => request('GET', `/api/mensagens/privadas/${destinatarioId}?usuarioId=${usuarioId}`),
   enviar: (dados) => request('POST', '/api/mensagens/privadas', dados),
   editar: (id, dados) => request('PUT', `/api/mensagens/privadas/${id}`, dados),
-  remover: (id) => request('DELETE', `/api/mensagens/privadas/${id}`)
+  remover: (id, usuarioId) => request('DELETE', `/api/mensagens/privadas/${id}?usuarioId=${usuarioId}`)
 };
 
 // Figurinhas
@@ -244,10 +239,14 @@ export const figurinhaService = {
 export const amigoService = {
   seguir: (seguidorId, seguidoId) => request('POST', '/api/conexoes', { seguidorId, seguidoId }),
   deixarDeSeguir: (seguidoId, seguidorId) => request('DELETE', `/api/conexoes/${seguidoId}`, null, { 'X-Usuario-Id': seguidorId }),
+  listarSeguindo: (usuarioId) => request('GET', `/api/conexoes/${usuarioId}/seguindo`),
+  listarSeguidores: (usuarioId) => request('GET', `/api/conexoes/${usuarioId}/seguidores`),
+  listarAmigos: (usuarioId) => request('GET', `/api/conexoes/${usuarioId}/amigos`),
+  status: (seguidorId, seguidoId) => request('GET', `/api/conexoes/status?seguidorId=${seguidorId}&seguidoId=${seguidoId}`),
   buscarPorApelido: (apelido) => request('GET', `/api/identidade/usuario/buscar?apelido=${encodeURIComponent(apelido)}`),
 };
 
-// Recompensas
+// Nivel
 export const recompensaService = {
   consultarTotal: (usuarioId) => request('GET', `/api/recompensas/total?usuarioId=${usuarioId}`),
   listarHistorico: (usuarioId) => request('GET', `/api/recompensas/historico?usuarioId=${usuarioId}`),

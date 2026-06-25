@@ -12,10 +12,14 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.R
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.SessaoUsuario;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarFilmeComando;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.NotificacaoMetaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.Recomendacao;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.TipoConteudo;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.Filme;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioLogado;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuario;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
@@ -34,6 +38,8 @@ public class RecomendacaoController {
     private final SessaoUsuario sessao;
     private final UsuarioRepositorio usuarios;
     private final AvaliarFilmeCasoDeUso avaliarFilme;
+    private final NotificacaoMetaRepositorio notificacoes;
+    private final FilmeRepositorio filmes;
 
     public RecomendacaoController(EnviarRecomendacaoCasoDeUso enviarRecomendacaoCasoDeUso,
                                   ResponderRecomendacaoCasoDeUso responderRecomendacaoCasoDeUso,
@@ -41,7 +47,9 @@ public class RecomendacaoController {
                                   RecomendacaoRepositorio recomendacoes,
                                   SessaoUsuario sessao,
                                   UsuarioRepositorio usuarios,
-                                  AvaliarFilmeCasoDeUso avaliarFilme) {
+                                  AvaliarFilmeCasoDeUso avaliarFilme,
+                                  NotificacaoMetaRepositorio notificacoes,
+                                  FilmeRepositorio filmes) {
         this.enviarRecomendacaoCasoDeUso = enviarRecomendacaoCasoDeUso;
         this.responderRecomendacaoCasoDeUso = responderRecomendacaoCasoDeUso;
         this.listarRecomendacoesCasoDeUso = listarRecomendacoesCasoDeUso;
@@ -49,6 +57,8 @@ public class RecomendacaoController {
         this.sessao = sessao;
         this.usuarios = usuarios;
         this.avaliarFilme = avaliarFilme;
+        this.notificacoes = notificacoes;
+        this.filmes = filmes;
     }
 
     @GetMapping
@@ -104,6 +114,14 @@ public class RecomendacaoController {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Esta recomendação pertence a outro usuário.");
             }
             responderRecomendacaoCasoDeUso.executar(comando);
+            if (recomendacao.getRemetenteId() != null) {
+                notificacoes.criarSistema(
+                        recomendacao.getRemetenteId(),
+                        "RECOMENDACAO_RESPOSTA",
+                        "Recomendacao respondida",
+                        "Sua recomendacao recebeu uma resposta.",
+                        "/recomendacoes");
+            }
             return ResponseEntity.ok("Resposta registrada com sucesso!");
         } catch (ResponseStatusException e) {
             throw e;
@@ -171,6 +189,7 @@ public class RecomendacaoController {
         return new RecomendacaoEnviadaResponse(
                 recomendacao.getId().getId(),
                 recomendacao.getConteudoId(),
+                tituloConteudo(recomendacao.getTipoConteudo().name(), recomendacao.getConteudoId()),
                 recomendacao.getTipoConteudo().name(),
                 destinatario == null ? "usuário" : destinatario.getApelido().getValor(),
                 recomendacao.getMensagem(),
@@ -189,6 +208,7 @@ public class RecomendacaoController {
         return new RecomendacaoRecebidaResponse(
                 recomendacao.id(),
                 recomendacao.conteudoId(),
+                tituloConteudo(recomendacao.tipoConteudo(), recomendacao.conteudoId()),
                 recomendacao.tipoConteudo(),
                 recomendacao.remetenteId(),
                 remetente == null ? null : remetente.getApelido().getValor(),
@@ -210,6 +230,7 @@ public class RecomendacaoController {
     public record RecomendacaoEnviadaResponse(
             int id,
             String conteudoId,
+            String tituloConteudo,
             String tipoConteudo,
             String destinatarioApelido,
             String mensagem,
@@ -223,6 +244,7 @@ public class RecomendacaoController {
     public record RecomendacaoRecebidaResponse(
             int id,
             String conteudoId,
+            String tituloConteudo,
             String tipoConteudo,
             Integer remetenteId,
             String remetenteApelido,
@@ -235,6 +257,19 @@ public class RecomendacaoController {
     }
 
     public record AvaliacaoPosteriorRequest(int nota, String comentario, String visibilidade) {
+    }
+
+    private String tituloConteudo(String tipoConteudo, String conteudoId) {
+        if (!"FILME".equals(tipoConteudo) || conteudoId == null || conteudoId.isBlank()) {
+            return null;
+        }
+
+        try {
+            Filme filme = filmes.obter(new FilmeId(conteudoId));
+            return filme == null ? null : filme.getTitulo();
+        } catch (RuntimeException e) {
+            return null;
+        }
     }
 
 }

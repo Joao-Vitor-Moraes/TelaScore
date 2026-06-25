@@ -63,7 +63,7 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdRegistroPontuacao() {
-        throw new UnsupportedOperationException("Geracao de ID de registro de pontuacao nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(id) FROM registro_pontuacao");
     }
 
     @Override
@@ -78,12 +78,12 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdNoticia() {
-        throw new UnsupportedOperationException("Geracao de ID de noticia nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(id) FROM noticia");
     }
 
     @Override
     public int gerarProximoIdConexao() {
-        throw new UnsupportedOperationException("Geracao de ID de conexao nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(id) FROM conexao");
     }
 
     @Override
@@ -93,7 +93,7 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdMensagem() {
-        throw new UnsupportedOperationException("Geracao de ID de mensagem nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(id) FROM mensagem");
     }
 
     @Override
@@ -103,6 +103,6 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdQuiz() {
-        throw new UnsupportedOperationException("Geracao de ID de quiz nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(id) FROM quiz");
     }
 }

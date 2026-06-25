@@ -41,6 +41,10 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ReordenarItem
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ReordenarItemListaComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.TornarListaColaborativaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.TornarListaColaborativaComando;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.AcaoPontuada;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.PontuacaoServico;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.recompensa.EstrategiaPontuacaoFactory;
 
 @RestController
 @RequestMapping("/api/listas")
@@ -60,6 +64,8 @@ public class ListaController {
     private final AdicionarColaboradorListaCasoDeUso adicionarColaborador;
     private final RemoverColaboradorListaCasoDeUso removerColaborador;
     private final RegistrarFilmeAssistidoCasoDeUso registrarAssistido;
+    private final PontuacaoServico pontuacaoServico;
+    private final EstrategiaPontuacaoFactory estrategias;
 
     public ListaController(EditarListaCasoDeUso editarLista,
             CriarListaCasoDeUso criarLista,
@@ -74,7 +80,9 @@ public class ListaController {
             TornarListaColaborativaCasoDeUso tornarColaborativa,
             AdicionarColaboradorListaCasoDeUso adicionarColaborador,
             RemoverColaboradorListaCasoDeUso removerColaborador,
-            RegistrarFilmeAssistidoCasoDeUso registrarAssistido) {
+            RegistrarFilmeAssistidoCasoDeUso registrarAssistido,
+            PontuacaoServico pontuacaoServico,
+            EstrategiaPontuacaoFactory estrategias) {
         this.editarLista = editarLista;
         this.criarLista = criarLista;
         this.obterLista = obterLista;
@@ -89,6 +97,8 @@ public class ListaController {
         this.adicionarColaborador = adicionarColaborador;
         this.removerColaborador = removerColaborador;
         this.registrarAssistido = registrarAssistido;
+        this.pontuacaoServico = pontuacaoServico;
+        this.estrategias = estrategias;
     }
 
     @PutMapping("/{listaId}")
@@ -100,6 +110,8 @@ public class ListaController {
     @PostMapping
     public ResponseEntity<CriarListaResponse> criarLista(@RequestBody CriarListaComando comando) {
         int listaId = criarLista.executar(comando);
+        pontuacaoServico.concederPontos(new UsuarioId(comando.criadorId()), AcaoPontuada.CRIAR_LISTA,
+                estrategias.obter(AcaoPontuada.CRIAR_LISTA));
         return ResponseEntity.status(HttpStatus.CREATED).body(new CriarListaResponse(listaId));
     }
 

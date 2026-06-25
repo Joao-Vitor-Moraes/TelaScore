@@ -1,26 +1,28 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { carregarSessaoSalva, limparSessao, salvarSessao, SESSAO_STORAGE_KEY } from '../services/sessaoStorage';
 
 const AuthContext = createContext(null);
 
-function carregarSessao() {
-  try {
-    const raw = localStorage.getItem('telascore_sessao');
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
 export function AuthProvider({ children }) {
-  const [sessao, setSessao] = useState(carregarSessao);
+  const [sessao, setSessao] = useState(carregarSessaoSalva);
+
+  useEffect(() => {
+    function sincronizarSessao(event) {
+      if (event.key === SESSAO_STORAGE_KEY) {
+        setSessao(carregarSessaoSalva());
+      }
+    }
+
+    window.addEventListener('storage', sincronizarSessao);
+    return () => window.removeEventListener('storage', sincronizarSessao);
+  }, []);
 
   function login(dados) {
-    localStorage.setItem('telascore_sessao', JSON.stringify(dados));
-    setSessao(dados);
+    setSessao(salvarSessao(dados));
   }
 
   function logout() {
-    localStorage.removeItem('telascore_sessao');
+    limparSessao();
     setSessao(null);
   }
 

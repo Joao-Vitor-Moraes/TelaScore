@@ -12,6 +12,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.SessaoUsuar
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.*;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.PontuacaoServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioLogado;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
 
 @RestController
 @RequestMapping("/api/metas")
@@ -27,6 +28,7 @@ public class MetaController {
     private final PontuacaoServico pontuacao;
     private final NotificacaoMetaRepositorio notificacoes;
     private final SessaoUsuario sessao;
+    private final UsuarioRepositorio usuarios;
 
     public MetaController(
             CriarMetaCasoDeUso criarMeta,
@@ -39,7 +41,8 @@ public class MetaController {
             MetaRepositorio metas,
             PontuacaoServico pontuacao,
             NotificacaoMetaRepositorio notificacoes,
-            SessaoUsuario sessao) {
+            SessaoUsuario sessao,
+            UsuarioRepositorio usuarios) {
         this.criarMeta = criarMeta;
         this.adicionarProgresso = adicionarProgresso;
         this.removerProgresso = removerProgresso;
@@ -51,6 +54,7 @@ public class MetaController {
         this.pontuacao = pontuacao;
         this.notificacoes = notificacoes;
         this.sessao = sessao;
+        this.usuarios = usuarios;
     }
 
     @GetMapping
@@ -163,6 +167,12 @@ public class MetaController {
         MetaSistemaResumo criada = criarMetaSistema.executar(new CriarMetaSistemaComando(
                 request.titulo(), request.quantidadeAlvo(), request.duracaoDias(),
                 admin.getId().getId()));
+        usuarios.listarTodos().forEach(usuario -> notificacoes.criarSistema(
+                usuario.getId(),
+                "META_SISTEMA",
+                "Nova meta do sistema",
+                criada.titulo() + " foi adicionada as suas metas.",
+                "/metas"));
         return ResponseEntity.status(HttpStatus.CREATED).body(criada);
     }
 
@@ -208,15 +218,19 @@ public class MetaController {
     public record NotificacaoMetaRequest(boolean ativa) {}
     public record PontuacaoResumo(int totalPontos) {}
     public record NotificacaoMetaResumo(
-            int id, int metaId, String tituloMeta, int pontosGanhos,
-            java.time.LocalDateTime dataCriacao) {
+            int id, Integer metaId, String tituloMeta, int pontosGanhos,
+            java.time.LocalDateTime dataCriacao, String tipo, String titulo, String mensagem, String rota) {
         static NotificacaoMetaResumo de(NotificacaoMeta notificacao) {
             return new NotificacaoMetaResumo(
                     notificacao.id(),
-                    notificacao.metaId().getId(),
+                    notificacao.metaId() == null ? null : notificacao.metaId().getId(),
                     notificacao.tituloMeta(),
                     notificacao.pontosGanhos(),
-                    notificacao.dataCriacao());
+                    notificacao.dataCriacao(),
+                    notificacao.tipo(),
+                    notificacao.titulo(),
+                    notificacao.mensagem(),
+                    notificacao.rota());
         }
     }
 }

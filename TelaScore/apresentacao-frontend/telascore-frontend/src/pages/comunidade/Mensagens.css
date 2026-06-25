@@ -143,6 +143,391 @@
     box-shadow: 0 0 0 3px rgba(229, 9, 20, .09);
 }
 
+.mensagens-container {
+    margin: 0 auto;
+}
+
+.mensagens-painel {
+    min-height: 560px;
+    height: calc(100vh - 165px);
+}
+
+.mensagens-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 15px;
+}
+
+.mensagens-titulo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 0;
+}
+
+.mensagens-titulo h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.mensagens-titulo small {
+    color: var(--muted);
+}
+
+.mensagens-perfil-cabecalho {
+    display: grid;
+    justify-items: start;
+    gap: 2px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    color: white;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+}
+
+.mensagens-perfil-cabecalho:disabled {
+    cursor: default;
+}
+
+.mensagens-perfil-cabecalho:not(:disabled):hover h3 {
+    color: var(--brand-light);
+}
+
+.mensagens-alerta {
+    padding: 10px 12px;
+    border: 1px solid rgba(229, 9, 20, .35);
+    border-radius: 8px;
+    color: #ffd2d5;
+    background: rgba(229, 9, 20, .1);
+    font-size: .9rem;
+}
+
+.mensagens-layout {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: 16px;
+    overflow: hidden;
+}
+
+.mensagens-lista {
+    min-height: 0;
+}
+
+.mensagens-vazio {
+    min-height: 100%;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 8px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.mensagens-vazio strong {
+    color: white;
+}
+
+.mensagem-linha {
+    display: flex;
+    align-items: flex-end;
+    gap: 9px;
+    max-width: 88%;
+}
+
+.mensagem-linha.meu {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.mensagem-linha.outro {
+    align-self: flex-start;
+}
+
+.mensagem-avatar-button {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+}
+
+.mensagens-avatar {
+    display: block;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .12);
+}
+
+.mensagens-avatar--fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: var(--brand);
+    font-weight: 700;
+}
+
+.mensagem-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+    color: rgba(255, 255, 255, .66);
+    font-size: 11px;
+}
+
+.mensagem-meta button {
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
+}
+
+.mensagem-meta button:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.chat-balao p {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.mensagem-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 9px;
+    padding-top: 7px;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+.mensagem-acoes button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 0;
+    color: var(--muted);
+    background: transparent;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.mensagem-acoes button:hover {
+    color: white;
+}
+
+.mensagens-contatos {
+    gap: 9px;
+}
+
+.mensagens-contatos > small {
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.mensagens-contato {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
+    border: 1px solid transparent;
+    color: white;
+    cursor: pointer;
+    text-align: left;
+}
+
+.mensagens-contato-texto {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.mensagens-contato-texto span,
+.mensagens-contato-texto small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mensagens-contato small {
+    color: var(--muted);
+}
+
+.mensagens-contato-perfil {
+    padding: 5px 8px;
+    border-radius: 7px;
+    color: var(--brand-light);
+    background: rgba(229, 9, 20, .12);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.mensagens-contato-perfil:hover {
+    background: rgba(229, 9, 20, .2);
+}
+
+.mensagens-contato.ativo {
+    border-color: rgba(229, 9, 20, .35);
+    background: rgba(229, 9, 20, .12);
+}
+
+.mensagens-contato-vazio {
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+.mensagens-compositor {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mensagens-compositor input {
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: white;
+    background: rgba(255, 255, 255, .05);
+    outline: none;
+}
+
+.mensagens-compositor input:focus {
+    border-color: rgba(229, 9, 20, .65);
+}
+
+.mensagens-icon-button,
+.mensagens-enviar,
+.mensagens-cancelar {
+    height: 44px;
+    border-radius: 8px;
+    border: 0;
+    cursor: pointer;
+}
+
+.mensagens-icon-button {
+    width: 44px;
+    display: grid;
+    place-items: center;
+    color: white;
+    background: rgba(255, 255, 255, .07);
+}
+
+.mensagens-enviar {
+    width: 54px;
+    display: grid;
+    place-items: center;
+    color: white;
+    background: var(--brand);
+}
+
+.mensagens-cancelar {
+    padding: 0 14px;
+    color: #171717;
+    background: #f6c969;
+}
+
+.mensagens-icon-button:disabled,
+.mensagens-enviar:disabled,
+.mensagens-compositor input:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.mensagens-figurinhas {
+    position: absolute;
+    bottom: 56px;
+    left: 0;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: repeat(4, 42px);
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #202025;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, .35);
+}
+
+.mensagens-figurinhas button {
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .06);
+    cursor: pointer;
+    font-size: 1.35rem;
+}
+
+.mensagens-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, .62);
+}
+
+.mensagens-modal {
+    width: min(360px, 100%);
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #202025;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
+}
+
+.mensagens-modal h3 {
+    margin: 0 0 8px;
+}
+
+.mensagens-modal p {
+    margin: 0 0 18px;
+    color: var(--muted);
+}
+
+.mensagens-modal div {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.mensagens-modal button {
+    min-width: 92px;
+    height: 38px;
+    border: 0;
+    border-radius: 8px;
+    color: white;
+    background: rgba(255, 255, 255, .1);
+    cursor: pointer;
+}
+
+.mensagens-modal button.danger {
+    background: var(--brand);
+}
+
 @media (max-width: 760px) {
     .comunidades-grid {
         grid-template-columns: 1fr !important;
@@ -157,10 +542,18 @@
         grid-template-columns: 1fr !important;
     }
 
+    .mensagens-layout {
+        grid-template-columns: 1fr;
+    }
+
     .chat-zona-mensagens {
         border-right: 0;
         border-bottom: 1px solid var(--line);
         padding-bottom: 14px;
         max-height: 350px;
+    }
+
+    .mensagens-contatos {
+        max-height: 170px;
     }
 }

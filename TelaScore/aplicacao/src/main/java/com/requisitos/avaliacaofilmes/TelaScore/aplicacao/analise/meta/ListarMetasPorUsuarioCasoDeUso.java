@@ -16,6 +16,10 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.MetaSistema
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.NotificacaoMetaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.StatusMeta;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.TipoMeta;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.AcaoPontuada;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.EstrategiaPontuacaoProvider;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.Pontos;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.PontuacaoServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.avaliacao.Avaliacao;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.avaliacao.AvaliacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.Filme;
@@ -29,17 +33,23 @@ public class ListarMetasPorUsuarioCasoDeUso {
     private final AvaliacaoRepositorio avaliacaoRepositorio;
     private final FilmeRepositorio filmeRepositorio;
     private final NotificacaoMetaRepositorio notificacoes;
+    private final PontuacaoServico pontuacao;
+    private final EstrategiaPontuacaoProvider estrategias;
 
     public ListarMetasPorUsuarioCasoDeUso(MetaRepositorio repositorio,
             MetaSistemaRepositorio metasSistema, GeradorId geradorId,
             AvaliacaoRepositorio avaliacaoRepositorio, FilmeRepositorio filmeRepositorio,
-            NotificacaoMetaRepositorio notificacoes) {
+            NotificacaoMetaRepositorio notificacoes,
+            PontuacaoServico pontuacao,
+            EstrategiaPontuacaoProvider estrategias) {
         this.repositorio = repositorio;
         this.metasSistema = metasSistema;
         this.geradorId = geradorId;
         this.avaliacaoRepositorio = avaliacaoRepositorio;
         this.filmeRepositorio = filmeRepositorio;
         this.notificacoes = notificacoes;
+        this.pontuacao = pontuacao;
+        this.estrategias = estrategias;
     }
 
     public List<MetaResumo> executar(int usuarioId) {
@@ -93,8 +103,14 @@ public class ListarMetasPorUsuarioCasoDeUso {
             }
             if (!meta.isPontosConcedidos() && meta.getStatus() == StatusMeta.CONCLUIDA) {
                 meta.marcarPontosConcedidos();
-                if (meta.isNotificacaoAtiva()) {
-                    notificacoes.criar(meta.getUsuarioId(), meta.getId(), meta.getTitulo());
+                if (meta.getMetaSistemaId() != null) {
+                    Pontos pontos = pontuacao.concederPontos(
+                            meta.getUsuarioId(),
+                            AcaoPontuada.COMPLETAR_META,
+                            estrategias.obter(AcaoPontuada.COMPLETAR_META));
+                    if (meta.isNotificacaoAtiva()) {
+                        notificacoes.criar(meta.getUsuarioId(), meta.getId(), meta.getTitulo(), pontos.getQuantidade());
+                    }
                 }
                 salvar = true;
             }

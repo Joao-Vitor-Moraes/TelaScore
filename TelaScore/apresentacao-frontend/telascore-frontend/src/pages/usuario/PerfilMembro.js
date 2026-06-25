@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiTarget, FiList, FiArrowLeft, FiCheckCircle, FiClock, FiXCircle } from 'react-icons/fi';
+import { FiTarget, FiList, FiArrowLeft, FiAward, FiCheckCircle, FiClock, FiXCircle, FiUserPlus, FiUserX, FiUsers } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
-import { usuarioService, metaService, listaService } from '../../services/api';
+import { usuarioService, metaService, listaService, amigoService, recompensaService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import './usuario.css';
+
+const NIVEIS_PERFIL = [
+    { nome: 'Explorador', minPontos: 0, cor: '#aeb4c4' },
+    { nome: 'Espectador atento', minPontos: 150, cor: '#8fd7ff' },
+    { nome: 'Cinefilo', minPontos: 450, cor: '#72e49a' },
+    { nome: 'Critico', minPontos: 900, cor: '#f6d66f' },
+    { nome: 'Curador', minPontos: 1600, cor: '#ff9f7f' },
+    { nome: 'Lenda TelaScore', minPontos: 2600, cor: '#ff6f8a' }
+];
 
 export default function PerfilMembro() {
     const { usuarioId } = useParams();
@@ -14,21 +23,32 @@ export default function PerfilMembro() {
     const [perfil, setPerfil] = useState(null);
     const [metas, setMetas] = useState([]);
     const [listas, setListas] = useState([]);
+    const [totalPontos, setTotalPontos] = useState(0);
+    const [statusConexao, setStatusConexao] = useState(null);
     const [carregando, setCarregando] = useState(true);
+    const [salvandoConexao, setSalvandoConexao] = useState(false);
     const [erro, setErro] = useState('');
+    const [erroAcao, setErroAcao] = useState('');
 
     useEffect(() => {
         async function carregar() {
             setCarregando(true);
             try {
-                const [p, m, l] = await Promise.all([
+                const carregamentos = [
                     usuarioService.obterPorId(usuarioId),
                     metaService.listarPorUsuario(usuarioId),
                     listaService.listarPorUsuario(usuarioId, sessao.id),
-                ]);
+                    recompensaService.consultarTotal(usuarioId).catch(() => 0),
+                ];
+                if (Number(usuarioId) !== Number(sessao.id)) {
+                    carregamentos.push(amigoService.status(sessao.id, usuarioId));
+                }
+                const [p, m, l, pontos, status] = await Promise.all(carregamentos);
                 setPerfil(p);
                 setMetas(Array.isArray(m) ? m : []);
                 setListas(Array.isArray(l) ? l : []);
+                setTotalPontos(Number(pontos) || 0);
+                setStatusConexao(status || null);
             } catch {
                 setErro('Não foi possível carregar o perfil deste usuário.');
             } finally {
@@ -37,6 +57,24 @@ export default function PerfilMembro() {
         }
         carregar();
     }, [usuarioId, sessao.id]);
+
+    async function alternarConexao() {
+        setSalvandoConexao(true);
+        setErroAcao('');
+        try {
+            if (statusConexao?.seguindo) {
+                await amigoService.deixarDeSeguir(usuarioId, sessao.id);
+            } else {
+                await amigoService.seguir(sessao.id, usuarioId);
+            }
+            const novoStatus = await amigoService.status(sessao.id, usuarioId);
+            setStatusConexao(novoStatus);
+        } catch (e) {
+            setErroAcao(e.message || 'Não foi possível atualizar a conexão.');
+        } finally {
+            setSalvandoConexao(false);
+        }
+    }
 
     function iconeStatus(status) {
         if (status === 'CONCLUIDA') return <FiCheckCircle style={{ color: '#65dc82' }} />;
@@ -67,7 +105,12 @@ export default function PerfilMembro() {
     }
 
     const inicial = (perfil.apelido || perfil.nome || '?')[0].toUpperCase();
+    const perfilDoUsuarioLogado = Number(usuarioId) === Number(sessao.id);
     const papelDescricao = perfil.papel === 'ADMIN' ? 'Administrador' : 'Cinéfilo';
+    const { atual: nivelAtual, proximo: nivelProximo } = calcularNivelPerfil(totalPontos);
+    const progressoNivel = nivelProximo
+        ? Math.min(((totalPontos - nivelAtual.minPontos) / (nivelProximo.minPontos - nivelAtual.minPontos)) * 100, 100)
+        : 100;
 
     return (
         <div className="cinema-page">
@@ -80,6 +123,8 @@ export default function PerfilMembro() {
                     <FiArrowLeft /> Voltar
                 </button>
 
+                {erroAcao && <div className="analysis-error" style={{ marginBottom: '16px' }}>{erroAcao}</div>}
+
                 {/* Cabeçalho do perfil */}
                 <div className="admin-card" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '28px', padding: '24px' }}>
                     <div style={{
@@ -90,7 +135,7 @@ export default function PerfilMembro() {
                     }}>
                         {!perfil.avatarUrl && inicial}
                     </div>
-                    <div>
+                    <div style={{ flex: 1 }}>
                         <div className="public-profile-name">
                             <h1 style={{ fontSize: '22px', marginBottom: '4px' }}>{perfil.nome}</h1>
                             <span className={`user-badge ${perfil.papel === 'ADMIN' ? 'is-admin' : 'is-user'}`}>
@@ -100,6 +145,45 @@ export default function PerfilMembro() {
                         <p style={{ color: 'var(--brand-light)', fontSize: '14px', marginBottom: '6px' }}>@{perfil.apelido}</p>
                         {perfil.biografia && (
                             <p style={{ color: 'var(--muted)', fontSize: '13px' }}>{perfil.biografia}</p>
+                        )}
+                    </div>
+                    <div style={{ display: 'grid', gap: '10px', justifyItems: 'end', minWidth: '190px' }}>
+                        <div style={{
+                            width: '100%',
+                            padding: '12px',
+                            border: '1px solid var(--line)',
+                            borderRadius: '8px',
+                            background: 'rgba(255,255,255,0.04)'
+                        }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: nivelAtual.cor, fontSize: '12px', fontWeight: 800 }}>
+                                <FiAward /> {nivelAtual.nome}
+                            </span>
+                            <strong style={{ display: 'block', color: 'white', marginTop: '6px', fontSize: '18px' }}>
+                                {totalPontos.toLocaleString('pt-BR')} pts
+                            </strong>
+                            <div style={{ height: '6px', marginTop: '8px', borderRadius: '999px', background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                                <div style={{ width: `${progressoNivel}%`, height: '100%', background: nivelAtual.cor }} />
+                            </div>
+                        </div>
+                        {!perfilDoUsuarioLogado && (
+                            <>
+                            {statusConexao?.amigo && (
+                                <span className="user-badge is-user" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                    <FiUsers /> Amigos
+                                </span>
+                            )}
+                            {statusConexao?.seguidoPor && !statusConexao?.amigo && (
+                                <span style={{ color: 'var(--muted)', fontSize: '12px' }}>Segue você</span>
+                            )}
+                            <button
+                                className={statusConexao?.seguindo ? 'btn-secondary' : 'btn-primary'}
+                                onClick={alternarConexao}
+                                disabled={salvandoConexao}
+                            >
+                                {statusConexao?.seguindo ? <FiUserX /> : <FiUserPlus />}
+                                {salvandoConexao ? 'Atualizando...' : statusConexao?.seguindo ? 'Deixar de seguir' : 'Seguir'}
+                            </button>
+                            </>
                         )}
                     </div>
                 </div>
@@ -182,4 +266,17 @@ export default function PerfilMembro() {
             </main>
         </div>
     );
+}
+
+function calcularNivelPerfil(total) {
+    let atual = NIVEIS_PERFIL[0];
+    let proximo = NIVEIS_PERFIL[1];
+    for (let i = NIVEIS_PERFIL.length - 1; i >= 0; i--) {
+        if (total >= NIVEIS_PERFIL[i].minPontos) {
+            atual = NIVEIS_PERFIL[i];
+            proximo = NIVEIS_PERFIL[i + 1] || null;
+            break;
+        }
+    }
+    return { atual, proximo };
 }

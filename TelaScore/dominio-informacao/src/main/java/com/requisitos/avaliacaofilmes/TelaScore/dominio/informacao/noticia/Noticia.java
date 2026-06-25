@@ -1,74 +1,103 @@
 package com.requisitos.avaliacaofilmes.TelaScore.dominio.informacao.noticia;
 
+import static org.apache.commons.lang3.Validate.isTrue;
 import static org.apache.commons.lang3.Validate.notBlank;
 import static org.apache.commons.lang3.Validate.notNull;
-import static org.apache.commons.lang3.Validate.isTrue;
 
 import java.time.LocalDateTime;
+
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
 public class Noticia {
-	private final NoticiaId id;
-	private final UsuarioId autorId;
-	private final String autorApelido;
+    private final NoticiaId id;
+    private final UsuarioId autorId;
+    private final String autorApelido;
 
-	private String titulo;
-	private String conteudo;
-	private final LocalDateTime dataPublicacao;
-	private CategoriaNoticia categoria;
+    private String titulo;
+    private String conteudo;
+    private final LocalDateTime dataPublicacao;
+    private CategoriaNoticia categoria;
+    private final String filmeId;
+    private final String filmeTitulo;
+    private final String filmeImagemUrl;
 
-	public Noticia(NoticiaId id, UsuarioId autorId, String titulo, String conteudo, CategoriaNoticia categoria) {
-		notNull(id, "O id da notícia não pode ser nulo");
-		notNull(autorId, "O id do autor não pode ser nulo");
+    public Noticia(NoticiaId id, UsuarioId autorId, String titulo, String conteudo, CategoriaNoticia categoria) {
+        this(id, autorId, titulo, conteudo, categoria, null);
+    }
 
-		this.id = id;
-		this.autorId = autorId;
-		this.autorApelido = null;
-		this.dataPublicacao = LocalDateTime.now();
-		this.categoria = categoria;
+    public Noticia(NoticiaId id, UsuarioId autorId, String titulo, String conteudo,
+                   CategoriaNoticia categoria, String filmeId) {
+        notNull(id, "O id da noticia nao pode ser nulo");
+        notNull(autorId, "O id do autor nao pode ser nulo");
 
-		setTitulo(titulo);
-		setConteudo(conteudo);
-	}
+        this.id = id;
+        this.autorId = autorId;
+        this.autorApelido = null;
+        this.dataPublicacao = LocalDateTime.now();
+        this.categoria = categoria;
+        this.filmeId = normalizarFilmeId(filmeId);
+        this.filmeTitulo = null;
+        this.filmeImagemUrl = null;
 
-	public Noticia(NoticiaId id, UsuarioId autorId, String autorApelido, String titulo, String conteudo, LocalDateTime dataPublicacao, CategoriaNoticia categoria) {
-		notNull(id, "O id da notícia não pode ser nulo");
-		notNull(autorId, "O id do autor não pode ser nulo");
-		notNull(dataPublicacao, "A data de publicação não pode ser nula");
+        setTitulo(titulo);
+        setConteudo(conteudo);
+    }
 
-		this.id = id;
-		this.autorId = autorId;
-		this.autorApelido = autorApelido;
-		this.dataPublicacao = dataPublicacao;
-		this.categoria = categoria;
+    public Noticia(NoticiaId id, UsuarioId autorId, String autorApelido, String titulo, String conteudo,
+                   LocalDateTime dataPublicacao, CategoriaNoticia categoria) {
+        this(id, autorId, autorApelido, titulo, conteudo, dataPublicacao, categoria, null, null, null);
+    }
 
-		setTitulo(titulo);
-		setConteudo(conteudo);
-	}
+    public Noticia(NoticiaId id, UsuarioId autorId, String autorApelido, String titulo, String conteudo,
+                   LocalDateTime dataPublicacao, CategoriaNoticia categoria, String filmeId,
+                   String filmeTitulo, String filmeImagemUrl) {
+        notNull(id, "O id da noticia nao pode ser nulo");
+        notNull(autorId, "O id do autor nao pode ser nulo");
+        notNull(dataPublicacao, "A data de publicacao nao pode ser nula");
 
-	public NoticiaId getId() { return id; }
-	public UsuarioId getAutorId() { return autorId; }
-	public String getAutorApelido() { return autorApelido; }
-	public LocalDateTime getDataPublicacao() { return dataPublicacao; }
+        this.id = id;
+        this.autorId = autorId;
+        this.autorApelido = autorApelido;
+        this.dataPublicacao = dataPublicacao;
+        this.categoria = categoria;
+        this.filmeId = normalizarFilmeId(filmeId);
+        this.filmeTitulo = filmeTitulo;
+        this.filmeImagemUrl = filmeImagemUrl;
 
-	public void setTitulo(String titulo) {
-		notNull(titulo, "O título da notícia não pode ser nulo");
-		notBlank(titulo, "O título não pode estar em branco");
-		isTrue(titulo.trim().length() >= 5, "Título muito curto");
-		this.titulo = titulo;
-	}
-	public String getTitulo() { return titulo; }
+        setTitulo(titulo);
+        setConteudo(conteudo);
+    }
 
-	public void setConteudo(String conteudo) {
-		notNull(conteudo, "O conteúdo da notícia não pode ser nulo");
-		notBlank(conteudo, "O conteúdo não pode estar em branco");
-		this.conteudo = conteudo;
-	}
-	public String getConteudo() { return conteudo; }
+    public NoticiaId getId() { return id; }
+    public UsuarioId getAutorId() { return autorId; }
+    public String getAutorApelido() { return autorApelido; }
+    public LocalDateTime getDataPublicacao() { return dataPublicacao; }
+    public String getFilmeId() { return filmeId; }
+    public String getFilmeTitulo() { return filmeTitulo; }
+    public String getFilmeImagemUrl() { return filmeImagemUrl; }
 
-	public CategoriaNoticia getCategoria() { return categoria; }
-	public void setCategoria(CategoriaNoticia categoria) {
-		notNull(categoria, "A categoria não pode ser nula");
-		this.categoria = categoria;
-	}
+    public void setTitulo(String titulo) {
+        notNull(titulo, "O titulo da noticia nao pode ser nulo");
+        notBlank(titulo, "O titulo nao pode estar em branco");
+        isTrue(titulo.trim().length() >= 5, "Titulo muito curto");
+        this.titulo = titulo;
+    }
+    public String getTitulo() { return titulo; }
+
+    public void setConteudo(String conteudo) {
+        notNull(conteudo, "O conteudo da noticia nao pode ser nulo");
+        notBlank(conteudo, "O conteudo nao pode estar em branco");
+        this.conteudo = conteudo;
+    }
+    public String getConteudo() { return conteudo; }
+
+    public CategoriaNoticia getCategoria() { return categoria; }
+    public void setCategoria(CategoriaNoticia categoria) {
+        notNull(categoria, "A categoria nao pode ser nula");
+        this.categoria = categoria;
+    }
+
+    private String normalizarFilmeId(String valor) {
+        return valor == null || valor.isBlank() ? null : valor.trim();
+    }
 }

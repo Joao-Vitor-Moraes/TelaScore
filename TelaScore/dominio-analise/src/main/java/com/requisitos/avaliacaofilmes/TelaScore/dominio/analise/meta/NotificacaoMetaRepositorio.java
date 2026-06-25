@@ -5,7 +5,11 @@ import java.util.List;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
 public interface NotificacaoMetaRepositorio {
-    void criar(UsuarioId usuarioId, MetaId metaId, String tituloMeta);
+    default void criar(UsuarioId usuarioId, MetaId metaId, String tituloMeta) {
+        criar(usuarioId, metaId, tituloMeta, 0);
+    }
+    void criar(UsuarioId usuarioId, MetaId metaId, String tituloMeta, int pontosGanhos);
+    void criarSistema(UsuarioId usuarioId, String tipo, String titulo, String mensagem, String rota);
     List<NotificacaoMeta> listarNaoLidas(UsuarioId usuarioId);
     void marcarComoLida(int notificacaoId, UsuarioId usuarioId);
 }

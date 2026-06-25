@@ -33,7 +33,8 @@ public class NoticiaController {
                 body.autorId(),
                 body.titulo(),
                 body.conteudo(),
-                body.categoria()
+                body.categoria(),
+                body.filmeId()
         );
 
         adicionarNoticia.executar(comando);
@@ -59,6 +60,7 @@ public class NoticiaController {
             int autorId,
             String titulo,
             String conteudo,
-            String categoria
+            String categoria,
+            String filmeId
     ) {}
 }

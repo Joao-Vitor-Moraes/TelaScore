@@ -23,7 +23,7 @@ public class CriarQuizCasoDeUso {
         this.geradorId = geradorId;
     }
 
-    public void executar(CriarQuizComando comando) {
+    public Quiz executar(CriarQuizComando comando) {
         // 1. Pede um novo ID para o Quiz (Siga o padrão do GeradorId)
         // Se ainda não existir o método gerarProximoIdQuiz, você precisará criá-lo na interface GeradorId
         QuizId novoQuizId = new QuizId(geradorId.gerarProximoIdQuiz());
@@ -46,5 +46,6 @@ public class CriarQuizCasoDeUso {
         
         // 5. Salva através do repositório (definido no domínio, implementado na infra)
         quizRepositorio.salvar(quiz);
+        return quiz;
     }
 }
