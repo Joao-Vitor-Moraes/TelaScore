@@ -4,6 +4,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.EnviarMensagemC
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.EnviarMensagemComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.RemoverMensagemCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.RemoverMensagemComando;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.NotificacaoMetaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.conexao.ConexaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.mensagem.Mensagem;
@@ -34,15 +35,18 @@ public class MensagemController {
     private final RemoverMensagemCasoDeUso removerMensagem;
     private final MensagemRepositorio mensagemRepositorio;
     private final ConexaoRepositorio conexaoRepositorio;
+    private final NotificacaoMetaRepositorio notificacoes;
 
     public MensagemController(EnviarMensagemCasoDeUso enviarMensagem,
                               RemoverMensagemCasoDeUso removerMensagem,
                               MensagemRepositorio mensagemRepositorio,
-                              ConexaoRepositorio conexaoRepositorio) {
+                              ConexaoRepositorio conexaoRepositorio,
+                              NotificacaoMetaRepositorio notificacoes) {
         this.enviarMensagem = enviarMensagem;
         this.removerMensagem = removerMensagem;
         this.mensagemRepositorio = mensagemRepositorio;
         this.conexaoRepositorio = conexaoRepositorio;
+        this.notificacoes = notificacoes;
     }
 
     @GetMapping("/privadas/{amigoId}")
@@ -63,6 +67,12 @@ public class MensagemController {
         String texto = normalizarTexto(body.texto(), body.figurinha());
         Mensagem mensagem = enviarMensagem.executar(
                 new EnviarMensagemComando(body.remetenteId(), body.destinatarioId(), texto));
+        notificacoes.criarSistema(
+                new UsuarioId(body.destinatarioId()),
+                "MENSAGEM",
+                "Nova mensagem privada",
+                "Voce recebeu uma nova mensagem privada.",
+                "/mensagens");
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(mensagem));
     }
 

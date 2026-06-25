@@ -3,6 +3,10 @@ package com.requisitos.avaliacaofilmes.TelaScore.apresentacao.catalogo;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.*;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.EditarSolicitacaoCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.EditarSolicitacaoComando;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.NotificacaoMetaRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.PapelUsuario;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioRepositorio;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +26,8 @@ public class SolicitacaoController {
     private final ListarSolicitacoesPorStatusCasoDeUso listarPorStatus;
     private final AvaliarSolicitacaoFilmeCasoDeUso avaliarSolicitacao;
     private final SolicitarAjustesFilmeCasoDeUso solicitarAjustes;
+    private final NotificacaoMetaRepositorio notificacoes;
+    private final UsuarioRepositorio usuarios;
 
     public SolicitacaoController(EditarSolicitacaoCasoDeUso editarSolicitacao,
             SolicitarFilmeCasoDeUso solicitarFilme,
@@ -30,7 +36,9 @@ public class SolicitacaoController {
             ListarSolicitacoesPorSolicitanteCasoDeUso listarPorSolicitante,
             ListarSolicitacoesPorStatusCasoDeUso listarPorStatus,
             AvaliarSolicitacaoFilmeCasoDeUso avaliarSolicitacao,
-            SolicitarAjustesFilmeCasoDeUso solicitarAjustes) {
+            SolicitarAjustesFilmeCasoDeUso solicitarAjustes,
+            NotificacaoMetaRepositorio notificacoes,
+            UsuarioRepositorio usuarios) {
         this.editarSolicitacao = editarSolicitacao;
         this.solicitarFilme = solicitarFilme;
         this.obterSolicitacao = obterSolicitacao;
@@ -39,6 +47,8 @@ public class SolicitacaoController {
         this.listarPorStatus = listarPorStatus;
         this.avaliarSolicitacao = avaliarSolicitacao;
         this.solicitarAjustes = solicitarAjustes;
+        this.notificacoes = notificacoes;
+        this.usuarios = usuarios;
     }
 
     @PutMapping("/{solicitacaoId}")
@@ -57,6 +67,14 @@ public class SolicitacaoController {
     @PostMapping
     public ResponseEntity<SolicitacaoResumo> solicitar(@RequestBody SolicitarFilmeComando comando) {
         SolicitacaoResumo resumo = solicitarFilme.executar(comando);
+        usuarios.listarTodos().stream()
+                .filter(usuario -> usuario.getPapel() == PapelUsuario.ADMIN)
+                .forEach(admin -> notificacoes.criarSistema(
+                        admin.getId(),
+                        "SOLICITACAO",
+                        "Nova solicitacao de filme",
+                        resumo.tituloSugerido() + " aguarda avaliacao.",
+                        "/admin/solicitacoes"));
         return ResponseEntity.status(HttpStatus.CREATED).body(resumo);
     }
 
@@ -71,6 +89,15 @@ public class SolicitacaoController {
     public ResponseEntity<Void> avaliar(@PathVariable int solicitacaoId,
             @RequestBody AvaliarSolicitacaoFilmeComando corpo) {
         avaliarSolicitacao.executar(new AvaliarSolicitacaoFilmeComando(solicitacaoId, corpo.avaliadorId(), corpo.aprovar()));
+        SolicitacaoResumo solicitacao = obterSolicitacao.executar(solicitacaoId);
+        notificacoes.criarSistema(
+                new UsuarioId(solicitacao.solicitanteId()),
+                "SOLICITACAO",
+                corpo.aprovar() ? "Solicitacao aprovada" : "Solicitacao recusada",
+                corpo.aprovar()
+                        ? solicitacao.tituloSugerido() + " foi adicionada ao catalogo."
+                        : solicitacao.tituloSugerido() + " nao foi aprovada desta vez.",
+                "/solicitacoes");
         return ResponseEntity.noContent().build();
     }
 
@@ -78,6 +105,15 @@ public class SolicitacaoController {
     public ResponseEntity<Void> solicitarAjustes(@PathVariable int solicitacaoId,
             @RequestBody SolicitarAjustesFilmeComando corpo) {
         solicitarAjustes.executar(new SolicitarAjustesFilmeComando(solicitacaoId, corpo.avaliadorId(), corpo.feedback()));
+        SolicitacaoResumo solicitacao = obterSolicitacao.executar(solicitacaoId);
+        notificacoes.criarSistema(
+                new UsuarioId(solicitacao.solicitanteId()),
+                "SOLICITACAO",
+                "Ajustes solicitados",
+                corpo.feedback() == null || corpo.feedback().isBlank()
+                        ? "Revise sua solicitacao de filme."
+                        : corpo.feedback(),
+                "/solicitacoes");
         return ResponseEntity.noContent().build();
     }
 

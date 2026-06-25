@@ -11,5 +11,9 @@ public record NotificacaoMeta(
         String tituloMeta,
         int pontosGanhos,
         LocalDateTime dataCriacao,
-        boolean lida) {
+        boolean lida,
+        String tipo,
+        String titulo,
+        String mensagem,
+        String rota) {
 }

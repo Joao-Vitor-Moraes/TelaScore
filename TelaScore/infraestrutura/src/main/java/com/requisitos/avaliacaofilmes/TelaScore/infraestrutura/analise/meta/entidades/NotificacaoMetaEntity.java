@@ -19,14 +19,26 @@ public class NotificacaoMetaEntity {
     @Column(name = "usuario_id", nullable = false)
     private Integer usuarioId;
 
-    @Column(name = "meta_id", nullable = false)
+    @Column(name = "meta_id")
     private Integer metaId;
 
-    @Column(name = "titulo_meta", nullable = false)
+    @Column(name = "titulo_meta")
     private String tituloMeta;
 
     @Column(name = "pontos_ganhos", nullable = false)
     private Integer pontosGanhos;
+
+    @Column
+    private String tipo = "META";
+
+    @Column
+    private String titulo = "Meta concluida";
+
+    @Column(columnDefinition = "TEXT")
+    private String mensagem;
+
+    @Column
+    private String rota;
 
     @Column(name = "data_criacao", nullable = false)
     private LocalDateTime dataCriacao;
@@ -43,6 +55,14 @@ public class NotificacaoMetaEntity {
     public void setTituloMeta(String tituloMeta) { this.tituloMeta = tituloMeta; }
     public Integer getPontosGanhos() { return pontosGanhos; }
     public void setPontosGanhos(Integer pontosGanhos) { this.pontosGanhos = pontosGanhos; }
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
+    public String getTitulo() { return titulo; }
+    public void setTitulo(String titulo) { this.titulo = titulo; }
+    public String getMensagem() { return mensagem; }
+    public void setMensagem(String mensagem) { this.mensagem = mensagem; }
+    public String getRota() { return rota; }
+    public void setRota(String rota) { this.rota = rota; }
     public LocalDateTime getDataCriacao() { return dataCriacao; }
     public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
     public Boolean getLida() { return lida; }

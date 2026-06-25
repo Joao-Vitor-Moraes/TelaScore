@@ -11,6 +11,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.ListarA
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.ListarConexoesCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.SeguirUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.social.conexao.SeguirUsuarioComando;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.NotificacaoMetaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.AcaoPontuada;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.PontuacaoServico;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
@@ -30,6 +31,7 @@ public class ConexaoController {
     private final ConexaoRepositorio conexaoRepositorio;
     private final PontuacaoServico pontuacaoServico;
     private final EstrategiaPontuacaoFactory estrategias;
+    private final NotificacaoMetaRepositorio notificacoes;
 
     public ConexaoController(SeguirUsuarioCasoDeUso seguirUsuario,
                              DeixarDeSeguirCasoDeUso deixarDeSeguir,
@@ -37,7 +39,8 @@ public class ConexaoController {
                              ListarAmigosCasoDeUso listarAmigos,
                              ConexaoRepositorio conexaoRepositorio,
                              PontuacaoServico pontuacaoServico,
-                             EstrategiaPontuacaoFactory estrategias) {
+                             EstrategiaPontuacaoFactory estrategias,
+                             NotificacaoMetaRepositorio notificacoes) {
         this.seguirUsuario = seguirUsuario;
         this.deixarDeSeguir = deixarDeSeguir;
         this.listarConexoes = listarConexoes;
@@ -45,6 +48,7 @@ public class ConexaoController {
         this.conexaoRepositorio = conexaoRepositorio;
         this.pontuacaoServico = pontuacaoServico;
         this.estrategias = estrategias;
+        this.notificacoes = notificacoes;
     }
 
     @PostMapping
@@ -59,6 +63,8 @@ public class ConexaoController {
                     estrategias.obter(AcaoPontuada.CONVIDAR_AMIGO));
             pontuacaoServico.concederPontos(seguido, AcaoPontuada.CONVIDAR_AMIGO,
                     estrategias.obter(AcaoPontuada.CONVIDAR_AMIGO));
+            notificacoes.criarSistema(seguidor, "AMIZADE", "Nova amizade", "Voces agora podem conversar por mensagens privadas.", "/amigos");
+            notificacoes.criarSistema(seguido, "AMIZADE", "Nova amizade", "Voces agora podem conversar por mensagens privadas.", "/amigos");
         }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

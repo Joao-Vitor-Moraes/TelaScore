@@ -25,6 +25,37 @@ public class NotificacaoMetaRepositorioImpl implements NotificacaoMetaRepositori
             entity.setMetaId(metaId.getId());
             entity.setTituloMeta(tituloMeta);
             entity.setPontosGanhos(pontosGanhos);
+            entity.setTipo("META");
+            entity.setTitulo("Meta concluida");
+            entity.setMensagem(tituloMeta + " concluida" + (pontosGanhos > 0 ? " +" + pontosGanhos + " pontos." : "."));
+            entity.setRota("/metas");
+            entity.setDataCriacao(LocalDateTime.now());
+            entity.setLida(false);
+            em.persist(entity);
+            tx.commit();
+        } catch (RuntimeException e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void criarSistema(UsuarioId usuarioId, String tipo, String titulo, String mensagem, String rota) {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            NotificacaoMetaEntity entity = new NotificacaoMetaEntity();
+            entity.setUsuarioId(usuarioId.getId());
+            entity.setMetaId(1);
+            entity.setTituloMeta(titulo);
+            entity.setPontosGanhos(0);
+            entity.setTipo(tipo == null || tipo.isBlank() ? "SISTEMA" : tipo.trim());
+            entity.setTitulo(titulo == null || titulo.isBlank() ? "Notificacao" : titulo.trim());
+            entity.setMensagem(mensagem == null || mensagem.isBlank() ? null : mensagem.trim());
+            entity.setRota(rota == null || rota.isBlank() ? "/" : rota.trim());
             entity.setDataCriacao(LocalDateTime.now());
             entity.setLida(false);
             em.persist(entity);
@@ -78,10 +109,14 @@ public class NotificacaoMetaRepositorioImpl implements NotificacaoMetaRepositori
         return new NotificacaoMeta(
                 entity.getId(),
                 new UsuarioId(entity.getUsuarioId()),
-                new MetaId(entity.getMetaId()),
+                !"META".equals(entity.getTipo()) ? null : new MetaId(entity.getMetaId()),
                 entity.getTituloMeta(),
                 entity.getPontosGanhos(),
                 entity.getDataCriacao(),
-                entity.getLida());
+                entity.getLida(),
+                entity.getTipo(),
+                entity.getTitulo(),
+                entity.getMensagem(),
+                entity.getRota());
     }
 }

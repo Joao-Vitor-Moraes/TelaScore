@@ -12,6 +12,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.analise.recomendacao.R
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.SessaoUsuario;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarFilmeComando;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.meta.NotificacaoMetaRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.Recomendacao;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
@@ -34,6 +35,7 @@ public class RecomendacaoController {
     private final SessaoUsuario sessao;
     private final UsuarioRepositorio usuarios;
     private final AvaliarFilmeCasoDeUso avaliarFilme;
+    private final NotificacaoMetaRepositorio notificacoes;
 
     public RecomendacaoController(EnviarRecomendacaoCasoDeUso enviarRecomendacaoCasoDeUso,
                                   ResponderRecomendacaoCasoDeUso responderRecomendacaoCasoDeUso,
@@ -41,7 +43,8 @@ public class RecomendacaoController {
                                   RecomendacaoRepositorio recomendacoes,
                                   SessaoUsuario sessao,
                                   UsuarioRepositorio usuarios,
-                                  AvaliarFilmeCasoDeUso avaliarFilme) {
+                                  AvaliarFilmeCasoDeUso avaliarFilme,
+                                  NotificacaoMetaRepositorio notificacoes) {
         this.enviarRecomendacaoCasoDeUso = enviarRecomendacaoCasoDeUso;
         this.responderRecomendacaoCasoDeUso = responderRecomendacaoCasoDeUso;
         this.listarRecomendacoesCasoDeUso = listarRecomendacoesCasoDeUso;
@@ -49,6 +52,7 @@ public class RecomendacaoController {
         this.sessao = sessao;
         this.usuarios = usuarios;
         this.avaliarFilme = avaliarFilme;
+        this.notificacoes = notificacoes;
     }
 
     @GetMapping
@@ -104,6 +108,14 @@ public class RecomendacaoController {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Esta recomendação pertence a outro usuário.");
             }
             responderRecomendacaoCasoDeUso.executar(comando);
+            if (recomendacao.getRemetenteId() != null) {
+                notificacoes.criarSistema(
+                        recomendacao.getRemetenteId(),
+                        "RECOMENDACAO_RESPOSTA",
+                        "Recomendacao respondida",
+                        "Sua recomendacao recebeu uma resposta.",
+                        "/recomendacoes");
+            }
             return ResponseEntity.ok("Resposta registrada com sucesso!");
         } catch (ResponseStatusException e) {
             throw e;
