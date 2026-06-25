@@ -1,18 +1,11 @@
+import { obterTokenSessao } from './sessaoStorage';
+
 const BASE_URL = process.env.REACT_APP_API_URL !== undefined
     ? process.env.REACT_APP_API_URL
     : 'http://localhost:8080';
 
-function getToken() {
-  try {
-    const raw = localStorage.getItem('telascore_sessao');
-    return raw ? JSON.parse(raw).token : null;
-  } catch {
-    return null;
-  }
-}
-
 async function request(method, path, body, extraHeaders = {}) {
-  const token = getToken();
+  const token = obterTokenSessao();
   const options = {
     method,
     headers: {
@@ -38,7 +31,7 @@ async function request(method, path, body, extraHeaders = {}) {
 }
 
 async function upload(path, file) {
-  const token = getToken();
+  const token = obterTokenSessao();
   const formData = new FormData();
   formData.append('arquivo', file);
   const res = await fetch(`${BASE_URL}${path}`, {
