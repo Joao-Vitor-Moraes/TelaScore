@@ -28,7 +28,7 @@ public class Mensagem {
 		notNull(destinatarioId, "O id do destinatario nao pode ser nulo");
 		notNull(dataEnvio, "A data de envio da mensagem nao pode ser nula");
 
-		isTrue(!remetenteId.equals(destinatarioId), "O remetente e o destinatario nao podem ser a mesma pessoa");
+		isTrue(!remetenteId.equals(destinatarioId), "O remetente e o destinatário não podem ser a mesma pessoa");
 
 		this.id = id;
 		this.remetenteId = remetenteId;

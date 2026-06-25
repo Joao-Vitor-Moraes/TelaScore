@@ -24,6 +24,13 @@ public class TentativaQuizEntity {
 
     public TentativaQuizEntity() {}
 
+    @PrePersist
+    public void prePersist() {
+        if (dataTentativa == null) {
+            dataTentativa = LocalDateTime.now();
+        }
+    }
+
     public TentativaQuizEntity(int quizId, int usuarioId, int pontuacao, LocalDateTime dataTentativa) {
         this.quizId = quizId;
         this.usuarioId = usuarioId;

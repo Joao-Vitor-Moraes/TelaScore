@@ -88,7 +88,7 @@ public class GeradorIdImpl implements GeradorId {
 
     @Override
     public int gerarProximoIdComunidade() {
-        throw new UnsupportedOperationException("Geracao de ID de comunidade nao implementada neste modulo");
+        return proximoIdNativo("SELECT MAX(id) FROM comunidade");
     }
 
     @Override

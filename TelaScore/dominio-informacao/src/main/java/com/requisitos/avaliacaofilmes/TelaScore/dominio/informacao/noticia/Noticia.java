@@ -79,7 +79,7 @@ public class Noticia {
     public void setTitulo(String titulo) {
         notNull(titulo, "O titulo da noticia nao pode ser nulo");
         notBlank(titulo, "O titulo nao pode estar em branco");
-        isTrue(titulo.trim().length() >= 5, "Titulo muito curto");
+        isTrue(titulo.trim().length() >= 5, "Título muito curto");
         this.titulo = titulo;
     }
     public String getTitulo() { return titulo; }

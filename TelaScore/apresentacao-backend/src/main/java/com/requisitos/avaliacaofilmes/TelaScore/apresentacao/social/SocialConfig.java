@@ -40,8 +40,8 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.mensagem.Mensagem
 public class SocialConfig {
 
     @Bean
-    public CriarComunidadeCasoDeUso criarComunidadeCasoDeUso(ComunidadeRepositorio comunidadeRepositorio) {
-        return new CriarComunidadeCasoDeUso(comunidadeRepositorio);
+    public CriarComunidadeCasoDeUso criarComunidadeCasoDeUso(ComunidadeRepositorio comunidadeRepositorio, GeradorId geradorId) {
+        return new CriarComunidadeCasoDeUso(comunidadeRepositorio, geradorId);
     }
 
     @Bean

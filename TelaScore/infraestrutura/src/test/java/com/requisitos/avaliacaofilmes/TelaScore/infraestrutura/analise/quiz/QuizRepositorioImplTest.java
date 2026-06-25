@@ -22,7 +22,11 @@ class QuizRepositorioImplTest {
         try {
             tx.begin();
             // Cria usuário fantasma isolado para FK da tentativa 
-            em.createNativeQuery("INSERT INTO usuario (id, email, senha) VALUES (:id, 'quiz_usr@test.com', '123') ON DUPLICATE KEY UPDATE id=id")
+            em.createNativeQuery("""
+                    INSERT INTO usuario (id, email, senha, papel_usuario, data_cadastro)
+                    VALUES (:id, 'quiz_usr@test.com', '123', 'CINEFILO', CURRENT_TIMESTAMP)
+                    ON DUPLICATE KEY UPDATE id=id
+                    """)
               .setParameter("id", USUARIO_TESTE_ID).executeUpdate();
             
             // Cria um quiz base direto via SQL 
@@ -51,7 +55,7 @@ class QuizRepositorioImplTest {
         EntityManager em = ConexaoBanco.obterEntityManager();
         em.getTransaction().begin();
         // Simula uma tentativa direto no banco 
-        em.createNativeQuery("INSERT INTO tentativa_quiz (quiz_id, usuario_id, pontuacao) VALUES (:qId, :uId, 1)")
+        em.createNativeQuery("INSERT INTO tentativa_quiz (quiz_id, usuario_id, pontuacao, data_tentativa) VALUES (:qId, :uId, 1, CURRENT_TIMESTAMP)")
           .setParameter("qId", QUIZ_TESTE_ID)
           .setParameter("uId", USUARIO_TESTE_ID)
           .executeUpdate();

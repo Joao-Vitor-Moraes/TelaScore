@@ -23,9 +23,17 @@ class MensagemRepositorioImplTest {
         try {
             tx.begin();
             // Insere o remetente
-            em.createNativeQuery("INSERT INTO usuario (id, email, senha) VALUES (:id, 'rem@t.com', '123') ON DUPLICATE KEY UPDATE id=id").setParameter("id", REMETENTE_ID).executeUpdate();
+            em.createNativeQuery("""
+                    INSERT INTO usuario (id, email, senha, papel_usuario, data_cadastro)
+                    VALUES (:id, 'rem@t.com', '123', 'CINEFILO', CURRENT_TIMESTAMP)
+                    ON DUPLICATE KEY UPDATE id=id
+                    """).setParameter("id", REMETENTE_ID).executeUpdate();
             // Insere o destinatário
-            em.createNativeQuery("INSERT INTO usuario (id, email, senha) VALUES (:id, 'dest@t.com', '123') ON DUPLICATE KEY UPDATE id=id").setParameter("id", DESTINATARIO_ID).executeUpdate();
+            em.createNativeQuery("""
+                    INSERT INTO usuario (id, email, senha, papel_usuario, data_cadastro)
+                    VALUES (:id, 'dest@t.com', '123', 'CINEFILO', CURRENT_TIMESTAMP)
+                    ON DUPLICATE KEY UPDATE id=id
+                    """).setParameter("id", DESTINATARIO_ID).executeUpdate();
             tx.commit();
         } catch (Exception e) {
             if (tx.isActive()) tx.rollback();

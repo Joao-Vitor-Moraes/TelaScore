@@ -3,6 +3,7 @@ package com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.identidade.usuar
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -38,6 +39,16 @@ public class UsuarioEntity {
     private String avatarUrl;
 
     public UsuarioEntity() {
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (dataCadastro == null) {
+            dataCadastro = LocalDateTime.now();
+        }
+        if (papelUsuario == null || papelUsuario.isBlank()) {
+            papelUsuario = "CINEFILO";
+        }
     }
 
     public Integer getId() {

@@ -13,6 +13,10 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.Ponto
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.RegistroPontuacao;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recompensa.RegistroPontuacaoId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.config.ConexaoBanco;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 
 public class RegistroPontuacaoRepositorioImplTest {
 
@@ -33,16 +37,23 @@ public class RegistroPontuacaoRepositorioImplTest {
     }
 
     private void limparBancoDeDados() {
-    try {
-        repositorio.buscarPorUsuario(testeUsuarioId); // sem atribuir variável
-    } catch (Exception e) {
-        // ignora
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            em.createNativeQuery("DELETE FROM registro_pontuacao WHERE usuario_id = :usuarioId OR id IN (9991, 9992, 9999)")
+                    .setParameter("usuarioId", testeUsuarioId.getId())
+                    .executeUpdate();
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+        } finally {
+            em.close();
+        }
     }
-}
 
     @Test
     public void deveSalvarEBuscarRegistroPorUsuario() {
-        // Arrange
         RegistroPontuacao registro = new RegistroPontuacao(
             testeRegistroId,
             testeUsuarioId,
@@ -50,19 +61,16 @@ public class RegistroPontuacaoRepositorioImplTest {
             AcaoPontuada.AVALIAR_FILME
         );
 
-        // Act
         repositorio.salvar(registro);
 
-        // Assert
         List<RegistroPontuacao> registros = repositorio.buscarPorUsuario(testeUsuarioId);
-        assertFalse(registros.isEmpty(), "A lista de registros não deveria estar vazia.");
+        assertFalse(registros.isEmpty(), "A lista de registros nao deveria estar vazia.");
         assertEquals(testeUsuarioId.getId(), registros.get(0).getUsuarioId().getId());
         assertEquals(AcaoPontuada.AVALIAR_FILME, registros.get(0).getAcao());
     }
 
     @Test
     public void deveCalcularTotalDePontosPorUsuario() {
-        // Arrange
         RegistroPontuacao primeiroRegistro = new RegistroPontuacao(
             new RegistroPontuacaoId(9991),
             testeUsuarioId,
@@ -77,38 +85,30 @@ public class RegistroPontuacaoRepositorioImplTest {
             AcaoPontuada.CONVIDAR_AMIGO
         );
 
-        // Act
         repositorio.salvar(primeiroRegistro);
         repositorio.salvar(segundoRegistro);
 
-        // Assert
         Integer total = repositorio.calcularTotalPontos(testeUsuarioId);
-        assertNotNull(total, "O total de pontos não deveria ser nulo.");
+        assertNotNull(total, "O total de pontos nao deveria ser nulo.");
         assertEquals(400, total, "O total de pontos deveria ser 400.");
     }
 
     @Test
     public void deveRetornarZeroQuandoUsuarioSemPontos() {
-        // Arrange — usuário sem nenhum registro
         UsuarioId usuarioSemPontos = new UsuarioId(6666);
 
-        // Act
         Integer total = repositorio.calcularTotalPontos(usuarioSemPontos);
 
-        // Assert
-        assertEquals(0, total, "Usuário sem registros deveria ter 0 pontos.");
+        assertEquals(0, total, "Usuario sem registros deveria ter 0 pontos.");
     }
 
     @Test
     public void deveRetornarListaVaziaParaUsuarioSemRegistros() {
-        // Arrange
         UsuarioId usuarioSemRegistros = new UsuarioId(5555);
 
-        // Act
         List<RegistroPontuacao> registros = repositorio.buscarPorUsuario(usuarioSemRegistros);
 
-        // Assert
-        assertNotNull(registros, "A lista não deveria ser nula.");
-        assertTrue(registros.isEmpty(), "A lista deveria estar vazia para usuário sem registros.");
+        assertNotNull(registros, "A lista nao deveria ser nula.");
+        assertTrue(registros.isEmpty(), "A lista deveria estar vazia para usuario sem registros.");
     }
 }

@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.social.comunidade.*;
+import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.config.ConexaoBanco;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,17 +25,56 @@ public class ComunidadeRepositorioImplTest {
     public void setUp() {
         repositorio = new ComunidadeRepositorioImpl();
         limparBancoDeDados();
+        criarUsuarioDeTeste();
     }
 
     @AfterEach
     public void tearDown() {
         limparBancoDeDados();
+        removerUsuarioDeTeste();
     }
 
     private void limparBancoDeDados() {
         try {
             repositorio.excluirComunidade(testeComunidadeId);
         } catch (Exception e) {
+        }
+    }
+
+    private void criarUsuarioDeTeste() {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            em.createNativeQuery("""
+                    INSERT INTO usuario (id, email, senha, papel_usuario, data_cadastro, apelido)
+                    VALUES (:id, 'membro_comunidade@test.com', '123', 'CINEFILO', CURRENT_TIMESTAMP, 'membro_comunidade')
+                    ON DUPLICATE KEY UPDATE id=id
+                    """)
+                    .setParameter("id", testeUsuarioId.getId())
+                    .executeUpdate();
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    private void removerUsuarioDeTeste() {
+        EntityManager em = ConexaoBanco.obterEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            em.createNativeQuery("DELETE FROM usuario WHERE id = :id")
+                    .setParameter("id", testeUsuarioId.getId())
+                    .executeUpdate();
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+        } finally {
+            em.close();
         }
     }
 

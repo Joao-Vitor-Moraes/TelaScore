@@ -35,7 +35,7 @@ class ListaRepositorioImplTest {
         try {
             tx.begin();
             em.createNativeQuery(
-                "INSERT INTO usuario (id, email, senha, papel_usuario) VALUES (:id, :email, :senha, 'CINEFILO') " +
+                "INSERT INTO usuario (id, email, senha, papel_usuario, data_cadastro) VALUES (:id, :email, :senha, 'CINEFILO', CURRENT_TIMESTAMP) " +
                 "ON DUPLICATE KEY UPDATE email = email"
             )
             .setParameter("id", DONO_ID)
