@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   FiAlertCircle, FiArrowLeft, FiArrowRight, FiAward, FiCheckCircle, FiEdit3,
   FiHelpCircle, FiPlayCircle, FiPlus, FiRefreshCw, FiSearch, FiTrash2, FiX, FiXCircle
@@ -19,6 +20,8 @@ const perguntaInicial = {
 
 export default function Quiz() {
   const { sessao } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [busca, setBusca] = useState('');
   const [erro, setErro] = useState('');
@@ -41,6 +44,18 @@ export default function Quiz() {
   useEffect(() => {
     carregarQuizzes();
   }, []);
+
+  useEffect(() => {
+    const idRecomendado = Number(location.state?.conteudoRecomendadoId);
+    if (!idRecomendado || carregando || quizAtivo) return;
+
+    const quizRecomendado = quizzes.find(quiz => Number(quiz.id) === idRecomendado);
+    if (quizRecomendado) {
+      iniciarQuiz(quizRecomendado);
+      setFeedback(`Quiz recomendado: ${quizRecomendado.titulo}`);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [carregando, location.pathname, location.state?.conteudoRecomendadoId, navigate, quizAtivo, quizzes]);
 
   async function carregarQuizzes() {
     setCarregando(true);

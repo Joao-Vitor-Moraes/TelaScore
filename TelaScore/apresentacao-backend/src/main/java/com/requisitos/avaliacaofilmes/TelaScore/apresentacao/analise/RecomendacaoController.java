@@ -17,6 +17,9 @@ import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.Rec
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.RecomendacaoRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.recomendacao.TipoConteudo;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.Quiz;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizId;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.analise.quiz.QuizRepositorio;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.Filme;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.catalogo.filme.FilmeRepositorio;
@@ -40,6 +43,7 @@ public class RecomendacaoController {
     private final AvaliarFilmeCasoDeUso avaliarFilme;
     private final NotificacaoMetaRepositorio notificacoes;
     private final FilmeRepositorio filmes;
+    private final QuizRepositorio quizzes;
 
     public RecomendacaoController(EnviarRecomendacaoCasoDeUso enviarRecomendacaoCasoDeUso,
                                   ResponderRecomendacaoCasoDeUso responderRecomendacaoCasoDeUso,
@@ -49,7 +53,8 @@ public class RecomendacaoController {
                                   UsuarioRepositorio usuarios,
                                   AvaliarFilmeCasoDeUso avaliarFilme,
                                   NotificacaoMetaRepositorio notificacoes,
-                                  FilmeRepositorio filmes) {
+                                  FilmeRepositorio filmes,
+                                  QuizRepositorio quizzes) {
         this.enviarRecomendacaoCasoDeUso = enviarRecomendacaoCasoDeUso;
         this.responderRecomendacaoCasoDeUso = responderRecomendacaoCasoDeUso;
         this.listarRecomendacoesCasoDeUso = listarRecomendacoesCasoDeUso;
@@ -59,6 +64,7 @@ public class RecomendacaoController {
         this.avaliarFilme = avaliarFilme;
         this.notificacoes = notificacoes;
         this.filmes = filmes;
+        this.quizzes = quizzes;
     }
 
     @GetMapping
@@ -260,13 +266,20 @@ public class RecomendacaoController {
     }
 
     private String tituloConteudo(String tipoConteudo, String conteudoId) {
-        if (!"FILME".equals(tipoConteudo) || conteudoId == null || conteudoId.isBlank()) {
+        if (conteudoId == null || conteudoId.isBlank()) {
             return null;
         }
 
         try {
-            Filme filme = filmes.obter(new FilmeId(conteudoId));
-            return filme == null ? null : filme.getTitulo();
+            if ("FILME".equals(tipoConteudo)) {
+                Filme filme = filmes.obter(new FilmeId(conteudoId));
+                return filme == null ? null : filme.getTitulo();
+            }
+            if ("QUIZ".equals(tipoConteudo)) {
+                Quiz quiz = quizzes.obter(new QuizId(Integer.parseInt(conteudoId)));
+                return quiz == null ? null : quiz.getTitulo();
+            }
+            return null;
         } catch (RuntimeException e) {
             return null;
         }

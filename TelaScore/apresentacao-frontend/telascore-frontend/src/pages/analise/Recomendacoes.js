@@ -155,6 +155,7 @@ export default function Recomendacoes() {
     [conteudosPorChave],
   );
   const obterTitulo = useCallback(recomendacao => {
+    if (recomendacao.tituloConteudo) return recomendacao.tituloConteudo;
     const item = obterConteudo(recomendacao);
     return tituloConteudo(recomendacao.tipoConteudo, item)
       || `${configuracaoTipo(recomendacao.tipoConteudo)?.rotulo || recomendacao.tipoConteudo} #${recomendacao.conteudoId}`;
