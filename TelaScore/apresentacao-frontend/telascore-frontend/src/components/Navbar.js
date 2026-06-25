@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiBell, FiChevronDown, FiFilm, FiLogOut, FiMenu, FiShield, FiUser, FiX } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
-import { filmeService, metaService, recomendacaoService, usuarioService } from '../services/api';
+import { metaService, recomendacaoService, usuarioService } from '../services/api';
 
 const links = [
   { label: 'Filmes', path: '/filmes' },
@@ -77,21 +77,19 @@ export default function Navbar() {
     let ativo = true;
     async function carregarNotificacoes() {
       try {
-        const [recebidas, filmes, sistema] = await Promise.all([
+        const [recebidas, sistema] = await Promise.all([
           recomendacaoService.listar(),
-          filmeService.listar(),
           metaService.listarNotificacoes(),
         ]);
         if (!ativo) return;
 
-        const titulos = Object.fromEntries(filmes.map(filme => [String(filme.id), filme.titulo]));
         const recomendacoes = recebidas
           .filter(recomendacao => recomendacao.status === 'PENDENTE')
           .map(recomendacao => ({
             ...recomendacao,
             chave: `recomendacao-${recomendacao.id}`,
             tipoNotificacao: 'RECOMENDACAO',
-            titulo: titulos[String(recomendacao.conteudoId)] || 'Filme recomendado',
+            titulo: recomendacao.tituloConteudo || tituloConteudoRecomendado(recomendacao),
             subtitulo: `Recomendado por @${recomendacao.remetenteApelido || 'usuario'}`,
             rota: '/recomendacoes',
           }));
@@ -287,6 +285,11 @@ function subtituloNotificacao(tipo) {
     RECOMENDACAO_RESPOSTA: 'Resposta de recomendacao',
   };
   return subtitulos[tipo] || 'Atualizacao do sistema';
+}
+
+function tituloConteudoRecomendado(recomendacao) {
+  if (recomendacao.tipoConteudo === 'FILME') return `Filme #${recomendacao.conteudoId}`;
+  return 'Conteudo recomendado';
 }
 
 function formatarDataNotificacao(valor) {
