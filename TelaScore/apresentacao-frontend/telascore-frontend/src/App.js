@@ -33,6 +33,7 @@ import Quiz from './pages/analise/Quiz';
 import Mensagens from './pages/comunidade/Mensagens';
 import Amigos from './pages/social/Amigos';
 import Recompensas from './pages/analise/Recompensas';
+import Hub from './pages/hub/Hub';
 
 function App() {
   return (
@@ -40,6 +41,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+
+            <Route path="/hub/:area" element={<RotaProtegida><Hub /></RotaProtegida>} />
 
             {/* Filmes */}
             <Route path="/filmes" element={<RotaProtegida><Filmes /></RotaProtegida>} />

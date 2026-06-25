@@ -1,28 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FiBell, FiChevronDown, FiFilm, FiLogOut, FiMenu, FiShield, FiUser, FiX } from 'react-icons/fi';
+import { FiBell, FiChevronDown, FiCompass, FiFilm, FiLogOut, FiMenu, FiStar, FiTrendingUp, FiUsers, FiShield, FiUser, FiX } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import { metaService, recomendacaoService, usuarioService } from '../services/api';
 
 const links = [
-  { label: 'Filmes', path: '/filmes' },
-  { label: 'Listas', path: '/listas' },
-  { label: 'Watchlist', path: '/watchlist' },
-  { label: 'Metas', path: '/metas' },
-  { label: 'Recomendacoes', path: '/recomendacoes' },
-  { label: 'Comunidades', path: '/comunidades' },
-  { label: 'Amigos', path: '/amigos' },
-  { label: 'Noticias', path: '/noticias' },
-  { label: 'Calendario', path: '/calendario' },
-  { label: 'Eventos', path: '/eventos' },
-  { label: 'Solicitacoes', path: '/solicitacoes' },
-  { label: 'Denuncias', path: '/denuncias' },
-  { label: 'Quizzes', path: '/quiz' },
-  { label: 'Nivel', path: '/recompensas' },
-  { label: 'Mensagens', path: '/mensagens' },
+  { label: 'Inicio', path: '/filmes', icon: FiStar, rotas: ['/', '/filmes'], ignorarPrefixo: ['/filmes'] },
+  { label: 'Filmes', path: '/hub/filmes', icon: FiFilm, rotas: ['/hub/filmes', '/filmes/novo', '/filmes', '/listas', '/watchlist', '/solicitacoes', '/admin/solicitacoes'], ignorarPrefixo: ['/filmes'] },
+  { label: 'Social', path: '/hub/social', icon: FiUsers, rotas: ['/hub/social', '/amigos', '/mensagens', '/comunidades', '/denuncias', '/admin/denuncias'] },
+  { label: 'Descobrir', path: '/hub/descobrir', icon: FiCompass, rotas: ['/hub/descobrir', '/noticias', '/quiz', '/recomendacoes', '/eventos', '/calendario'] },
+  { label: 'Progresso', path: '/hub/progresso', icon: FiTrendingUp, rotas: ['/hub/progresso', '/metas', '/recompensas'] },
 ];
-
-const NAV_SCROLL_KEY = 'telascore:navbar-scroll-left';
 
 export default function Navbar() {
   const [perfilAberto, setPerfilAberto] = useState(false);
@@ -30,29 +18,9 @@ export default function Navbar() {
   const [usuario, setUsuario] = useState(null);
   const [notificacoes, setNotificacoes] = useState([]);
   const [notificacoesAbertas, setNotificacoesAbertas] = useState(false);
-  const navRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { sessao, logout } = useAuth();
-
-  useEffect(() => {
-    const nav = navRef.current;
-    if (!nav) return undefined;
-
-    const salvo = Number(window.sessionStorage.getItem(NAV_SCROLL_KEY));
-    if (!Number.isNaN(salvo)) {
-      window.requestAnimationFrame(() => {
-        nav.scrollLeft = salvo;
-      });
-    }
-
-    const guardarPosicao = () => {
-      window.sessionStorage.setItem(NAV_SCROLL_KEY, String(nav.scrollLeft));
-    };
-
-    nav.addEventListener('scroll', guardarPosicao, { passive: true });
-    return () => nav.removeEventListener('scroll', guardarPosicao);
-  }, []);
 
   useEffect(() => {
     let ativo = true;
@@ -124,9 +92,6 @@ export default function Navbar() {
   }, [sessao?.id]);
 
   const navegar = path => {
-    if (navRef.current) {
-      window.sessionStorage.setItem(NAV_SCROLL_KEY, String(navRef.current.scrollLeft));
-    }
     navigate(path);
     setPerfilAberto(false);
     setNotificacoesAbertas(false);
@@ -151,7 +116,6 @@ export default function Navbar() {
     navigate('/login');
   }
 
-  const rotaSolicitacoes = sessao?.papel === 'ADMIN' ? '/admin/solicitacoes' : '/solicitacoes';
   const nomeExibicao = usuario?.nome || (sessao?.papel === 'ADMIN' ? 'Administrador' : 'Usuario');
   const detalheExibicao = usuario?.apelido ? `@${usuario.apelido.replace(/^@/, '')}` : usuario?.papel;
   const inicial = (usuario?.apelido || usuario?.nome || '?').trim().charAt(0).toUpperCase();
@@ -165,15 +129,18 @@ export default function Navbar() {
           </button>
           {mobileAberto && (
             <div className="header-dropdown mobile-dropdown">
-              {links.map(link => (
+              {links.map(link => {
+                const Icone = link.icon;
+                return (
                 <button
                   key={link.path}
                   className="dropdown-action"
-                  onClick={() => navegar(link.label === 'Solicitacoes' ? rotaSolicitacoes : link.path)}
+                  onClick={() => navegar(link.path)}
                 >
+                  <Icone />
                   {link.label}
                 </button>
-              ))}
+              );})}
             </div>
           )}
         </div>
@@ -183,12 +150,17 @@ export default function Navbar() {
           <span className="brand__name">TelaScore</span>
         </button>
 
-        <nav className="desktop-nav" ref={navRef}>
+        <nav className="desktop-nav">
           {links.map(link => {
-            const path = link.label === 'Solicitacoes' ? rotaSolicitacoes : link.path;
-            const ativo = location.pathname === path || (path !== '/filmes' && location.pathname.startsWith(`${path}/`));
+            const path = link.path;
+            const ativo = link.rotas.some(rota => {
+              const prefixoBloqueado = link.ignorarPrefixo?.includes(rota);
+              return location.pathname === rota || (!prefixoBloqueado && location.pathname.startsWith(`${rota}/`));
+            });
+            const Icone = link.icon;
             return (
               <button key={link.path} className={`nav-link ${ativo ? 'is-active' : ''}`} onClick={() => navegar(path)}>
+                <Icone />
                 {link.label}
               </button>
             );
@@ -261,6 +233,7 @@ export default function Navbar() {
                   <strong>{nomeExibicao}</strong>
                   {detalheExibicao && <span>{detalheExibicao}</span>}
                 </div>
+                <button className="dropdown-action" onClick={() => navegar('/hub/perfil')}><FiUser /> Perfil e conta</button>
                 <button className="dropdown-action" onClick={() => navegar('/meuusuario')}><FiUser /> Meu perfil</button>
                 {sessao?.papel === 'ADMIN' && (
                   <button className="dropdown-action" onClick={() => navegar('/admin/solicitacoes')}><FiShield /> Administracao</button>
