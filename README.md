@@ -1,60 +1,50 @@
-# 🎬 TelaScore
+# TelaScore
 
-Sistema de gerenciamento de avaliações de filmes inspirado em plataformas como
-Letterboxd, permitindo que cinéfilos registrem, organizem e compartilhem suas
-experiências cinematográficas.
+Sistema web para avaliação, organização e descoberta de filmes, com recursos sociais inspirados em plataformas como Letterboxd. A aplicação permite consultar filmes, criar listas, registrar avaliações, acompanhar metas, responder quizzes, receber recomendações, publicar notícias e interagir com outros usuários.
 
-## 🌎 Descrição do domínio
+## Visão Geral
 
-O TelaScore é uma plataforma social voltada para cinéfilos e amantes do cinema.
-Seu domínio envolve o registro, a organização e o compartilhamento de
-experiências cinematográficas.
+O TelaScore está dividido em cinco contextos principais:
 
-Os usuários podem consultar filmes, registrar avaliações e resenhas, organizar
-obras em listas personalizadas e manter uma watchlist com os títulos que
-pretendem assistir.
-
-A plataforma também permite solicitar a inclusão de filmes que ainda não
-estejam no catálogo. Essas solicitações são analisadas pelos administradores,
-que podem aprová-las, rejeitá-las ou solicitar ajustes.
-
-O aspecto social inclui recomendações de filmes entre usuários e comunidades
-temáticas para interação entre pessoas com interesses semelhantes.
-
-Para incentivar o engajamento, os usuários podem definir metas pessoais, como
-assistir determinada quantidade de filmes dentro de um prazo, acompanhando o
-progresso até sua conclusão.
-
-O projeto está organizado em diferentes contextos de domínio:
-
-- **Identidade:** cadastro, autenticação e gerenciamento de usuários.
-- **Catálogo:** filmes, avaliações, listas, watchlist e solicitações.
-- **Análise:** metas, recomendações, quizzes e recompensas.
-- **Social:** comunidades, conexões e mensagens.
+- **Identidade:** cadastro, login, perfil, autenticação por token e permissões de administrador.
+- **Catálogo:** filmes, avaliações, listas, watchlist, solicitações de novos filmes e importação via TMDB.
+- **Análise:** metas, recomendações, quizzes, níveis, pontuação, recompensas e notificações.
+- **Social:** amizades/conexões, comunidades, denúncias e mensagens privadas.
 - **Informação:** notícias, eventos e calendário de estreias.
-
-## 🗺️ Mapa de histórias do usuário
-
-![Mapa de histórias do usuário](https://github.com/user-attachments/assets/747b329e-ab8a-48be-bec4-59d4eb23d782)
-
-## 🎨 Protótipos
-
-[Acessar os protótipos digitalizados](https://drive.google.com/drive/folders/1E7BqRoQI8SytqiydP5ptddj06PrGCgtM?usp=sharing)
 
 ## Tecnologias
 
-- Java 17, Spring Boot e Maven
+- Java 17
+- Spring Boot 4
+- Maven
 - React
 - MySQL 8
 - Docker Compose
+- Nginx para servir o frontend em container
 
-## ▶️ Como executar
+## Estrutura
 
-### Opção 1 — Docker (recomendado)
+```text
+TelaScore/
+|-- aplicacao/                 # Casos de uso
+|-- apresentacao-backend/      # Controllers, segurança e configuração da API
+|-- apresentacao-frontend/     # Aplicação React
+|-- dominio-analise/           # Metas, quizzes, recomendações e recompensas
+|-- dominio-catalogo/          # Filmes, listas, avaliações e solicitações
+|-- dominio-compartilhado/     # Tipos compartilhados
+|-- dominio-identidade/        # Usuários e autenticação
+|-- dominio-informacao/        # Notícias, eventos e calendário
+|-- dominio-social/            # Conexões, comunidades, mensagens e denúncias
+`-- infraestrutura/            # Persistência JPA, repositórios e integrações
+```
+
+## Como Executar
+
+### Docker
 
 Pré-requisito: Docker Desktop instalado e em execução.
 
-Na pasta onde está o arquivo `docker-compose.yml`, rode:
+Na pasta onde está o `docker-compose.yml`, rode:
 
 ```powershell
 docker compose up --build
@@ -66,97 +56,136 @@ Acesse:
 - API: `http://localhost:8080`
 - MySQL externo: `localhost:3307`
 
-O Docker inicia automaticamente frontend, backend e MySQL. O banco
-`telascore_db` e suas tabelas são criados na primeira execução.
-
-#### Parar
+Para parar:
 
 ```powershell
 docker compose down
 ```
 
-#### Recriar o banco
+Para recriar o banco do zero:
 
 ```powershell
 docker compose down -v
 docker compose up --build
 ```
 
-Os scripts de inicialização ficam em:
+Os scripts de inicialização do banco ficam em `docker/mysql/init`.
 
-```text
-docker/mysql/init
-```
+### Execução Local
 
----
+Pré-requisitos: Java 17, Maven, Node.js e MySQL 8.
 
-### Opção 2 — Sem Docker (local)
-
-Pré-requisitos: Java 17, Maven, Node.js e MySQL 8 instalados localmente.
-
-#### 1. Banco de dados
-
-Crie o banco e as tabelas via MySQL (ou MySQL Workbench):
+1. Crie o banco:
 
 ```sql
 CREATE DATABASE IF NOT EXISTS telascore_db;
 ```
 
-> As tabelas são criadas automaticamente pelo Hibernate na primeira
-> inicialização do backend (`hibernate.hbm2ddl.auto=update`).
-
-#### 2. Backend
-
-Abra um terminal **na pasta raiz do projeto** (onde está o `docker-compose.yml`) e rode tudo no mesmo terminal:
+2. Suba o backend:
 
 ```powershell
-# 1. Variáveis de ambiente (substitua a senha)
+cd TelaScore
 $env:DB_URL = "jdbc:mysql://localhost:3306/telascore_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
 $env:DB_USER = "root"
 $env:DB_PASSWORD = "sua_senha_aqui"
 $env:TELASCORE_TOKEN_SECRET = "TelaScore-token-dev-secret"
-
-# 2. Build completo (apenas na primeira vez ou após mudanças nos módulos)
-cd TelaScore
 mvn clean install "-Dmaven.test.skip=true"
-
-# 3. Subir o backend
 cd apresentacao-backend
 mvn spring-boot:run "-Dmaven.test.skip=true"
 ```
 
-A API estará disponível em `http://localhost:8080`.
-
-#### 3. Frontend
-
-Em outro terminal:
+3. Suba o frontend:
 
 ```powershell
 cd TelaScore\apresentacao-frontend\telascore-frontend
-npm install   # apenas na primeira vez
+npm install
 npm start
 ```
 
-A aplicação abrirá em `http://localhost:3000`.
+## Acesso Inicial
 
-## Acesso inicial
-
-É possível criar uma conta pela tela de login. Também existe o administrador:
+É possível criar uma conta pela tela de login. Também existe um administrador inicial:
 
 ```text
 E-mail: admin@admin.com
 Senha: admin123
 ```
 
+## Variáveis de Ambiente
+
+| Variável | Uso | Valor comum em desenvolvimento |
+|---|---|---|
+| `DB_URL` | URL JDBC do MySQL | `jdbc:mysql://localhost:3307/telascore_db?...` |
+| `DB_USER` | Usuário do banco | `telascore` ou `root` |
+| `DB_PASSWORD` | Senha do banco | definida no `.env` |
+| `TELASCORE_TOKEN_SECRET` | Assinatura dos tokens | segredo local de desenvolvimento |
+| `REACT_APP_API_URL` | URL da API quando o React roda fora do Docker | `http://localhost:8080` |
+| `TMDB_API_KEY` | Importação de catálogo pela TMDB | chave pessoal da API |
+
+## Funcionalidades
+
+- Login, cadastro, sessão persistida e perfis de usuário.
+- Catálogo de filmes com busca, detalhes, avaliações e solicitação de inclusão.
+- Listas, watchlist e gerenciamento de filmes assistidos.
+- Notícias com menção opcional a filmes e visualização do filme relacionado.
+- Quizzes conectados ao backend, com respostas, histórico e pontuação.
+- Recomendações baseadas em avaliações, watchlist, quizzes e preferências.
+- Sistema de nível com pontos por atividades concluídas.
+- Metas pessoais e metas de sistema, com pontuação controlada conforme o tipo da meta.
+- Amizades/conexões, DMs baseadas em amigos e notificações sociais.
+- Comunidades, denúncias e moderação por administrador.
+- Notificações no sino para eventos do sistema, social, metas, recomendações e mensagens.
+- Navbar compacta por hubs para reduzir poluição visual sem remover funcionalidades.
+- Diálogos próprios da aplicação no lugar de `alert`, `confirm` e `prompt` nativos do navegador.
+
 ## Padrões de Projeto
 
-| Integrante | Padrão | Funcionalidade | Classes |
+| Padrão | Módulo | Uso principal | Classes principais |
 |---|---|---|---|
-| João Vitor Moraes | Iterator | Lista | `IteradorDeItens`, `IteradorSequencialDeItens`, `IteradorRanqueadoDeItens`, `Lista` (dominio-catalogo) · `ConsultarItensListaCasoDeUso` (aplicacao) |
-| Ester Carvalho | — | — | — |
-| Célio Pereira | — | — | — |
-| Guilherme Vinicius | Template Method | Metas | `AtualizadorMetaTemplate`, `AtualizadorMetaComNotificacao`, `AtualizadorMetaSilencioso` (aplicacao) · `AdicionarProgressoMetaCasoDeUso` (aplicacao) · atualização do progresso, pontuação e notificação de conclusão |
-| Fátima Beatriz Moraes | — | — | — |
-| Caio Almeida | Decorator | Quiz | `QuizDecorator`, `QuizBase`, `QuizComRestricao` (dominio-analise) , `ResponderQuizCasoDeUso` (aplicacao) |
-| Gabriel Reis | Iterator | Denúncia | `MapeadorDesnunciasComIterador`, `iteradorDeDenuncias`,`iteradorSequencialDeDenuncias` |
-| Rodrigo Souza | Proxy | Comunidades | `EntrarComunidade`, `EntrarComunidadeProxy` (aplicacao) · `ErroProxyHandler` (apresentacao-backend) |
+| Iterator | Catálogo | Percorrer itens de listas normais e ranqueadas sem expor a estrutura interna | `IteradorDeItens`, `IteradorSequencialDeItens`, `IteradorRanqueadoDeItens`, `Lista`, `ConsultarItensListaCasoDeUso` |
+| Iterator | Social | Percorrer denúncias antes de montar os resumos da aplicação | `ColecaoDenuncias`, `IteradorDeDenuncias`, `IteradorSequencialDeDenuncias`, `MapeadorDenunciasComIterador` |
+| Template Method | Análise | Centralizar o fluxo de atualização de metas e variar apenas efeitos como notificação e pontuação | `AtualizadorMetaTemplate`, `AtualizadorMetaComNotificacao`, `AtualizadorMetaSilencioso`, `AdicionarProgressoMetaCasoDeUso` |
+| Decorator | Análise | Adicionar restrições ao quiz sem alterar o componente base | `QuizComponent`, `QuizBase`, `QuizDecorator`, `QuizComRestricao`, `ResponderQuizCasoDeUso` |
+| Decorator | Social/Infraestrutura | Adicionar logging ao repositório de mensagens sem alterar a implementação persistente | `MensagemRepositorioLoggingDecorator`, `MensagemRepositorioImpl` |
+| Proxy | Social | Controlar regras de entrada em comunidades antes de chamar o caso de uso real | `EntrarComunidade`, `EntrarComunidadeProxy`, `ErroProxyHandler` |
+| Observer | Catálogo | Reagir a mudanças de filmes e avaliações, como remoção de avaliações associadas e atualização de média | `FilmeObserver`, `FilmeServico`, `RemoverAvaliacoesDoFilmeObserver`, `AvaliacaoObserver`, `MediaNotasObserver`, `AvaliacaoLogObserver` |
+| Observer | Informação | Notificar interessados quando uma estreia entra no calendário | `ObservadorEstreia`, `CalendarioEstreia`, `CalendarioServico`, `NotificadorPush` |
+| Strategy + Factory | Análise | Calcular pontos por tipo de atividade concluída | `EstrategiaPontuacaoFactory`, estratégias de pontuação e `PontuacaoServico` |
+| Singleton | Infraestrutura | Manter uma fábrica compartilhada de `EntityManager` para persistência JPA legada | `ConexaoBanco` |
+
+## Validação e Testes
+
+Backend:
+
+```powershell
+cd TelaScore
+mvn test
+```
+
+Build do backend usado pelo Docker:
+
+```powershell
+cd TelaScore
+mvn -pl apresentacao-backend -am package "-Dmaven.test.skip=true"
+```
+
+Frontend:
+
+```powershell
+cd TelaScore\apresentacao-frontend\telascore-frontend
+npm run build
+```
+
+Validações rápidas úteis depois de subir com Docker:
+
+```powershell
+docker compose ps
+Invoke-RestMethod http://localhost:3000/api/quizzes
+Invoke-RestMethod http://localhost:3000/api/filmes
+```
+
+
+## Protótipos e Material de Apoio
+
+- [Protótipos digitalizados](https://drive.google.com/drive/folders/1E7BqRoQI8SytqiydP5ptddj06PrGCgtM?usp=sharing)
+- [Mapa de histórias do usuário](https://github.com/user-attachments/assets/747b329e-ab8a-48be-bec4-59d4eb23d782)
