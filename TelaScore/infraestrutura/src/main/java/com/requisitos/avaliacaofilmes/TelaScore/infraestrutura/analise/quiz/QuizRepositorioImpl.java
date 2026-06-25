@@ -13,6 +13,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.enti
 import com.requisitos.avaliacaofilmes.TelaScore.infraestrutura.analise.quiz.entidades.TentativaQuizEntity;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.Objects;
 
 public class QuizRepositorioImpl implements QuizRepositorio {
     private final EntityManager entityManager;
@@ -43,7 +44,7 @@ public class QuizRepositorioImpl implements QuizRepositorio {
     @Override
     public Quiz obter(QuizId id) {
         QuizEntity entity = entityManager.find(QuizEntity.class, id.getId());
-        return entity == null ? null : mapearDominio(entity);
+        return entity == null ? null : mapearDominioSeguro(entity);
     }
 
     @Override
@@ -51,7 +52,8 @@ public class QuizRepositorioImpl implements QuizRepositorio {
         return entityManager.createQuery("SELECT q FROM QuizEntity q ORDER BY q.id DESC", QuizEntity.class)
                 .getResultList()
                 .stream()
-                .map(this::mapearDominio)
+                .map(this::mapearDominioSeguro)
+                .filter(Objects::nonNull)
                 .toList();
     }
 
@@ -128,5 +130,13 @@ public class QuizRepositorioImpl implements QuizRepositorio {
             quiz.adicionarPergunta(new Pergunta(perguntaEntity.getTexto(), alternativas));
         });
         return quiz;
+    }
+
+    private Quiz mapearDominioSeguro(QuizEntity entity) {
+        try {
+            return mapearDominio(entity);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return null;
+        }
     }
 }
