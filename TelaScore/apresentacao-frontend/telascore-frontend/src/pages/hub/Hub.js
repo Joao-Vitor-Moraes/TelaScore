@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   FiAward, FiCalendar, FiCompass, FiEdit3, FiFilm, FiFlag, FiGrid, FiHeart,
-  FiInbox, FiList, FiMessageCircle, FiPlus, FiShield, FiStar, FiTarget,
+  FiInbox, FiList, FiMessageCircle, FiShield, FiStar, FiTarget,
   FiTrendingUp, FiUser, FiUsers
 } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
@@ -18,7 +18,6 @@ const hubsBase = {
       { titulo: 'Minhas listas', descricao: 'Organizar coleções pessoais.', rota: '/listas', icone: FiList },
       { titulo: 'Watchlist', descricao: 'Acompanhar o que pretende assistir.', rota: '/watchlist', icone: FiHeart },
       { titulo: 'Solicitações', descricao: 'Pedir filmes ou acompanhar pedidos.', rota: '/solicitacoes', rotaAdmin: '/admin/solicitacoes', icone: FiInbox },
-      { titulo: 'Solicitar filme', descricao: 'Enviar uma nova sugestão ao catálogo.', rota: '/solicitacoes/nova', apenasUsuario: true, icone: FiPlus },
       { titulo: 'Novo filme', descricao: 'Cadastrar um título diretamente.', rota: '/filmes/novo', apenasAdmin: true, icone: FiEdit3 },
     ],
   },
@@ -43,7 +42,6 @@ const hubsBase = {
       { titulo: 'Quizzes', descricao: 'Responder e criar desafios.', rota: '/quiz', icone: FiStar },
       { titulo: 'Recomendações', descricao: 'Indicações recebidas e enviadas.', rota: '/recomendacoes', icone: FiCompass },
       { titulo: 'Eventos', descricao: 'Sessões, encontros e estreias.', rota: '/eventos', icone: FiCalendar },
-      { titulo: 'Criar evento', descricao: 'Agendar um novo evento.', rota: '/eventos/novo', icone: FiPlus },
       { titulo: 'Calendário', descricao: 'Visualizar datas importantes.', rota: '/calendario', icone: FiCalendar },
     ],
   },
