@@ -201,7 +201,7 @@ export default function FilmeDetalhe() {
                     Editar
                   </button>
                   <button
-                    style={{ ...styles.btnAcaoTexto, color: '#e94560' }}
+                    style={{ ...styles.btnAcaoTexto, ...styles.btnAcaoPerigo }}
                     onClick={() => handleRemoverAvaliacao(minhaAvaliacao.avaliacaoId)}
                   >
                     Remover
@@ -374,13 +374,15 @@ const styles = {
   btnEditar: {
     marginTop: '8px',
     alignSelf: 'flex-start',
-    padding: '8px 16px',
-    borderRadius: '6px',
-    border: '1px solid #aaa',
-    backgroundColor: 'transparent',
-    color: 'white',
+    minHeight: '38px',
+    padding: '9px 18px',
+    borderRadius: '999px',
+    border: '1px solid rgba(255,255,255,0.68)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    color: '#fff',
     cursor: 'pointer',
     fontSize: '13px',
+    fontWeight: '800',
   },
   secao: {
     marginBottom: '40px',
@@ -423,15 +425,23 @@ const styles = {
   acoesAvaliacao: {
     marginLeft: 'auto',
     display: 'flex',
-    gap: '12px',
+    gap: '10px',
   },
   btnAcaoTexto: {
-    background: 'none',
-    border: 'none',
-    color: '#aaa',
+    minHeight: '34px',
+    padding: '7px 13px',
+    borderRadius: '999px',
+    border: '1px solid rgba(255,255,255,0.52)',
+    background: 'rgba(255,255,255,0.08)',
+    color: '#fff',
     cursor: 'pointer',
     fontSize: '13px',
-    padding: 0,
+    fontWeight: '800',
+  },
+  btnAcaoPerigo: {
+    border: '1px solid rgba(255,77,94,0.62)',
+    background: 'rgba(255,77,94,0.12)',
+    color: '#ff8c98',
   },
   avaliacaoResenha: {
     color: '#ccc',
@@ -492,14 +502,17 @@ const styles = {
   },
   btnEnviar: {
     alignSelf: 'flex-end',
-    padding: '10px 24px',
-    borderRadius: '6px',
-    border: 'none',
-    backgroundColor: '#e94560',
-    color: 'white',
+    minHeight: '44px',
+    padding: '11px 26px',
+    borderRadius: '999px',
+    border: '1px solid rgba(255,255,255,0.14)',
+    backgroundColor: '#ff2f48',
+    color: '#fff',
     cursor: 'pointer',
     fontSize: '14px',
-    fontWeight: 'bold',
+    fontWeight: '800',
+    boxShadow: '0 14px 28px rgba(255,47,72,0.26)',
+    textShadow: '0 1px 1px rgba(0,0,0,0.28)',
   },
   formBotoes: {
     display: 'flex',
@@ -507,23 +520,28 @@ const styles = {
     gap: '10px',
   },
   btnCancelar: {
-    padding: '8px 18px',
-    borderRadius: '6px',
-    border: '1px solid #aaa',
-    backgroundColor: 'transparent',
-    color: 'white',
+    minHeight: '38px',
+    padding: '9px 18px',
+    borderRadius: '999px',
+    border: '1px solid rgba(255,255,255,0.68)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    color: '#fff',
     cursor: 'pointer',
     fontSize: '14px',
+    fontWeight: '800',
   },
   btnSalvar: {
-    padding: '8px 18px',
-    borderRadius: '6px',
-    border: 'none',
-    backgroundColor: '#e94560',
-    color: 'white',
+    minHeight: '38px',
+    padding: '9px 20px',
+    borderRadius: '999px',
+    border: '1px solid rgba(255,255,255,0.14)',
+    backgroundColor: '#ff2f48',
+    color: '#fff',
     cursor: 'pointer',
     fontSize: '14px',
-    fontWeight: 'bold',
+    fontWeight: '800',
+    boxShadow: '0 12px 24px rgba(255,47,72,0.25)',
+    textShadow: '0 1px 1px rgba(0,0,0,0.28)',
   },
   listaAvaliacoes: {
     display: 'flex',

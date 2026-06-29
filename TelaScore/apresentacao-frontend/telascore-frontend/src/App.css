@@ -78,9 +78,11 @@
 }
 
 .btn-primary:disabled {
-  background-color: #3e0f12;
-  color: #726b6b;
+  background: linear-gradient(135deg, #a92733, #7e0f18);
+  color: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .btn-secondary {

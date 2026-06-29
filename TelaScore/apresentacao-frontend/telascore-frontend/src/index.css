@@ -54,7 +54,7 @@ button:not(:disabled):hover {
 }
 
 button:disabled {
-  opacity: .58;
+  opacity: .74;
   cursor: not-allowed !important;
 }
 
@@ -183,15 +183,29 @@ h1, h2, h3 {
   min-height: 42px;
   padding: 0 18px;
   border-radius: 11px;
-  color: white;
+  color: #fff;
   cursor: pointer;
   font-weight: 700;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .24);
 }
 
 .btn-primary {
   border: 1px solid transparent;
   background: linear-gradient(135deg, var(--brand-light), var(--brand));
   box-shadow: 0 10px 25px rgba(229, 9, 20, .24);
+}
+
+.btn-primary:disabled,
+button[style*="background-color: rgb(233, 69, 96)"]:disabled,
+button[style*="background-color: #e94560"]:disabled,
+button[style*="background-color:#e94560"]:disabled,
+button[style*="background-color: #ff2f48"]:disabled,
+button[style*="background-color:#ff2f48"]:disabled {
+  color: rgba(255, 255, 255, .88) !important;
+  background: linear-gradient(135deg, #a92733, #7e0f18) !important;
+  border-color: rgba(255, 255, 255, .12) !important;
+  box-shadow: none !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .35);
 }
 
 .btn-secondary {
