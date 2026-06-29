@@ -20,14 +20,17 @@ public class AvaliarFilmeCasoDeUso {
 	private final GeradorId geradorId;
 	private final ListaRepositorio listaRepositorio;
 	private final ListaServico listaServico;
+	private final ListaAssistidosServico listaAssistidosServico;
 
 	public AvaliarFilmeCasoDeUso(AvaliacaoRepositorio avaliacaoRepositorio, FilmeRepositorio filmeRepositorio,
-			GeradorId geradorId, ListaRepositorio listaRepositorio, ListaServico listaServico) {
+			GeradorId geradorId, ListaRepositorio listaRepositorio, ListaServico listaServico,
+			ListaAssistidosServico listaAssistidosServico) {
 		this.avaliacaoRepositorio = avaliacaoRepositorio;
 		this.filmeRepositorio = filmeRepositorio;
 		this.geradorId = geradorId;
 		this.listaRepositorio = listaRepositorio;
 		this.listaServico = listaServico;
+		this.listaAssistidosServico = listaAssistidosServico;
 	}
 
 	public void executar(AvaliarFilmeComando comando) {
@@ -45,6 +48,7 @@ public class AvaliarFilmeCasoDeUso {
 		Avaliacao avaliacao = new Avaliacao(avaliacaoId, filmeId, usuarioId, nota, comando.comentario(), comando.visibilidade());
 
 		avaliacaoRepositorio.salvar(avaliacao);
+		listaAssistidosServico.registrarAssistido(usuarioId, filmeId);
 
 		for (Lista lista : listaRepositorio.pesquisarPorDono(usuarioId)) {
 			if (lista.getTipo() == TipoLista.WATCHLIST) {

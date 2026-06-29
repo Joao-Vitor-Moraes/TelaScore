@@ -16,6 +16,9 @@ export default function ListaAberta() {
   const [dragSobre, setDragSobre] = useState(null);
   const [hoveredFilmeId, setHoveredFilmeId] = useState(null);
   const [notasCache, setNotasCache] = useState({});
+  const [reviewAberta, setReviewAberta] = useState(null);
+  const [reviewEditando, setReviewEditando] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ valorNota: 5, resenha: '' });
   const [menuAberto, setMenuAberto] = useState(false);
   const [modalColaborador, setModalColaborador] = useState(false);
   const [colaboradorId, setColaboradorId] = useState('');
@@ -121,9 +124,72 @@ export default function ListaAberta() {
       const minha = Array.isArray(avaliacoes)
         ? avaliacoes.find(a => a.usuarioId === USUARIO_ID)
         : null;
-      setNotasCache(prev => ({ ...prev, [filmeId]: minha?.valorNota ?? null }));
+      setNotasCache(prev => ({ ...prev, [filmeId]: minha || null }));
     } catch {
       setNotasCache(prev => ({ ...prev, [filmeId]: null }));
+    }
+  }
+
+  async function carregarMinhaReview(filmeId) {
+    if (notasCache[filmeId] !== undefined) return notasCache[filmeId];
+    try {
+      const avaliacoes = await avaliacaoService.listarPorFilme(filmeId, USUARIO_ID);
+      const minha = Array.isArray(avaliacoes)
+        ? avaliacoes.find(a => a.usuarioId === USUARIO_ID)
+        : null;
+      setNotasCache(prev => ({ ...prev, [filmeId]: minha || null }));
+      return minha || null;
+    } catch {
+      setNotasCache(prev => ({ ...prev, [filmeId]: null }));
+      return null;
+    }
+  }
+
+  async function handleAbrirReview(item) {
+    const review = await carregarMinhaReview(item.filmeId);
+    if (!review) return;
+    setReviewAberta({ ...review, filmeId: item.filmeId, titulo: item.titulo, imagemUrl: item.imagemUrl });
+    setReviewForm({ valorNota: review.valorNota, resenha: review.resenha || '' });
+    setReviewEditando(false);
+  }
+
+  function fecharReview() {
+    setReviewAberta(null);
+    setReviewEditando(false);
+  }
+
+  async function handleSalvarReview() {
+    try {
+      await avaliacaoService.atualizar(reviewAberta.avaliacaoId, {
+        valorNota: parseInt(reviewForm.valorNota),
+        resenha: reviewForm.resenha,
+      });
+      const atualizada = {
+        ...reviewAberta,
+        valorNota: parseInt(reviewForm.valorNota),
+        resenha: reviewForm.resenha,
+      };
+      setReviewAberta(atualizada);
+      setNotasCache(prev => ({ ...prev, [reviewAberta.filmeId]: atualizada }));
+      setReviewEditando(false);
+    } catch {
+      avisar({ titulo: 'Resenha não salva', mensagem: 'Não foi possível atualizar sua resenha agora.' });
+    }
+  }
+
+  async function handleRemoverReview() {
+    const podeRemover = await confirmar({
+      titulo: 'Remover resenha',
+      mensagem: 'Sua avaliação e resenha deste filme serão apagadas.',
+      textoConfirmar: 'Remover',
+    });
+    if (!podeRemover) return;
+    try {
+      await avaliacaoService.remover(reviewAberta.avaliacaoId);
+      setNotasCache(prev => ({ ...prev, [reviewAberta.filmeId]: null }));
+      fecharReview();
+    } catch {
+      avisar({ titulo: 'Resenha não removida', mensagem: 'Tente novamente em instantes.' });
     }
   }
 
@@ -131,10 +197,11 @@ export default function ListaAberta() {
   if (!lista) return <div style={styles.pagina}><Navbar /><p style={styles.carregando}>Carregando...</p></div>;
 
   const voltarRota = lista.tipo === 'WATCHLIST' ? '/watchlist' : '/listas';
+  const listaAutomatica = lista.tipo === 'ASSISTIDOS';
   const ehDono = Number(lista.donoId) === Number(USUARIO_ID);
   const ehColaborador = (lista.colaboradores || []).some(colaboradorId =>
     Number(colaboradorId) === Number(USUARIO_ID));
-  const podeModificar = ehDono || ehColaborador;
+  const podeModificar = !listaAutomatica && (ehDono || ehColaborador);
 
   return (
     <>
@@ -152,13 +219,13 @@ export default function ListaAberta() {
             {lista.rankeada && <span style={styles.badgeRankeada}>Rankeada</span>}
           </div>
           <div style={styles.direita}>
-            {ehDono && <button style={styles.btnIcone} onClick={() => navigate(`/listas/${id}/editar`)}>
+            {ehDono && !listaAutomatica && <button style={styles.btnIcone} onClick={() => navigate(`/listas/${id}/editar`)}>
               <FiEdit2 size={18} />
             </button>}
-            {ehDono && <button style={styles.btnIcone}>
+            {ehDono && !listaAutomatica && <button style={styles.btnIcone}>
               <FiShare2 size={18} />
             </button>}
-            {ehDono && <div style={{ position: 'relative' }}>
+            {ehDono && !listaAutomatica && <div style={{ position: 'relative' }}>
               <button style={styles.btnIcone} onClick={() => setMenuAberto(prev => !prev)}>
                 <FiMoreVertical size={18} />
               </button>
@@ -226,12 +293,17 @@ export default function ListaAberta() {
                     onClick={e => { e.stopPropagation(); handleRemover(item.filmeId); }}
                     title="Remover da lista"
                   >×</button>
-                  {hoveredFilmeId === item.filmeId && notasCache[item.filmeId] != null && (
-                    <div style={styles.overlayEstrelas}>
+                  {hoveredFilmeId === item.filmeId && notasCache[item.filmeId]?.valorNota != null && (
+                    <button
+                      type="button"
+                      style={styles.overlayEstrelas}
+                      onClick={e => { e.stopPropagation(); handleAbrirReview(item); }}
+                      title="Abrir sua resenha"
+                    >
                       {Array.from({ length: 5 }, (_, i) => (
-                        <span key={i} style={{ color: i < notasCache[item.filmeId] ? '#f6c969' : 'rgba(255,255,255,0.25)', fontSize: '16px' }}>★</span>
+                        <span key={i} style={{ color: i < notasCache[item.filmeId].valorNota ? '#f6c969' : 'rgba(255,255,255,0.25)', fontSize: '16px' }}>★</span>
                       ))}
-                    </div>
+                    </button>
                   )}
                 </div>
                 {item.titulo && <span style={styles.tituloCard}>{item.titulo}</span>}
@@ -281,6 +353,69 @@ export default function ListaAberta() {
               </button>
             </div>
           </form>
+        </div>
+      </div>
+    )}
+
+    {reviewAberta && (
+      <div style={styles.overlayModal}>
+        <div style={styles.reviewModal}>
+          <button type="button" style={styles.btnFecharReview} onClick={fecharReview}>×</button>
+          <div style={styles.reviewTopo}>
+            {reviewAberta.imagemUrl && <img src={reviewAberta.imagemUrl} alt="" style={styles.reviewPoster} />}
+            <div>
+              <span style={styles.reviewLabel}>Sua resenha</span>
+              <h3 style={styles.modalTitulo}>{reviewAberta.titulo || 'Filme'}</h3>
+              <p style={styles.reviewData}>{reviewAberta.dataAvaliacao}</p>
+            </div>
+          </div>
+
+          {reviewEditando ? (
+            <>
+              <label style={styles.modalLabel}>Nota</label>
+              <select
+                style={styles.modalInput}
+                value={reviewForm.valorNota}
+                onChange={e => setReviewForm(prev => ({ ...prev, valorNota: e.target.value }))}
+              >
+                {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n} estrela(s)</option>)}
+              </select>
+              <label style={styles.modalLabel}>Resenha</label>
+              <textarea
+                style={styles.modalTextarea}
+                value={reviewForm.resenha}
+                onChange={e => setReviewForm(prev => ({ ...prev, resenha: e.target.value }))}
+                rows={5}
+                placeholder="Escreva sua resenha..."
+              />
+              <div style={styles.modalBotoes}>
+                <button type="button" style={styles.btnCancelarModal} onClick={() => setReviewEditando(false)}>
+                  Cancelar
+                </button>
+                <button type="button" style={styles.btnConfirmarModal} onClick={handleSalvarReview}>
+                  Salvar
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={styles.reviewStars}>
+                {Array.from({ length: 5 }, (_, i) => (
+                  <span key={i} style={{ color: i < reviewAberta.valorNota ? '#f6c969' : 'rgba(255,255,255,0.22)' }}>★</span>
+                ))}
+                {reviewAberta.visibilidade === 'PRIVADA' && <span style={styles.reviewBadge}>Privada</span>}
+              </div>
+              <p style={styles.reviewTexto}>{reviewAberta.resenha || 'Você ainda não escreveu uma resenha para essa avaliação.'}</p>
+              <div style={styles.modalBotoes}>
+                <button type="button" style={styles.btnCancelarModal} onClick={handleRemoverReview}>
+                  Excluir
+                </button>
+                <button type="button" style={styles.btnConfirmarModal} onClick={() => setReviewEditando(true)}>
+                  Editar
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     )}
@@ -400,6 +535,8 @@ const styles = {
     padding: '20px 4px 8px',
     borderRadius: '0 0 8px 8px',
     animation: 'fadeIn 0.15s ease',
+    border: 'none',
+    cursor: 'pointer',
   },
   btnRemover: {
     position: 'absolute',
@@ -513,6 +650,28 @@ const styles = {
     outline: 'none',
     boxSizing: 'border-box',
   },
+  modalLabel: {
+    display: 'block',
+    margin: '12px 0 6px',
+    color: '#aaa',
+    fontSize: '11px',
+    fontWeight: 'bold',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+  modalTextarea: {
+    width: '100%',
+    padding: '10px 14px',
+    borderRadius: '8px',
+    border: '1px solid #2a2a4a',
+    backgroundColor: '#0f3460',
+    color: 'white',
+    fontSize: '14px',
+    outline: 'none',
+    boxSizing: 'border-box',
+    resize: 'vertical',
+    fontFamily: 'inherit',
+  },
   modalBotoes: {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -553,5 +712,75 @@ const styles = {
     color: 'white',
     cursor: 'pointer',
     fontSize: '12px',
+  },
+  reviewModal: {
+    position: 'relative',
+    backgroundColor: '#16213e',
+    borderRadius: '12px',
+    padding: '24px',
+    width: 'min(460px, calc(100vw - 32px))',
+    boxSizing: 'border-box',
+    boxShadow: '0 24px 70px rgba(0,0,0,0.45)',
+  },
+  btnFecharReview: {
+    position: 'absolute',
+    top: '12px',
+    right: '12px',
+    width: '30px',
+    height: '30px',
+    borderRadius: '50%',
+    border: '1px solid #2a2a4a',
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    color: 'white',
+    cursor: 'pointer',
+    fontSize: '20px',
+    lineHeight: '1',
+  },
+  reviewTopo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '14px',
+    paddingRight: '32px',
+    marginBottom: '18px',
+  },
+  reviewPoster: {
+    width: '58px',
+    aspectRatio: '2/3',
+    objectFit: 'cover',
+    borderRadius: '8px',
+    flexShrink: 0,
+  },
+  reviewLabel: {
+    color: '#f6c969',
+    fontSize: '11px',
+    fontWeight: 'bold',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+  reviewData: {
+    margin: '4px 0 0',
+    color: '#777',
+    fontSize: '12px',
+  },
+  reviewStars: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    marginBottom: '14px',
+    fontSize: '20px',
+  },
+  reviewBadge: {
+    marginLeft: '8px',
+    border: '1px solid #f6c969',
+    borderRadius: '999px',
+    color: '#f6c969',
+    fontSize: '11px',
+    padding: '3px 8px',
+  },
+  reviewTexto: {
+    margin: '0 0 18px',
+    color: '#ddd',
+    fontSize: '14px',
+    lineHeight: '1.6',
   },
 };

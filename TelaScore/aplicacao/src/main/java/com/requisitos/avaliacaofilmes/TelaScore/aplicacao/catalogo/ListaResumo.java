@@ -12,5 +12,6 @@ public record ListaResumo(
 		String visibilidade,
 		boolean colaborativa,
 		int quantidadeTotalDeFilmes,
+		String capaUrl,
 		List<Integer> colaboradores
 ) {}

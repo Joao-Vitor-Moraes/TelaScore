@@ -124,7 +124,7 @@ public class Lista implements Iterable<ItemLista> {
         garantirPermissao(usuarioId);
         notNull(item, "O item não pode ser nulo");
         
-        if (this.tipo == TipoLista.NORMAL && !filmeJaFoiAssistido) {
+        if ((this.tipo == TipoLista.NORMAL || this.tipo == TipoLista.ASSISTIDOS) && !filmeJaFoiAssistido) {
             throw new IllegalStateException("Listas normais só podem conter filmes que você já assistiu");
         }
         if (this.tipo == TipoLista.WATCHLIST && filmeJaFoiAssistido) {

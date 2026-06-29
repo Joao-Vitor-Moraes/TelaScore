@@ -7,6 +7,7 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AdicionarCola
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.RemoverColaboradorListaCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.AvaliarSolicitacaoFilmeCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.SolicitarAjustesFilmeCasoDeUso;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListaAssistidosServico;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarListasPorUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarListasPublicasCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListarSolicitacoesPorSolicitanteCasoDeUso;
@@ -51,6 +52,14 @@ public class CatalogoConfig {
     @Bean
     public CriarListaCasoDeUso criarListaCasoDeUso(ListaServico listaServico, GeradorId geradorId) {
         return new CriarListaCasoDeUso(listaServico, geradorId);
+    }
+
+    @Bean
+    public ListaAssistidosServico listaAssistidosServico(ListaRepositorio listaRepositorio,
+            ListaServico listaServico,
+            GeradorId geradorId,
+            AvaliacaoRepositorio avaliacaoRepositorio) {
+        return new ListaAssistidosServico(listaRepositorio, listaServico, geradorId, avaliacaoRepositorio);
     }
 
     @Bean
@@ -122,18 +131,22 @@ public class CatalogoConfig {
     }
 
     @Bean
-    public ObterListaCasoDeUso obterListaCasoDeUso(ListaRepositorio listaRepositorio) {
-        return new ObterListaCasoDeUso(listaRepositorio);
+    public ObterListaCasoDeUso obterListaCasoDeUso(ListaRepositorio listaRepositorio,
+            FilmeRepositorio filmeRepositorio) {
+        return new ObterListaCasoDeUso(listaRepositorio, filmeRepositorio);
     }
 
     @Bean
-    public ListarListasPorUsuarioCasoDeUso listarListasPorUsuarioCasoDeUso(ListaRepositorio listaRepositorio) {
-        return new ListarListasPorUsuarioCasoDeUso(listaRepositorio);
+    public ListarListasPorUsuarioCasoDeUso listarListasPorUsuarioCasoDeUso(ListaRepositorio listaRepositorio,
+            FilmeRepositorio filmeRepositorio,
+            ListaAssistidosServico listaAssistidosServico) {
+        return new ListarListasPorUsuarioCasoDeUso(listaRepositorio, filmeRepositorio, listaAssistidosServico);
     }
 
     @Bean
-    public ListarListasPublicasCasoDeUso listarListasPublicasCasoDeUso(ListaRepositorio listaRepositorio) {
-        return new ListarListasPublicasCasoDeUso(listaRepositorio);
+    public ListarListasPublicasCasoDeUso listarListasPublicasCasoDeUso(ListaRepositorio listaRepositorio,
+            FilmeRepositorio filmeRepositorio) {
+        return new ListarListasPublicasCasoDeUso(listaRepositorio, filmeRepositorio);
     }
 
     @Bean
@@ -212,8 +225,10 @@ public class CatalogoConfig {
     @Bean
     public AvaliarFilmeCasoDeUso avaliarFilmeCasoDeUso(AvaliacaoRepositorio avaliacaoRepositorio,
             FilmeRepositorio filmeRepositorio, GeradorId geradorId,
-            ListaRepositorio listaRepositorio, ListaServico listaServico) {
-        return new AvaliarFilmeCasoDeUso(avaliacaoRepositorio, filmeRepositorio, geradorId, listaRepositorio, listaServico);
+            ListaRepositorio listaRepositorio, ListaServico listaServico,
+            ListaAssistidosServico listaAssistidosServico) {
+        return new AvaliarFilmeCasoDeUso(avaliacaoRepositorio, filmeRepositorio, geradorId, listaRepositorio, listaServico,
+                listaAssistidosServico);
     }
 
     @Bean

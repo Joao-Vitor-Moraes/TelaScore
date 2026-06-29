@@ -39,7 +39,10 @@ export default function Watchlist() {
         <div className="collection-grid">
           {listas.map((lista, index) => (
             <button key={lista.id} className={`collection-card watch-card palette-${(index + 2) % 4}`} onClick={() => navigate(`/listas/${lista.id}`)}>
-              <div className="collection-card__art"><FiClock /><span>PLAY</span></div>
+              <div className="collection-card__art">
+                {lista.capaUrl ? <img src={lista.capaUrl} alt="" /> : <FiClock />}
+                <span>PLAY</span>
+              </div>
               <div className="collection-card__content">
                 <span className="collection-card__label">Para assistir</span>
                 <h3>{lista.nome}</h3>

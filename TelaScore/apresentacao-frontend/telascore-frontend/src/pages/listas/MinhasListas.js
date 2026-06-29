@@ -42,11 +42,11 @@ export default function MinhasListas() {
           {normais.map((lista, index) => (
             <button key={lista.id} className={`collection-card palette-${index % 4}`} onClick={() => navigate(`/listas/${lista.id}`)}>
               <div className="collection-card__art">
-                <FiFilm />
-                <span>{String(index + 1).padStart(2, '0')}</span>
+                {lista.capaUrl ? <img src={lista.capaUrl} alt="" /> : <FiFilm />}
+                <span>{lista.tipo === 'ASSISTIDOS' ? 'VISTOS' : String(index + 1).padStart(2, '0')}</span>
               </div>
               <div className="collection-card__content">
-                <span className="collection-card__label">Lista pessoal</span>
+                <span className="collection-card__label">{lista.tipo === 'ASSISTIDOS' ? 'Lista automática' : 'Lista pessoal'}</span>
                 <h3>{lista.nome}</h3>
                 <p>{lista.quantidadeTotalDeFilmes} filme(s)</p>
                 <span className="collection-card__open">Abrir coleção <FiArrowRight /></span>

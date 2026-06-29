@@ -14,9 +14,11 @@ import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.ObterMeuUsu
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.RemoverUsuarioCasoDeUso;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.RemoverUsuarioComando;
 import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.identidade.SessaoUsuario;
+import com.requisitos.avaliacaofilmes.TelaScore.aplicacao.catalogo.ListaAssistidosServico;
 import com.requisitos.avaliacaofilmes.TelaScore.apresentacao.seguranca.TokenServico;
 import com.requisitos.avaliacaofilmes.TelaScore.apresentacao.seguranca.TokenServico.TokenGerado;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.Usuario;
+import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioId;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioLogado;
 import com.requisitos.avaliacaofilmes.TelaScore.dominio.identidade.usuario.UsuarioServico;
 
@@ -49,6 +51,7 @@ public class UsuarioController {
     private final SessaoUsuario sessaoUsuario;
     private final TokenServico tokenServico;
     private final UsuarioServico usuarioServico;
+    private final ListaAssistidosServico listaAssistidosServico;
 
     public UsuarioController(
             CadastrarUsuarioCasoDeUso cadastrarUsuario,
@@ -60,7 +63,8 @@ public class UsuarioController {
             RemoverUsuarioCasoDeUso removerUsuario,
             SessaoUsuario sessaoUsuario,
             TokenServico tokenServico,
-            UsuarioServico usuarioServico) {
+            UsuarioServico usuarioServico,
+            ListaAssistidosServico listaAssistidosServico) {
         this.cadastrarUsuario = cadastrarUsuario;
         this.loginUsuario = loginUsuario;
         this.listarUsuarios = listarUsuarios;
@@ -71,6 +75,7 @@ public class UsuarioController {
         this.sessaoUsuario = sessaoUsuario;
         this.tokenServico = tokenServico;
         this.usuarioServico = usuarioServico;
+        this.listaAssistidosServico = listaAssistidosServico;
     }
 
     @PostMapping({"/registrar"})
@@ -88,6 +93,7 @@ public class UsuarioController {
                     request.biografia(),
                     request.avatarUrl()));
             UsuarioLogado usuarioLogado = loginUsuario.executar(new LoginUsuarioComando(request.email(), request.senha()));
+            listaAssistidosServico.garantirLista(new UsuarioId(usuarioLogado.getId().getId()));
             TokenGerado token = tokenServico.gerar(usuarioLogado);
             return ResponseEntity.status(HttpStatus.CREATED).body(LoginResponse.de(usuarioLogado, token));
         } catch (IllegalArgumentException e) {
