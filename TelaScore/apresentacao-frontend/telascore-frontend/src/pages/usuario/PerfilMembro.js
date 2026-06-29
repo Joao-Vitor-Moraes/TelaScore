@@ -246,7 +246,7 @@ export default function PerfilMembro() {
                             )}
                             {listas.map(lista => (
                                 <div key={lista.id} className="admin-card" style={{ padding: '14px 16px', cursor: 'pointer' }}
-                                    onClick={() => navigate(`/listas/${lista.id}`)}>
+                                    onClick={() => navigate(`/listas/${lista.id}`, { state: { voltarPara: `/usuario/${usuarioId}` } })}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
                                             <span style={{ fontSize: '13px', fontWeight: 'bold', display: 'block' }}>{lista.nome}</span>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { FiArrowLeft, FiEdit2, FiShare2, FiMoreVertical, FiPlusCircle } from 'react-icons/fi';
 import Navbar from '../../components/Navbar';
 import { useAppDialog } from '../../components/AppDialog';
@@ -25,6 +25,7 @@ export default function ListaAberta() {
   const { confirmar, avisar, Dialog } = useAppDialog();
   const dragId = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     Promise.all([
@@ -196,7 +197,7 @@ export default function ListaAberta() {
   if (erro) return <div style={styles.pagina}><Navbar /><p style={styles.erro}>{erro}</p></div>;
   if (!lista) return <div style={styles.pagina}><Navbar /><p style={styles.carregando}>Carregando...</p></div>;
 
-  const voltarRota = lista.tipo === 'WATCHLIST' ? '/watchlist' : '/listas';
+  const voltarRota = location.state?.voltarPara || (lista.tipo === 'WATCHLIST' ? '/watchlist' : '/listas');
   const listaAutomatica = lista.tipo === 'ASSISTIDOS';
   const ehDono = Number(lista.donoId) === Number(USUARIO_ID);
   const ehColaborador = (lista.colaboradores || []).some(colaboradorId =>
